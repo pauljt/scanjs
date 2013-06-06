@@ -1,4 +1,4 @@
-function RuleListCtrl($scope, $http, ScanSvc) {
+function RuleListCtrl($scope, ScanSvc) {
   //if copy of rules in localStorage use that, else load from original
   $scope.current={};
   editing=-1;
@@ -18,26 +18,17 @@ function RuleListCtrl($scope, $http, ScanSvc) {
         rec:current.rec
       }
     }
-    localStorage.rules = JSON.stringify($scope.rules);
+    localStorage.setItem('rules', JSON.stringify($scope.rules));
   }
   
   if(localStorage && localStorage.rules) {
     console.log('loading rules from localstorage')
-    $scope.rules = JSON.parse(localStorage.rules);
-    ScanSvc.init($scope.rules);
   } else {
-    try {
-      console.log('loading rules from json')
-      $http.get('./rules.json').then(function(res) {
-        ScanSvc.init(res.data);
-        localStorage.rules = JSON.stringify(res.data);
-        $scope.rules = res.data;
-      });
-    } catch(e) {
-
-    }
+    console.log('loading rules from json')
+    localStorage.setItem('rules', JSON.stringify(ScanJS.rules));
   }
+
+  $scope.rules = JSON.parse(localStorage.getItem('rules'));
+
+  ScanSvc.init($scope.rules);
 }
-
-
-

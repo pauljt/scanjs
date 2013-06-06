@@ -58,6 +58,8 @@ var ScanJS = {
     }
   },
   scan : function(content, signatures, filename,copiedname) {
+    console.log(content);
+    console.log(signatures);
     scanresults = {};
     this.testNumber = 0;
     this.testTotal = signatures.length;
@@ -107,7 +109,7 @@ if( typeof (require) != 'undefined') {
   var fs = require('fs');
   var path = require('path');
   var esprima = require('esprima');
-  var signatures = require('rules.json')
+  var signatures = require(__dirname + '/rules');
   var argv = require('optimist').usage('Usage: $node scan.js -t [path/to/app] -o [resultFile.json]').demand(['t']).argv;
 
   var dive = function(dir, action) {

@@ -1,4 +1,5 @@
-[
+(function() {
+var rules = [
 	{
 		"type": "execution_sink",
 		"name": "eval",
@@ -384,4 +385,11 @@
 		"desc": "todo",
 		"rec": "todo"
 	}
-]
+];
+
+if (typeof module != 'undefined') {
+	module.exports = rules;
+} else {
+	ScanJS.rules = rules;
+}
+})();
