@@ -2,14 +2,18 @@
 <html ng-app='scanjs'>
   <head>
     <link href='css/bootstrap.min.css' rel='stylesheet' media='screen'>
-    <script src='js/jquery-2.0.0.min.js'></script>
-    <script src='js/angular.min.js'></script>
-    <script src='js/ui-bootstrap-tpls-0.3.0.js'></script>
-    <script src='js/esprima/esprima.js'></script>
-    <script src='scanctrl.js'></script>
-    <script src='scan.js'></script>
-    <script src='rules.js'></script>
-    <script src='scanservice.js'></script>
+    <!-- Third-party libs -->
+    <script src='js/lib/jquery-2.0.0.min.js'></script>
+    <script src='js/lib/angular.min.js'></script>
+    <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
+    <script src='js/lib/esprima/esprima.js'></script>
+    <!-- CommonJS modules -->
+    <script src='../common/scan.js'></script>
+    <script src='../common/rules.js'></script>
+    <!-- Client specific files -->
+    <script src='js/scanctrl.js'></script>
+    <script src='js/rules.js'></script>
+    <script src='js/scanservice.js'></script>
     <style>
       #rulediv {
         background-color: #FFFFFF;
