@@ -1,11 +1,11 @@
 {
   "name": "scanjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Static analysis tool for javascript codebases",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pauljt/scanjs.git"
+    "url": "https://github.com/freddyb/scanjs.git"
   },
   "keywords": [
     "scanjs",
@@ -13,10 +13,11 @@
     "javascript",
     "static-analysis"
   ],
-  "author": "Paul Theriault",
-  "license": "BSD",
+  "author": "Paul Theriault, Frederik Braun",
+  "license": "MPL",
   "dependencies": {
-    "esprima": "~1.0.3",
+    "acorn": "~0.3.0",
+    "esprima": "'0.3.0",
     "optimist": "~0.5.2"
   }
 }
