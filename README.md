@@ -7,7 +7,7 @@ scanjs
 Client-side instructions
 ------------------------
 
-- Navigate to client/index.html
+- Navigate to [client/index.html](http://freddyb.github.io/scanjs/client/)
 
 Server-side instructions
 ------------------------
