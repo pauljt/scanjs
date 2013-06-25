@@ -58,18 +58,30 @@ var ScanJS = {
     }
   },
   scan : function(content, signatures, filename,copiedname) {
-    console.log(content);
-    console.log(signatures);
-    scanresults = {};
+    //console.log(content);
+    //console.log(signatures);
+    var scanresults = {};
     this.testNumber = 0;
     this.testTotal = signatures.length;
     if(this.Total <= 0) {
       console.log('Error: signatures array is 0 length')
       return;
     }
-    ast = esprima.parse(content, {
-      loc : true
-    });
+    if (content.indexOf("#!") == 0) {
+      /* hash-bang not so uncommin in nodejs files, cut off first line
+       * to avoid parse failures */
+      content = content.slice(content.indexOf("\n"+1));
+    }
+    try {
+      ast = acorn.parse(content, {
+        locations : true
+      });
+    }
+    catch(e) {
+      console.log("ERROR: Skipping " + filename +" (parsing failure)");
+      console.log('Exception: '+e+ "\n");
+      return [];
+    }
 
     //run all the rules against content.
     console.log('Running tests against ' + filename);
@@ -99,7 +111,7 @@ var ScanJS = {
         }
       });
     }
-    console.log(filename + ' had ' + scanresults.length + ' findings in it.');
+    console.log(filename + ' had ' + Object.keys(scanresults).length + ' findings in it.');
     return scanresults;
   }
 }
@@ -108,7 +120,7 @@ var ScanJS = {
 if( typeof (require) != 'undefined') {
   var fs = require('fs');
   var path = require('path');
-  var esprima = require('esprima');
+  var acorn = require('acorn');
   var signatures = require(__dirname + '/rules');
   var argv = require('optimist').usage('Usage: $node scan.js -t [path/to/app] -o [resultFile.json]').demand(['t']).argv;
 
