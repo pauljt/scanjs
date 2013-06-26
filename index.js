@@ -4,7 +4,6 @@
 
 var fs = require('fs');
 var path = require('path');
-var esprima = require('esprima');
 
 var ScanJS = require(__dirname + '/common/scan');
 var signatures = require(__dirname + '/common/rules');
