@@ -1,0 +1,1 @@
+{"name":"Scanjs","tagline":"Static analysis tool for javascript code based. Scanjs uses Esprima to convert sources to AST, then walks AST looking for patterns.","body":"[Scan JS](ruletester.html)","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
