@@ -1,5 +1,25 @@
+var module = angular.module('reportviewer',[]);
+
+module.directive('file', function(){
+    return {
+        scope: {
+            file: '='
+        },
+        link: function(scope, el, attrs){
+            el.bind('change', function(event){
+                var files = event.target.files;
+                var file = files[0];
+                scope.file = file ? file.name : undefined;
+                scope.$apply();
+            });
+        }
+    };
+});
+
 function ResultListCtrl($scope, $http) {
   //if copy of results in localStorage use that, else load from original
+  $scope.report = {};
+  $scope.report.file='scan.json' //load this by default
   $scope.current={};
   editing=-1;
   $scope.results=[];
@@ -29,15 +49,15 @@ function ResultListCtrl($scope, $http) {
     localStorage.results = JSON.stringify($scope.results);
   }
   
-  if(localStorage && localStorage.results) {
-    console.log('loading results from localstorage')
-    $scope.results = JSON.parse(localStorage.results);
-  } else {
+  $scope.loadReport=function(){
     try {
-      console.log('loading results from json')
-      $http.get('./results.json').then(function(res) {
+      console.log('loading results from '+$scope.report.file)
+      $http.get($scope.report.file).then(function(res) {
         localStorage.results = JSON.stringify(res.data);
+       
         $scope.results = res.data;
+        console.log('loaded results' +$scope.results.length)
+        console.log($scope.results)
       });
     } catch(e) {
 

@@ -1,0 +1,27 @@
+<!doctype html>
+<html data-ng-app='reportviewer' data-ng-controller="ResultListCtrl">
+  <head>
+    <link href='client/css/bootstrap.min.css' rel='stylesheet' media='screen'>
+    <link href="client/css/prettify.css" type="text/css" rel="stylesheet" />
+    <!-- Third-party libs -->
+    <script src='client/js/lib/jquery-2.0.0.min.js'></script>
+    <script src='client/js/lib/angular.min.js'></script>
+    <script src='client/js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
+    <script src='client/js/lib/esprima/esprima.js'></script>
+    <!-- Common JS modules -->
+    <script src='client/js/report.js'></script>
+    <script type="text/javascript" src="js/prettify/run_prettify.js"></script>
+  </head>
+  <body>
+    <span class='span12'> <h2>Results</h2>
+      <input type="file" data-file="report.file">
+      <button ng-click='loadReport()' value={{scope.report.file}}>
+        Load Report
+      </button>
+      <div ng-repeat="(ruleName,ruleResults) in results">
+        Rule:{{ruleName}}({{ruleResults.length}})
+        <div ng-repeat="item in ruleResults"><a href='{{item.filename}}#{{item.line}}'>{{item.filename}} Line {{item.line}}</a> </div>
+      </div> 
+    </span>
+  </body>
+</html>

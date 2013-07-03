@@ -1,8 +1,8 @@
 {
   "name": "scanjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Static analysis tool for javascript codebases",
-  "main": "index.js",
+  "main": "scanner.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/pauljt/scanjs.git"
@@ -18,5 +18,8 @@
   "dependencies": {
     "esprima": "~1.0.3",
     "optimist": "~0.5.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
