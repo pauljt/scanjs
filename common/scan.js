@@ -112,7 +112,37 @@ var ScanJS = {
       });
     }
     console.log(filename + ' had ' + Object.keys(scanresults).length + ' findings in it.');
+    console.log("Generating block list on "+filename);
+    var blocks = ScanJS.getBlocks(ast);
+    for (var j=0; j< blocks.length; ++j) {
+      console.log("BLOCK BEGIN:");
+      console.log(blocks[j]);
+      console.log("BLOCK END:");
+    }
+    //console.log(JSON.stringify(blocks));
+    
     return scanresults;
+  },
+  getBlocks: function(ast) {
+    var branchTypes = ["BreakStatement", "ContinueStatement", "IfStatement", "SwitchStatement", "ReturnStatement", "ThrowStatement", "TryStatement", "WhileStatement", "DoWhileStatement", "ForStatement", "ForInStatement", "ForOfStatement"];
+    var blocks = [""]; // list of objects
+    ScanJS.traverse(ast, function(node) {
+      if (!node.hasOwnProperty('type')) { return false; } // don't go deeper
+      console.log(node.type);
+      if (node.type.indexOf("Statement") == -1) { return false; } // just skip?!
+      if (branchTypes.indexOf(node.type) !== -1) {
+        blocks.push(""); // next block
+      }
+      try {
+        var code = escodegen.generate(node)
+      }
+      catch(e) {
+        console.log("escodegen error " +e + "typeof blocks:" + JSON.stringify(blocks));
+        console.log(JSON.stringify(node));
+      }
+      blocks[blocks.length-1] += code;      
+    });
+    return blocks
   }
 }
 
@@ -121,6 +151,7 @@ if( typeof (require) != 'undefined') {
   var fs = require('fs');
   var path = require('path');
   var acorn = require('acorn');
+  var escodegen = require('escodegen');
   var signatures = require(__dirname + '/rules');
   var argv = require('optimist').usage('Usage: $node scan.js -t [path/to/app] -o [resultFile.json]').demand(['t']).argv;
 
