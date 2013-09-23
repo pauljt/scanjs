@@ -70,7 +70,19 @@ if( typeof process != 'undefined' && process.argv[2]) {
         var content = fs.readFileSync(fullpath, 'utf8');
         results[fullpath] = ScanJS.scan(content, signatures, fullpath,copiedName);
       }
-    })
+    });
+    // Flatten report file to remove files with no findings and tests with no results (i.e. empty arr)
+    // TODO: Don't even store empty unless --overly-verbose or so..
+    for (var testedFile in results) {
+      for (var testCase in results[testedFile]) {
+        if (results[testedFile][testCase].length == 0) {
+          delete(results[testedFile][testCase]);
+        }
+      }
+      if (Object.keys(results[testedFile]).length == 0) {
+        delete(results[testedFile]);
+      }
+    }
     writeReport(results, reportname + '.JSON');
   }
 } else {
