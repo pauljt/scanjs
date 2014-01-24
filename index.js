@@ -27,16 +27,6 @@ var dive = function(dir, action) {
     }
   });
 };
-var report = function(results) {
-  for(filename in results) {
-    console.log("Issue:" + issue);
-    instances = results[issue];
-    for( i = 0; i < instances.length; i++) {
-      console.log("Found item in" + instances[i].filename + ":" + instances[i].line + "-" + isntance[i].rule.name)
-    }
-  }
-
-};
 var writeReport = function(results, name) {
   if(fs.existsSync(name)) {
     console.log("Error:output file already exists (" + name + "). Supply a different name using: -o [filename]")
