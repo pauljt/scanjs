@@ -1,4 +1,8 @@
-(function() {
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") return mod(exports); // CommonJS
+  if (typeof define == "function" && define.amd) return define(["exports"], mod); // AMD
+  mod(this.ScanJS || (this.ScanJS = {})); // Plain browser env
+})(function(exports) {
   var ScanJS = {
     template : {
       identifier : "var node=arguments[0]; return node.type == 'Identifier' && node.name == '$1$';",
@@ -139,14 +143,7 @@
       return blocks
     }
   }
-  if (typeof module != 'undefined') {
-    module.exports = ScanJS;
-  } else {
-    return ScanJS;
-  }
 
-  // a bit weird have to repeat this in here
-  var acorn = module.require("acorn");
-
-
-})()
+  exports.scan = ScanJS.scan;
+  exports.traverse = ScanJS.traverse;
+});
