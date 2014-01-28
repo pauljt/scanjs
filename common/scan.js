@@ -110,8 +110,11 @@
             });
           }
         });
+        if (scanresults[rule.name].length == 0) {
+          delete scanresults[rule.name]; // no need to store empty arrays
+        }
       }
-      console.log(filename + ' had ' + Object.keys(scanresults).length + ' findings in it.');
+      console.log(filename + ' had matches for ' + Object.keys(scanresults).length + ' rules.');
       return scanresults;
     },
     getBlocks: function(ast) {
