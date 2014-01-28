@@ -64,6 +64,58 @@
     scan : function(content, signatures, filename,copiedname) {
       //console.log(content);
       //console.log(signatures);
+      if (typeof this.th === "undefined") {
+        // init. dirty :<<
+        function getFileFromDict(th, name, cb) {
+          var text = th.fileDict[name];
+          if (text)
+            cb(text);
+          //else if (ts.options.getFile)
+          //  ts.options.getFile(name, c);
+          else
+            cb(null);
+        }
+        function ternHandler() {
+          //  this and most other functions adopted/stolen from tern's codemirror glue
+          this.addFile = function(name, text) {
+            this.fileDict[name] = text;
+            this.ternServer.addFile(name, text)
+          };
+          var self = this;
+          this.fileDict = {}; // used as a cache..
+
+          this.ternServer = new tern.Server({async: true, plugins: {},
+            getFile: function(name, cb) {
+              return getFileFromDict(self, name, cb)
+            },
+            defs: [defs.browser], // [JSON.parse(defs)]
+          });
+          this.getType = function(file, pos, cb) {
+            this.ternServer.request({
+                "query": {
+                  "type": "type",
+                  "lineCharPositions":true,
+                  "end": { "line": 0, "ch": pos}, // yay.. :D
+                  "file": file
+                },
+                "files": []},
+              cb);
+          }
+          // return this;
+        };
+        /*ternHandler.prototype.getType = function(file, pos, cb) {
+         this.ternServer.request({
+         "query": {
+         "type": "type",
+         "lineCharPositions":true,
+         "end": { "line": 0, "ch": pos}, // yay.. :D
+         "file": file
+         },
+         "files": []},
+         cb);
+         } */
+        this.th = new ternHandler();
+      }
       var scanresults = {};
       this.testNumber = 0;
       this.testTotal = signatures.length;
