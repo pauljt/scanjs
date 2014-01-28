@@ -5,7 +5,7 @@ function getJSON(nme, loc) {
   x.open("GET", loc, true);
   x.send()
   x.onload = function() {
-    defs[attr] = x.response;
+    defs[nme] = x.response;
   }
 }
 getJSON('browser', 'js/lib/tern/defs/browser.json');
