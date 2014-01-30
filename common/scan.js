@@ -53,7 +53,9 @@
         return;
       }
       for(key in object) {
-        if(object.hasOwnProperty(key)) {
+        //if(object.hasOwnProperty(key)) {
+        // using func from obj.proto because this obj might have wrong prototype :<
+        if (Object.prototype.hasOwnProperty.call(object, key)) {
           child = object[key];
           if( typeof child === 'object' && child !== null) {
             ScanJS.traverse(child, visitor);
