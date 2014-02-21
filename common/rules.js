@@ -88,8 +88,8 @@ var rules = [
         "type": "url_sink",
         "name": "\\.data",
         "test": ".data",
-        "desc": "todo",
-        "rec": "todo"
+        "desc": "Reading data from untrusted source might lead to XSS.",
+        "rec": "Make sure to validate and sanitize untrusted third-party and cross-origin data."
     },
     {
         "type": "url_sink",
@@ -383,15 +383,15 @@ var rules = [
         "type": "event",
         "name": "CustomEvent",
         "test": "CustomEvent",
-        "desc": "Events can be dispatched and created ",
-        "rec": "todo"
+        "desc": "CustomEvents can be dispatched and created arbitrarily",
+        "rec": "Make sure that intended origin and data are valid and sane to be used in the current context."
     },
     {
         "type": "event",
         "name": "message",
         "test": "message",
         "desc": "Incoming messages can originate from foreign domains or apps and their data might be untrusted.",
-        "rec": "It is recommended to validate that the origin is matching the expected message source. In any case, incoming data should be treated with care."
+        "rec": "Validate that the origin is matching the expected message source. In any case, incoming data should be treated with care."
     }
 ];
 
