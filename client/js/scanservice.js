@@ -12,7 +12,7 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
       
       console.log('running scan')
       //try{
-    	  this.results=ScanJS.scan(source,this.rules,'inline','#');
+      this.results=ScanJS.scan(source, this.rules, file || 'inline','#');
     
     	$rootScope.$broadcast('NewResults', this.results);
     	//}catch(e){

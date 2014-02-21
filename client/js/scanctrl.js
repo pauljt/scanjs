@@ -28,12 +28,37 @@ function ScanCtrl($scope, ScanSvc) {
 
   $scope.$on('NewResults', function(event, results) {
     console.log(results)
-    $scope.results=[];
     $scope.results = results
   });
   
   $scope.filterEmpty = function(item) {
   alert(1)
     return (item.length>0)
+  }
+
+  $scope.handleFiles = function handleFiles(fileList) {
+    for (var i = 0; i < fileList.length; i++) { // This should really just take 1 file
+      var file = fileList[i];
+      console.log("File: ", file.name, " Filetype: "+ file.type);
+      var acceptedType = /(application\/json)|(text\/plain)/;
+
+      if (!file.type.match(acceptedType)) {
+        continue;
+      }
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        console.log("read file..");
+        try {
+          resultObj = JSON.parse(e.target.result);
+          ScanSvc.addResults(resultObj);
+        } catch(e) {
+          console.log("couldnt parse json ://", e.target.result)// gotta catch them all
+        }
+
+      };
+      reader.readAsText(file);
+    }
+
   }
 }
