@@ -19,6 +19,13 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
     	//  console.log(e);
     	//$rootScope.$broadcast('NewResults', {error:[{line:e.lineNumber,rule:{name:e.description}}]});
     	//}
+    },
+    addResults: function(results) {
+      this.results = {};
+      for (fileName in results) {
+        this.results = results[fileName]; // we basically override and just take last file -.-
+      }
+      $rootScope.$broadcast('NewResults', this.results);
     }
   };
 });
