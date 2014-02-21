@@ -362,36 +362,36 @@ var rules = [
         "type": "client_side_torage",
         "name": "mozSetMessageHandler",
         "test": "mozSetMessageHandler",
-        "desc": "todo",
-        "rec": "todo"
+        "desc": "mozSetMessageHandler allows handling WebActivities. The origin of the activity and its data might be untrusted",
+        "rec": "Make sure the origin of this activity is as expected. All data within this activity should be sanitized and handled with great care."
     },
     {
         "type": "event",
         "name": "addEventListener",
         "test": "addEventListener",
-        "desc": "todo",
-        "rec": "todo"
+        "desc": "Events can be caused by untrusted source or even come from other origins.",
+        "rec": "Validate the event source and the data for all incoming events."
     },
     {
         "type": "event",
         "name": "mozChromeEvent",
         "test": "mozChromeEvent",
-        "desc": "todo",
-        "rec": "todo"
+        "desc": "mozChromeEvents are mostly used for window and activity handling.",
+        "rec": "mozChromeEvents should be handled with care, as every interaction between chrome and content scripts."
     },
     {
         "type": "event",
         "name": "CustomEvent",
         "test": "CustomEvent",
-        "desc": "todo",
+        "desc": "Events can be dispatched and created ",
         "rec": "todo"
     },
     {
         "type": "event",
         "name": "message",
         "test": "message",
-        "desc": "todo",
-        "rec": "todo"
+        "desc": "Incoming messages can originate from foreign domains or apps and their data might be untrusted.",
+        "rec": "It is recommended to validate that the origin is matching the expected message source. In any case, incoming data should be treated with care."
     }
 ];
 
