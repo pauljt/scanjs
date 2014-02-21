@@ -57,15 +57,16 @@
         <span class='span4'> <h2>Output</h2>
           <div id='output'>
             <div>{{error}}</div>
-            <ol>
+            <ul>
               <li ng-repeat="(rulename,ruleresult) in results" ng-show="ruleresult">
-                rule:{{rulename}}({{ruleresult.length}})<br>
+                <span title="{{ruleresult[0].rule.desc}}">Rule <strong>{{rulename}}</strong>({{ruleresult.length}})<br></span>
+                  <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
                 <ul>
                   <li ng-repeat='result in ruleresult' >
                 <a>Line {{result.line}}: {{result.rule.name}} </a>
                 </ul>
               </li>
-            </ol>
+            </ul>
           </div> </span>
       </div>
       </pane>
