@@ -48,13 +48,22 @@
   <body >
     <tabs>
       <pane heading='input'>
-      <div ng-controller='ScanCtrl'  id='input'>
+      <div ng-controller='ScanCtrl' id='input'>
         <span class='span8'> <h2>Input</h2>
-          <textarea rows='25' cols='500' ng-model='sourceinput' ng-change='run()'></textarea>
-          <button ng-click='run()'>
-            Scan
-          </button> </span>
-        <span class='span4'> <h2>Output</h2>
+            <tabs><pane heading='Text Input'>
+                <textarea rows='25' cols='500' ng-model='sourceinput' ng-change='run()'></textarea>
+                <button ng-click='run()'>
+                    Scan
+                </button>
+            </pane>
+            <pane heading='Upload JSON results'>
+                <p>Upload a scanresults.json</p>
+                <input type="file" id="json-input"  onchange="angular.element(this).scope().handleFiles(this.files)">
+            </pane>
+            </tabs>
+        </span>
+
+        <span class='span4'> <h2>Output</h2>   <!--FIXME does not update unless input pane is clicked :OO wtf angular u sux -->
           <div id='output'>
             <div>{{error}}</div>
             <ul>
