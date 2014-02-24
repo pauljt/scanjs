@@ -73,4 +73,5 @@ function ScanCtrl($scope, ScanSvc) {
     }
 
   }
+  $scope.gen = function(n) { return escodegen.generate(n); };
 }

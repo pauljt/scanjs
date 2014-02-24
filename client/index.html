@@ -6,6 +6,7 @@
     <script src='js/lib/jquery-2.1.0.min.js'></script>
     <script src='js/lib/angular-1.2.13.min.js'></script>
     <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
+    <script src='js/lib/escodegen.browser.js'></script>
       <!-- FIXME use proper module loading for acorn, tern and so on.-->
     <script src='js/lib/tern/node_modules/acorn/acorn.js'></script>
     <script src='js/lib/tern/node_modules/acorn/util/walk.js'></script>
@@ -74,8 +75,10 @@
                         <span title="{{ruleresult[0].rule.desc}}">Rule <strong>{{rulename}}</strong>({{ruleresult.length}})<br></span>
                           <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
                         <ul>
-                          <li ng-repeat='result in ruleresult' >
-                        <a>Line {{result.line}}: {{result.rule.name}}</a>
+                          <li ng-repeat='result in ruleresult'>
+                            <a>Line {{result.line}}: {{result.rule.name}}</a><br>
+                            <code ng-show="gen(result.node)">{{ gen(result.node) }}</code>
+                          </li>
                         </ul>
                       </li>
                     </ul>
@@ -121,7 +124,7 @@
           </div>
         </div>
       </pane>
-      
+
     </tabs>
   </body>
 </html>
