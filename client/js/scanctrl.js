@@ -39,6 +39,7 @@ function ScanCtrl($scope, ScanSvc) {
       console.log(results);
       $scope.results = results;
     }
+    $scope.$apply(); // apply changes to view
   });
   
   $scope.filterEmpty = function(item) {
