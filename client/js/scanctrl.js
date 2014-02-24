@@ -28,7 +28,7 @@ function ScanCtrl($scope, ScanSvc) {
 
   $scope.$on('ResultsForSingleFile', function(event, results) {
     console.log(results)
-    $scope.results = results
+    $scope.results = results;
   });
   
   $scope.filterEmpty = function(item) {
