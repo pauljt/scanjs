@@ -52,26 +52,27 @@ function ScanCtrl($scope, ScanSvc) {
       var file = fileList[i];
       console.log("File: ", file.name, " Filetype: "+ file.type);
       var acceptedType = /(application\/json)|(text\/plain)/;
-
       if (!file.type.match(acceptedType)) {
-        continue;
+        $scope.error = "Invalid file type, expected JSON.";
+        $scope.$apply();
+        break;
       }
-
       var reader = new FileReader();
       reader.onload = function(e) {
-        console.log("read file..");
         try {
           var resultObj = JSON.parse(e.target.result);
           ScanSvc.addResults(resultObj);
         } catch(e) { // gotta catch them all
-          alert("Could not parse JSON"); //XXX better UI..
-          console.log("couldnt parse json ://", e)
+          $scope.error = "Could not parse JSON";
+          $scope.$apply();
         }
-
       };
+      reader.onerror = function(e) {
+        $scope.error = "Could not read file";
+        $scope.$apply();
+      }
       reader.readAsText(file);
     }
-
   }
   $scope.gen = function(n) { return escodegen.generate(n); };
 }

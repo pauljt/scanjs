@@ -49,7 +49,7 @@
   <body>
     <tabs>
       <pane heading='input'>
-      <div ng-controller='ScanCtrl' id='input'>
+          <div ng-controller='ScanCtrl' id='input'>
         <span class='span8'> <h2>Input</h2>
             <tabs><pane heading='Text Input'>
                 <textarea rows='25' cols='500' ng-model='sourceinput' ng-change='run()'></textarea>
@@ -57,35 +57,35 @@
                     Scan
                 </button>
             </pane>
-            <pane heading='Upload JSON results'>
-                <p>Upload a scanresults.json</p>
-                <input type="file" id="json-input" onchange="angular.element(this).scope().handleFiles(this.files)">
-            </pane>
+                <pane heading='Upload JSON results'>
+                    <p>Upload a scanresults.json</p>
+                    <input type="file" id="json-input" onchange="angular.element(this).scope().handleFiles(this.files)">
+                </pane>
             </tabs>
         </span>
-
-        <span class='span8'> <h2>Output</h2>
-          <div id='output'>
-            <div>{{error}}</div>
-            <ul>
-                <li ng-repeat="(filename, resobj) in results">
-                <span>File <strong>{{filename}}</strong></span>
+        <span class='span8'><h2>Output</h2>
+            <div id='output'>
+                <div class="alert-error">{{error}}</div>
                 <ul>
-                      <li ng-repeat="(rulename,ruleresult) in resobj" ng-show="ruleresult">
-                        <span title="{{ruleresult[0].rule.desc}}">Rule <strong>{{rulename}}</strong>({{ruleresult.length}})<br></span>
-                          <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
+                    <li ng-repeat="(filename, resobj) in results">
+                        <span>File <strong>{{filename}}</strong></span>
                         <ul>
-                          <li ng-repeat='result in ruleresult'>
-                            <a>Line {{result.line}}: {{result.rule.name}}</a><br>
-                            <code ng-show="gen(result.node)">{{ gen(result.node) }}</code>
-                          </li>
+                            <li ng-repeat="(rulename,ruleresult) in resobj" ng-show="ruleresult">
+                                <span title="{{ruleresult[0].rule.desc}}">Rule <strong>{{rulename}}</strong>({{ruleresult.length}})<br></span>
+                                <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
+                                <ul>
+                                    <li ng-repeat='result in ruleresult'>
+                                        <a>Line {{result.line}}: {{result.rule.name}}</a><br>
+                                        <code ng-show="gen(result.node)">{{ gen(result.node) }}</code>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
-                      </li>
-                    </ul>
-                </li>
-            </ul>
-          </div> </span>
-      </div>
+                    </li>
+                </ul>
+            </div>
+        </span>
+          </div>
       </pane>
       
       
