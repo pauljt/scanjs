@@ -26,9 +26,19 @@ function ScanCtrl($scope, ScanSvc) {
     ScanSvc.newScan($scope.sourceinput, 'inline');
   }
 
-  $scope.$on('ResultsForSingleFile', function(event, results) {
-    console.log(results)
-    $scope.results = results;
+  $scope.$on('NewResults', function(event, results) {
+    var ruleNames = ScanJS.rules.map(function(el) { return el.name; }) // list of rule names
+    if (ruleNames.indexOf(Object.keys(results)[0]) !== -1) {
+      // we get the results without a file name, this must come from inline checks
+      // layout: results = { rule: results, rule2: results2, ..}
+      var resultsWithFile = {'inline': results};
+      console.log(resultsWithFile);
+      $scope.results = resultsWithFile;
+    }
+    else { // layout: results = {file1: {rule:results, ..}, file2: { rule:results, .. } }
+      console.log(results);
+      $scope.results = results;
+    }
   });
   
   $scope.filterEmpty = function(item) {

@@ -45,7 +45,7 @@
 
     </style>
   </head>
-  <body >
+  <body>
     <tabs>
       <pane heading='input'>
       <div ng-controller='ScanCtrl' id='input'>
@@ -58,7 +58,7 @@
             </pane>
             <pane heading='Upload JSON results'>
                 <p>Upload a scanresults.json</p>
-                <input type="file" id="json-input"  onchange="angular.element(this).scope().handleFiles(this.files)">
+                <input type="file" id="json-input" onchange="angular.element(this).scope().handleFiles(this.files)">
             </pane>
             </tabs>
         </span>
@@ -67,14 +67,19 @@
           <div id='output'>
             <div>{{error}}</div>
             <ul>
-              <li ng-repeat="(rulename,ruleresult) in results" ng-show="ruleresult">
-                <span title="{{ruleresult[0].rule.desc}}">Rule <strong>{{rulename}}</strong>({{ruleresult.length}})<br></span>
-                  <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
+                <li ng-repeat="(filename, resobj) in results">
+                <span>File <strong>{{filename}}</strong></span>
                 <ul>
-                  <li ng-repeat='result in ruleresult' >
-                <a>Line {{result.line}}: {{result.rule.name}} </a>
-                </ul>
-              </li>
+                      <li ng-repeat="(rulename,ruleresult) in resobj" ng-show="ruleresult">
+                        <span title="{{ruleresult[0].rule.desc}}">Rule <strong>{{rulename}}</strong>({{ruleresult.length}})<br></span>
+                          <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
+                        <ul>
+                          <li ng-repeat='result in ruleresult' >
+                        <a>Line {{result.line}}: {{result.rule.name}}</a>
+                        </ul>
+                      </li>
+                    </ul>
+                </li>
             </ul>
           </div> </span>
       </div>

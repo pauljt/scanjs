@@ -13,18 +13,15 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
       console.log('running scan')
       //try{
       this.results=ScanJS.scan(source, this.rules, file || 'inline','#');
-      $rootScope.$broadcast('ResultsForSingleFile', this.results);
+      $rootScope.$broadcast('NewResults', this.results);
     	//}catch(e){
     	//  console.log(e);
     	//$rootScope.$broadcast('NewResults', {error:[{line:e.lineNumber,rule:{name:e.description}}]});
     	//}
     },
     addResults: function(results) {
-      this.results = {};
-      for (fileName in results) {
-        this.results = results[fileName]; // we basically override and just take last file -.-
-      }
-      $rootScope.$broadcast('ResultsForSingleFile', this.results);
+      this.results = results;
+      $rootScope.$broadcast('NewResults', results);
     }
   };
 });
