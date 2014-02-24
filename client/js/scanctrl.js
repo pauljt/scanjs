@@ -26,7 +26,7 @@ function ScanCtrl($scope, ScanSvc) {
     ScanSvc.newScan($scope.sourceinput, 'inline');
   }
 
-  $scope.$on('NewResults', function(event, results) {
+  $scope.$on('ResultsForSingleFile', function(event, results) {
     console.log(results)
     $scope.results = results
   });
@@ -50,10 +50,11 @@ function ScanCtrl($scope, ScanSvc) {
       reader.onload = function(e) {
         console.log("read file..");
         try {
-          resultObj = JSON.parse(e.target.result);
+          var resultObj = JSON.parse(e.target.result);
           ScanSvc.addResults(resultObj);
-        } catch(e) {
-          console.log("couldnt parse json ://", e.target.result)// gotta catch them all
+        } catch(e) { // gotta catch them all
+          alert("Could not parse JSON"); //XXX better UI..
+          console.log("couldnt parse json ://", e)
         }
 
       };
