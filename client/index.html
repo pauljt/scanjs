@@ -85,8 +85,8 @@
                                 <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
                                 <ul>
                                     <li ng-repeat='result in ruleresult'>
-                                        <a>Line {{result.line}}: {{result.rule.name}}</a><br>
-                                        <code ng-show="gen(result.node)">{{ gen(result.node) }}</code>
+                                        <a ng-click="setCursor(result.line, result.col)">Line {{result.line}}: {{result.rule.name}}</a><br>
+                                        <code ng-show="gen(result.node)">{{ codegen(result.node) }}</code>
                                     </li>
                                 </ul>
                             </li>

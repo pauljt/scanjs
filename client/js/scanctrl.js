@@ -97,5 +97,10 @@ function ScanCtrl($scope, ScanSvc) {
       reader.readAsText(file);
     }
   }
-  $scope.gen = function(n) { return escodegen.generate(n); };
+  $scope.setCursor = function (l, c) {
+    // use line-1, because editor lines start at 0?!?!?!?? :D
+    $scope.codeMirror.setCursor(l-1, c || 0);
+    $scope.codeMirror.focus();
+  }
+  $scope.codegen = function(n) { return escodegen.generate(n); };
 }
