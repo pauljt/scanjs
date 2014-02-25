@@ -60,15 +60,17 @@
                 <pane heading='Text/File Scan'>
                     <textarea id="jsTextarea" rows='25' cols='500' ng-model='sourceinput' ng-change='run()'></textarea>
                     <!--TODO BEGIN: put these two in a row-design bootstrappy thing-->
-                    <button ng-click='run()'>
-                        Scan
-                    </button><br>
-                    <p>Upload & Scan JS file</p>
-                    <input type="file" id="js-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
-                    <!--TODO END -->
+                        <button ng-click='run()'>
+                            Start Scan
+                        </button>
+                    <hr>
+                        <p>Upload file for scanning:</p>
+                        <input type="file" id="js-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
+                        <!--TODO END -->
+
                 </pane>
                 <pane heading='Upload JSON results'>
-                    <p>Upload a scanresults.json</p>
+                    <p>Upload a scanresults.json file from a previous scan.</p>
                     <input type="file" id="json-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
                 </pane>
             </tabs>
