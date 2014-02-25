@@ -28,6 +28,11 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.$on('NewResults', function(event, results) {
+    if (Object.keys(results).length == 0) {
+      $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)"
+      $scope.apply();
+      return
+    }
     var ruleNames = ScanJS.rules.map(function(el) { return el.name; }) // list of rule names
     if (ruleNames.indexOf(Object.keys(results)[0]) !== -1) {
       // we get the results without a file name, this must come from inline checks
@@ -40,6 +45,7 @@ function ScanCtrl($scope, ScanSvc) {
       console.log(results);
       $scope.results = results;
     }
+    $scope.error = "";
     $scope.$apply(); // apply changes to view
   });
   
