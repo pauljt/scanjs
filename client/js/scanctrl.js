@@ -109,5 +109,5 @@ angular.element(document).ready(function() {
 
   var scanCtrlScope = angular.element(document.getElementById("input")).scope();
   scanCtrlScope.codeMirror = new CodeMirror(document.getElementById('codeMirrorDiv'), { mode: 'javascript',
-                                                         lineNumbers: true, readOnly: false, value: initialValue});
+                                            lineNumbers: true, theme: 'mdn-like', value: initialValue});
 });
