@@ -60,9 +60,7 @@
                 <pane heading='Text/File Scan'>
                     <div id="codeMirrorDiv"></div>
                     <!--TODO BEGIN: put these two in a row-design bootstrappy thing-->
-                        <button ng-click='run()'>
-                            Start Scan
-                        </button>
+                        <button ng-click='run()'>Scan</button>
                     <hr>
                         <p>Upload file for scanning:</p>
                         <input type="file" id="js-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
