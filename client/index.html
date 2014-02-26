@@ -59,12 +59,12 @@
             <tabs>
                 <pane heading='Text/File Scan'>
                     <div id="codeMirrorDiv"></div>
-                    <!--TODO BEGIN: put these two in a row-design bootstrappy thing-->
+                    <br>
                         <button ng-click='run()'>Scan</button>
                     <hr>
                         <p>Upload file for scanning:</p>
                         <input type="file" id="js-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
-                        <!--TODO END -->
+
 
                 </pane>
                 <pane heading='Upload JSON results'>
