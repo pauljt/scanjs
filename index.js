@@ -65,7 +65,16 @@ if( typeof process != 'undefined' && process.argv[2]) {
         fs.createReadStream(fullpath).pipe(fs.createWriteStream(reportname + '_files/' + copiedName));
 
         var content = fs.readFileSync(fullpath, 'utf8');
-        results[fullpath] = ScanJS.scan(content, signatures, fullpath,copiedName);
+        try {
+          results[fullpath] = ScanJS.scan(content, signatures, fullpath,copiedName);
+        } catch(e) {
+          if (e instanceof SyntaxError) { // e.g., parse failure
+            //XXX this might be easy to overlook when scanning a big folder
+            console.log("SKIPPING FILE: SyntaxError in "+ fullpath+", at Line "+ e.loc.line +", Column "+e.loc.column+ ": " + e.message);
+          } else {
+            throw e;
+          }
+        }
       }
     });
     // Flatten report file to remove files with no findings and tests with no results (i.e. empty arr)
