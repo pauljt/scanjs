@@ -63,7 +63,7 @@
         }
       }
     },
-    scan : function(content, signatures, filename,copiedname) {
+    scan : function(content, signatures, filename, copiedname) {
       //console.log(content);
       //console.log(signatures);
       if (typeof this.th === "undefined") {

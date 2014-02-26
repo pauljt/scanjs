@@ -15,16 +15,15 @@ getJSON('jquery', 'js/lib/tern/defs/jquery.json');
 var scanjsModule=angular.module('scanjs', ['ui.bootstrap']);
 function ScanCtrl($scope, ScanSvc) {
   $scope.codeMirror = undefined;
-
-  $scope.sourceinput = 'dangerous.innerHTML=document.location;\n' + 
-  'element[\'innerHTML\']=something+"we can catch calls to literal members;"\n' + 
-  'var foo=\'innerHTML\';element[foo]="but not dynamically referenced ones"\n' + 
-  'safe.innerHTML="a static string will never result in dom-based XSS";\n' + 
-  'doesntFlagFalsePositives="eval(\'alert(1)\')"+"element.innerHTML=danger";'
-
-  $scope.run = function() {
+  $scope.run = function(source, filename) {
+    if (source === undefined) {
+      var source = $scope.codeMirror.getValue();
+    }
+    if (filename === undefined) {
+      var filename = "inline";
+    }
     $scope.results=[];
-    ScanSvc.newScan($scope.sourceinput, 'inline');
+    ScanSvc.newScan(source, filename); //XXX codemirror content
   }
 
   $scope.$on('NewResults', function(event, results) {
@@ -81,20 +80,9 @@ function ScanCtrl($scope, ScanSvc) {
             $scope.$apply();
           }
         } else if (curFileType == "js") {
-          // code mirror stuff
-          if ($scope.codeMirror === undefined) {
-          $scope.codeMirror = new CodeMirror(function(elt) {
-                                                             var ta=document.getElementById('jsTextarea');
-                                                             ta.parentNode.replaceChild(elt, ta);
-                                              }, { mode: 'javascript', lineNumbers: true, readOnly: false,
-                                              value: e.target.result});
-          } else {
-            $scope.codeMirror.setValue(e.target.result);
+          // update codemirror content
+          $scope.codeMirror.setValue(e.target.result);
           }
-
-          $scope.sourceinput = e.target.result;
-          $scope.run();
-        }
       };
       reader.onerror = function(e) {
         $scope.error = "Could not read file";
@@ -110,3 +98,16 @@ function ScanCtrl($scope, ScanSvc) {
   }
   $scope.codegen = function(n) { return escodegen.generate(n); };
 }
+
+angular.element(document).ready(function() {
+  // loading codeMirror requires the textArea
+  var initialValue = 'dangerous.innerHTML=document.location;\n' +
+    'element[\'innerHTML\']=something+"we can catch calls to literal members;"\n' +
+    'var foo=\'innerHTML\';element[foo]="but not dynamically referenced ones"\n' +
+    'safe.innerHTML="a static string will never result in dom-based XSS";\n' +
+    'doesntFlagFalsePositives="eval(\'alert(1)\')"+"element.innerHTML=danger";';
+
+  var scanCtrlScope = angular.element(document.getElementById("input")).scope();
+  scanCtrlScope.codeMirror = new CodeMirror(document.getElementById('codeMirrorDiv'), { mode: 'javascript',
+                                                         lineNumbers: true, readOnly: false, value: initialValue});
+});
