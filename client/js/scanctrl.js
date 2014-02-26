@@ -28,8 +28,7 @@ function ScanCtrl($scope, ScanSvc) {
 
   $scope.$on('NewResults', function(event, results) {
     if (Object.keys(results).length == 0) {
-      $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)"
-      $scope.apply();
+      $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
     }
     var ruleNames = ScanJS.rules.map(function(el) { return el.name; }) // list of rule names
@@ -45,11 +44,12 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.results = results;
     }
     $scope.error = "";
-    $scope.$apply(); // apply changes to view
+  });
+  $scope.$on('ScanError', function(event, exception) {
+    $scope.error = exception.name +" at Line "+ exception.loc.line +", Column "+exception.loc.column+ ": " + exception.message;
   });
   
   $scope.filterEmpty = function(item) {
-  alert(1)
     return (item.length>0)
   }
 

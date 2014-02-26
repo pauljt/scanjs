@@ -8,16 +8,20 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
       this.rules=rules;
       this.ready=true;
     },
-    newScan: function(source,file) {
+    newScan: function(source, file) {
       
       console.log('running scan')
-      //try{
-      this.results=ScanJS.scan(source, this.rules, file || 'inline','#');
-      $rootScope.$broadcast('NewResults', this.results);
-    	//}catch(e){
-    	//  console.log(e);
-    	//$rootScope.$broadcast('NewResults', {error:[{line:e.lineNumber,rule:{name:e.description}}]});
-    	//}
+      try {
+        this.results= ScanJS.scan(source, this.rules, file || 'inline','#');
+        $rootScope.$broadcast('NewResults', this.results);
+      } catch(e) {
+      if (e instanceof SyntaxError) { // e.g., parse failure
+          $rootScope.$broadcast('ScanError', {name: e.name, loc: e.loc,message: e.message });
+          } else {
+          // if not, throw.
+          throw e;
+        }
+      }
     },
     addResults: function(results) {
       this.results = results;

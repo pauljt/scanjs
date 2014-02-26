@@ -138,7 +138,7 @@
       catch(e) {
         console.log("ERROR: Skipping " + filename +" (parsing failure)");
         console.log('Exception: '+e+ "\n");
-        return [];
+        throw e;
       }
 
       //run all the rules against content.
