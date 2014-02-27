@@ -8,10 +8,9 @@
     <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
     <script src='js/lib/escodegen.browser.js'></script>
 
-    <script src="js/lib/codemirror.js"></script>
+    <script src="js/lib/codemirror-compressed.js"></script>
     <link rel="stylesheet" href="css/codemirror.css">
     <link rel="stylesheet" href="css/codemirror_theme_mdn-like.css">
-    <script src="js/lib/codemirror_javascript_mode.js"></script>
 
       <!-- FIXME use proper module loading for acorn, tern and so on.-->
     <script src='js/lib/tern/node_modules/acorn/acorn.js'></script>
@@ -86,8 +85,8 @@
                                 <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
                                 <ul>
                                     <li ng-repeat='result in ruleresult'>
-                                        <a ng-click="setCursor(result.line, result.col)">Line {{result.line}}: {{result.rule.name}}</a><br>
-                                        <code ng-show="gen(result.node)">{{ codegen(result.node) }}</code>
+                                        <a ng-click="setCursor(result.line, result.col)" title="Click to highlight the affected line in the editor">Line {{result.line}}: {{result.rule.name}}</a><br>
+                                        <code ng-show="getLine(result.line-1)">{{ getLine(result.line-1) }}</code>
                                     </li>
                                 </ul>
                             </li>

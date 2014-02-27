@@ -96,6 +96,9 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.codeMirror.setCursor(l-1, c || 0);
     $scope.codeMirror.focus();
   }
+  $scope.getLine = function (n) {
+    return $scope.codeMirror.getLine(n);
+  }
   $scope.codegen = function(n) { return escodegen.generate(n); };
 }
 
@@ -109,5 +112,6 @@ angular.element(document).ready(function() {
 
   var scanCtrlScope = angular.element(document.getElementById("input")).scope();
   scanCtrlScope.codeMirror = new CodeMirror(document.getElementById('codeMirrorDiv'), { mode: 'javascript',
-                                            lineNumbers: true, theme: 'mdn-like', value: initialValue});
+                                            lineNumbers: true, theme: 'mdn-like', value: initialValue,
+                                            styleActiveLine: true});
 });
