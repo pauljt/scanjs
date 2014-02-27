@@ -78,14 +78,20 @@
                         <span>File <strong>{{filename}}</strong></span>
                         <ul>
                             <li ng-repeat="(rulename,ruleresult) in resobj" ng-show="ruleresult">
-                                <span title="{{ruleresult[0].rule.desc}}">Rule <strong>{{rulename}}</strong>({{ruleresult.length}})<br></span>
-                                <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
+                                <span title="{{ruleresult[0].rule.desc}}">Results for <strong>{{rulename}}</strong>({{ruleresult.length}}):<br></span>
                                 <ul>
                                     <li ng-repeat='result in ruleresult'>
-                                        <a ng-click="setCursor(result.line, result.col)" title="Click to highlight the affected line in the editor">Line {{result.line}}: {{result.rule.name}}</a><br>
+                                        <a ng-click="setCursor(result.line, result.col)" title="Click to highlight the affected line in the editor">Line {{result.line}}:</a><br>
+                                        <!-- this doesnt make any sense, for displaying results from a JSON file, of course.
+                                             How would we check this? by getLine or CodeMirror being disabled after JSON uploads?!
+
+                                             Also, we might want to go back to escodegen.generate() for the JSON blobs, since we
+                                             (at least) have the node object to get something useful out of it
+                                        -->
                                         <code ng-show="getLine(result.line-1)">{{ getLine(result.line-1) }}</code>
                                     </li>
                                 </ul>
+                                <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
                             </li>
                         </ul>
                     </li>
