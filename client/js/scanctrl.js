@@ -19,7 +19,7 @@ function ScanCtrl($scope, ScanSvc) {
     var src = source || $scope.codeMirror.getValue();
     var fName = filename || "inline"
     $scope.results=[];
-    ScanSvc.newScan(src, fName); //XXX codemirror content
+    ScanSvc.newScan(src, fName);
   }
 
   $scope.$on('NewResults', function(event, results) {
