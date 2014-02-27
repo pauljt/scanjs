@@ -99,7 +99,6 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.getLine = function (n) {
     return $scope.codeMirror.getLine(n);
   }
-  $scope.codegen = function(n) { return escodegen.generate(n); };
 }
 
 angular.element(document).ready(function() {
