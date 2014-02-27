@@ -65,8 +65,10 @@ function ScanCtrl($scope, ScanSvc) {
             $scope.$apply();
           }
         } else if (curFileType == "js") {
-          // update codemirror content
-          $scope.codeMirror.setValue(e.target.result);
+            // update codemirror content
+            $scope.codeMirror.setValue(e.target.result);
+            $scope.run(e.target.result, this.filename);
+            $scope.$apply();
           }
       };
       reader.onerror = function(e) {
