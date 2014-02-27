@@ -16,14 +16,10 @@ var scanjsModule=angular.module('scanjs', ['ui.bootstrap']);
 function ScanCtrl($scope, ScanSvc) {
   $scope.codeMirror = undefined;
   $scope.run = function(source, filename) {
-    if (source === undefined) {
-      var source = $scope.codeMirror.getValue();
-    }
-    if (filename === undefined) {
-      var filename = "inline";
-    }
+    var src = source || $scope.codeMirror.getValue();
+    var fName = filename || "inline"
     $scope.results=[];
-    ScanSvc.newScan(source, filename); //XXX codemirror content
+    ScanSvc.newScan(src, fName); //XXX codemirror content
   }
 
   $scope.$on('NewResults', function(event, results) {
@@ -31,18 +27,7 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
     }
-    var ruleNames = ScanJS.rules.map(function(el) { return el.name; }) // list of rule names
-    if (ruleNames.indexOf(Object.keys(results)[0]) !== -1) {
-      // we get the results without a file name, this must come from inline checks
-      // layout: results = { rule: results, rule2: results2, ..}
-      var resultsWithFile = {'inline': results};
-      console.log(resultsWithFile);
-      $scope.results = resultsWithFile;
-    }
-    else { // layout: results = {file1: {rule:results, ..}, file2: { rule:results, .. } }
-      console.log(results);
-      $scope.results = results;
-    }
+    $scope.results = results;
     $scope.error = "";
   });
   $scope.$on('ScanError', function(event, exception) {
@@ -88,6 +73,7 @@ function ScanCtrl($scope, ScanSvc) {
         $scope.error = "Could not read file";
         $scope.$apply();
       }
+      reader.filename = file.name;
       reader.readAsText(file);
     }
   }
