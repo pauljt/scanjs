@@ -60,7 +60,7 @@
                         <button ng-click='run()'>Scan</button>
                     <hr>
                         <p>Upload file for scanning:</p>
-                        <input type="file" id="js-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
+                        <input type="file" multiple="true" id="js-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
 
 
                 </pane>

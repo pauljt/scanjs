@@ -5,28 +5,28 @@ var rules = [
         "name": "eval",
         "test": "eval()",
         "desc": "Controlling of the first argument to eval(...) results in direct script execution.",
-        "rec": "Avoid use of eval. If you have to use it, be VERY sure about what you are eval-ing."
+        "rec": "Avoid use of eval. If you have to use it, be VERY sure about what you are eval-ing. eval() will not work in Firefox OS and other contexts, which are protected by Content Security Policy (CSP)"
     },
     {
         "type": "execution_sink",
         "name": "setTimeout",
         "test": "setTimeout()",
         "desc": "Controlling of the first argument to setTimeout(...) results in direct script execution.",
-        "rec": "Avoid passing user input to setTimeout. The first parameter can also be a function, this is usually safer than a string."
+        "rec": "Avoid passing user input to setTimeout. The first parameter can also be a function, which is much safer than a string. A string paramter will not work in Firefox OS and other contexts, which are protected by Content Security Policy (CSP)."
     },
     {
         "type": "execution_sink",
         "name": "setInterval",
         "test": "setInterval()",
         "desc": "Controlling of the first argument to setTimeout(...) results in direct script execution.",
-        "rec": "Avoid passing user input to setInterval. The first parameter can also be a function, this is usually safer than a string."
+        "rec": "Avoid passing user input to setInterval. The first parameter can also be a function, which is much safer than a string. A string paramter will not work in Firefox OS and other contexts, which are protected by Content Security Policy (CSP)."
     },
     {
         "type": "execution_sink",
         "name": "new Function(",
         "test": "function test(node) {return node.type == \"NewExpression\" && node.callee.name == \"Function\";}",
         "desc": "Controlling of the first argument to Function(...) can result in direct script execution.",
-        "rec": "Avoid using the Function constructor. In most cases writing down the function in itself can work as well."
+        "rec": "Avoid using the Function constructor. In most cases writing down the function in itself can work as well. The Function constructor will not work in Firefox OS and other contexts, which are protected by Content Security Policy (CSP)."
     },
     {
         "type": "execution_sink",
@@ -47,7 +47,7 @@ var rules = [
         "name": "document.writeln",
         "test": "document.writeln()",
         "desc": "Writing to the document mixes HTML, CSS and Text content, can cause computationally expensive page reflows and might lead to XSS.",
-        "rec": "Avoid the use of document.writeln. There are specific DOM methods like \ndocument.createElement and <node>.appendChild for example.."
+        "rec": "Avoid the use of document.writeln. There are specific DOM methods like \ndocument.createElement and <node>.appendChild for example."
     },
     {
         "type": "HTMLElement_sink",
@@ -106,28 +106,28 @@ var rules = [
         "rec": "Do not allow user input to specify this attribute."
     },
     {
-        "type": "intereting_function",
+        "type": "interesting_function",
         "name": "escapeHTML",
         "test": "escapeHTML",
         "desc": "Implementing your own HTML escaper is a risky and tedious task. Remember that you have to escape for the context a string is being used in, there is no generic solution that works in all scenarios.",
         "rec": "Read up on some best practices and remember that certain attributes and tags may perform automated entity decoding which can leave dangerous characters undetected."
     },
     {
-        "type": "intereting_function",
+        "type": "interesting_function",
         "name": "window.open",
         "test": "window.open()",
         "desc": "URLs pointing to javascript: and data: protocols can lead to XSS. Popups can also confuse and misdirect users",
         "rec": "Do not allow user input in window.open(). If windows have to communicate with each other use postMessage and always check for the correct origin."
     },
     {
-        "type": "intereting_function",
+        "type": "interesting_function",
         "name": "mozSetMessageHandler",
         "test": "mozSetMessageHandler",
         "desc": "This function allows registering message handlers for Web Activities.",
         "rec": "Remember that untrusted apps might invoke these activities with untrusted data and sanitize accordingly."
     },
     {
-        "type": "intereting_function",
+        "type": "interesting_function",
         "name": "MozActivity",
         "test": "MozActivity",
         "desc": "This function creates new Web Activities and can transfer data from one app to another",
