@@ -6,11 +6,14 @@ scanjs
 
 Client-side instructions
 ------------------------
-
-- Navigate to [client/index.html](http://freddyb.github.io/scanjs/client/)
+- ```git clone https://github.com/mozilla/scanjs.git```
+- Navigate to scanjs/client/index.html or see our [example page](http://mozilla.github.io/scanjs/client/)
 
 Server-side instructions
 ------------------------
 
-- Run npm init
-- Run index.js -t DIRECTORY_PATH
+- Install [node.js](http://nodejs.org/)
+- ```git clone https://github.com/mozilla/scanjs.git```
+- ```cd scanjs```
+- ```npm install```
+- ```node index.js -t DIRECTORY_PATH```
