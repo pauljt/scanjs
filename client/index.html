@@ -109,7 +109,7 @@
             <div class='span8'>
               <div class='rule-list'>
                 <ol>
-                  <li ng-repeat='rule in rules' >
+                  <li ng-repeat='rule in rules track by $index' >
                     <a ng-click='editRule($index)'>{{rule.name}}</a>
                   </li>
                 </ol>
