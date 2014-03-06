@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/freddyb/scanjs.git"
+    "url": "https://github.com/mozilla/scanjs.git"
   },
   "keywords": [
     "scanjs",
@@ -13,11 +13,11 @@
     "javascript",
     "static-analysis"
   ],
-  "author": "Paul Theriault, Frederik Braun",
+  "author": "Paul Theriault, Frederik Braun, Rob Fletcher",
   "license": "MPL",
   "dependencies": {
     "acorn": "~0.3.0",
-    "esprima": "'0.3.0",
+    "tern": "~0.5.0",
     "optimist": "~0.5.2"
   }
 }
