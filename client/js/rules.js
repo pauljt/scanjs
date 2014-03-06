@@ -1,7 +1,7 @@
 function RuleListCtrl($scope, ScanSvc) {
   //if copy of rules in localStorage use that, else load from original
   $scope.current={};
-  editing=-1;
+  var editing=-1;
   $scope.rules=[];
   
   $scope.editRule=function(ruleid){
@@ -11,11 +11,11 @@ function RuleListCtrl($scope, ScanSvc) {
   $scope.saveRule=function(){
     if(editing){
       $scope.rules[editing]={
-        type:current.type,
-        name:current.name,
-        test:current.test,
-        desc:current.desc,
-        rec:current.rec
+        type: $scope.current.type,
+        name: $scope.current.name,
+        test: $scope.current.test,
+        desc: $scope.current.desc,
+        rec: $scope.current.rec
       }
     }
     localStorage.setItem('rules', JSON.stringify($scope.rules));
