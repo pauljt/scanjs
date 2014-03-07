@@ -29,6 +29,7 @@ function RuleListCtrl($scope, ScanSvc) {
   }
 
   $scope.rules = JSON.parse(localStorage.getItem('rules'));
+  editing = $scope.rules.length;
 
   ScanSvc.init($scope.rules);
 }
