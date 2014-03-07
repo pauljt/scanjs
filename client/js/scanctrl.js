@@ -88,17 +88,3 @@ function ScanCtrl($scope, ScanSvc) {
     return $scope.codeMirror.getLine(n);
   }
 }
-
-angular.element(document).ready(function() {
-  // loading codeMirror requires the textArea
-  var initialValue = 'dangerous.innerHTML=document.location;\n' +
-    'element[\'innerHTML\']=something+"we can catch calls to literal members;"\n' +
-    'var foo=\'innerHTML\';element[foo]="but not dynamically referenced ones"\n' +
-    'safe.innerHTML="a static string will never result in dom-based XSS";\n' +
-    'doesntFlagFalsePositives="eval(\'alert(1)\')"+"element.innerHTML=danger";';
-
-  var scanCtrlScope = angular.element(document.getElementById("input")).scope();
-  scanCtrlScope.codeMirror = new CodeMirror(document.getElementById('codeMirrorDiv'), { mode: 'javascript',
-                                            lineNumbers: true, theme: 'mdn-like', value: initialValue,
-                                            styleActiveLine: true});
-});

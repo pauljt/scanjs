@@ -1,6 +1,7 @@
 <!doctype html>
-<html ng-app='scanjs'>
+<html ng-app='scanjs' ng-csp>
   <head>
+    <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval">
     <link href='css/bootstrap.min.css' rel='stylesheet' media='screen'>
     <!-- Third-party libs -->
     <script src='js/lib/jquery-2.1.0.min.js'></script>
@@ -24,29 +25,8 @@
     <script src='js/scanctrl.js'></script>
     <script src='js/rules.js'></script>
     <script src='js/scanservice.js'></script>
-    <style>
-      #rulediv {
-        background-color: #FFFFFF;
-        height: 445px;
-        margin: 20px auto;
-        overflow: auto;
-        padding: 20px 0 20px 20px;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-      }
-      textarea {
-        width: 600px;
-        min-width: 200px;
-        max-height: 200px;
-        height: 400px;
-      }
-      .rule-list {
-        height: 700px;
-        overflow: auto;
-      }
-
-    </style>
+    <script src='js/main.js'></script>
+    <link rel="stylesheet" href="js/style.css" type="text/css">
   </head>
   <body>
     <tabs>
@@ -60,13 +40,13 @@
                         <button ng-click='run()'>Scan</button>
                     <hr>
                         <p>Upload file for scanning:</p>
-                        <input type="file" id="js-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
+                        <input type="file" id="js-input">
 
 
                 </pane>
                 <pane heading='Upload JSON results'>
                     <p>Upload a scanresults.json file from a previous scan.</p>
-                    <input type="file" id="json-input" onchange="angular.element(this).scope().handleFileUpload(this.files)">
+                    <input type="file" id="json-input">
                 </pane>
             </tabs>
         </span>

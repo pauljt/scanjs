@@ -1,0 +1,20 @@
+#rulediv {
+    background-color: #FFFFFF;
+    height: 445px;
+    margin: 20px auto;
+    overflow: auto;
+    padding: 20px 0 20px 20px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+textarea {
+    width: 600px;
+    min-width: 200px;
+    max-height: 200px;
+    height: 400px;
+}
+.rule-list {
+    height: 700px;
+    overflow: auto;
+}
