@@ -46,6 +46,8 @@ var writeReport = function(results, name) {
     }
   });
 };
+
+
 if( typeof process != 'undefined' && process.argv[2]) {
   results = {};
   reportname = argv.o ? argv.o : 'scanresults';
@@ -60,13 +62,15 @@ if( typeof process != 'undefined' && process.argv[2]) {
       var ext = path.extname(file.toString());
 
       if(ext == '.js') {
-        //copy to report dir
+
+        /*copy to report dir
+        TODO: createOption to copy content to report - copying to file system doesn't work if we want a self-contained report format
         var copiedName = fullpath.substr(argv.t.length).replace(/\//g,"_");
         fs.createReadStream(fullpath).pipe(fs.createWriteStream(reportname + '_files/' + copiedName));
-
+        */
         var content = fs.readFileSync(fullpath, 'utf8');
         try {
-          results[fullpath] = ScanJS.scan(content, signatures, fullpath,copiedName);
+          results[fullpath] = ScanJS.scan(content, signatures, fullpath);
         } catch(e) {
           if (e instanceof SyntaxError) { // e.g., parse failure
             //XXX this might be easy to overlook when scanning a big folder

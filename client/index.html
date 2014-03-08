@@ -1,123 +1,127 @@
 <!doctype html>
 <html ng-app='scanjs' ng-csp>
-  <head>
-    <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval">
-    <link href='css/bootstrap.min.css' rel='stylesheet' media='screen'>
-    <!-- Third-party libs -->
-    <script src='js/lib/jquery-2.1.0.min.js'></script>
-    <script src='js/lib/angular-1.2.13.min.js'></script>
-    <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
-    <script src="js/lib/codemirror-compressed.js"></script>
-    <link rel="stylesheet" href="css/codemirror.css">
-    <link rel="stylesheet" href="css/codemirror_theme_mdn-like.css">
-      <!-- FIXME use proper module loading for acorn, tern and so on.-->
-    <script src='js/lib/tern/node_modules/acorn/acorn.js'></script>
-    <script src='js/lib/tern/node_modules/acorn/util/walk.js'></script>
-    <script src='js/lib/tern/node_modules/acorn/acorn_loose.js'></script>
-    <script src='js/lib/tern/lib/signal.js'></script>
-    <script src='js/lib/tern/lib/tern.js'></script>
-    <script src='js/lib/tern/lib/def.js'></script>
-    <script src='js/lib/tern/lib/infer.js'></script>
-    <!-- CommonJS modules -->
-    <script src='../common/scan.js'></script>
-    <script src='../common/rules.js'></script>
-    <!-- Client specific files -->
-    <script src='js/scanctrl.js'></script>
-    <script src='js/rules.js'></script>
-    <script src='js/scanservice.js'></script>
-    <script src='js/main.js'></script>
-    <link rel="stylesheet" href="js/style.css" type="text/css">
-  </head>
-  <body>
-    <tabs>
-      <pane heading='input'>
-          <div ng-controller='ScanCtrl' id='input'>
-        <span class='span8'> <h2>Input</h2>
-            <tabs>
-                <pane heading='Text/File Scan'>
-                    <div id="codeMirrorDiv"></div>
-                    <br>
-                        <button ng-click='run()'>Scan</button>
-                    <hr>
-                        <p>Upload file for scanning:</p>
-                        <input type="file" id="js-input">
+<head>
+  <!-- make this useful or remove it imho
+  <meta http-equiv="content-security-policy"
+        content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval">
+        -->
+  <link href='css/bootstrap.min.css' rel='stylesheet' media='screen'>
+  <link rel="stylesheet" href="css/codemirror.css">
+  <link rel="stylesheet" href="css/codemirror_theme_mdn-like.css">
+
+  <!-- Third-party libs -->
+  <script src='js/lib/jquery-2.1.0.min.js'></script>
+  <script src='js/lib/angular-1.2.13.min.js'></script>
+  <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
+  <script src="js/lib/codemirror-compressed.js"></script>
+  <script src='js/lib/tern/node_modules/acorn/acorn.js'></script>
+  <script src='js/lib/tern/node_modules/acorn/util/walk.js'></script>
+  <script src='js/lib/tern/node_modules/acorn/acorn_loose.js'></script>
+  <script src='js/lib/tern/lib/signal.js'></script>
+  <script src='js/lib/tern/lib/tern.js'></script>
+  <script src='js/lib/tern/lib/def.js'></script>
+  <script src='js/lib/tern/lib/infer.js'></script>
+  <script src='js/lib/jszip.min.js'></script>
+
+  <!-- CommonJS modules -->
+  <script src='../common/scan.js'></script>
+  <script src='../common/rules.js'></script>
+  <!-- Client specific files -->
+  <script src='js/main.js'></script>
+  <script src='js/scanctrl.js'></script>
+  <script src='js/rules.js'></script>
+  <script src='js/scanservice.js'></script>
+  <script src='js/initTern.js'></script>
+
+  <link rel="stylesheet" href="js/style.css" type="text/css">
+</head>
+<body>
+<tabs id="tabwrapper">
+  <pane heading='input'>
+    <div ng-controller='ScanCtrl'>
+      <div class="span16" id="input">
+          <span class="span10">
+            <div id="codeMirrorDiv"></div>
+            <p>Upload file for scanning:</p>
+            <input type="file" id="js-input" multiple>
+            <button ng-click='run()'>Scan</button>
+          </span>
+          <span class="span6">
+            <ul>
+              <li ng-repeat="file in inputFiles track by $index">
+                <a ng-click="updateCodeMirror($index)"
+                   title="Examine file in preview">{{file.name}}</a>
+            </ul>
+          </span>
+      </div>
 
 
-                </pane>
-                <pane heading='Upload JSON results'>
-                    <p>Upload a scanresults.json file from a previous scan.</p>
-                    <input type="file" id="json-input">
-                </pane>
-            </tabs>
-        </span>
-        <span class='span8'><h2>Output</h2>
-            <div id='output'>
-                <div class="alert-error">{{error}}</div>
-                <ul>
-                    <li ng-repeat="(filename, resobj) in results">
-                        <span>File <strong>{{filename}}</strong></span>
-                        <ul>
-                            <li ng-repeat="(rulename,ruleresult) in resobj" ng-show="ruleresult">
-                                <span title="{{ruleresult[0].rule.desc}}">Results for <strong>{{rulename}}</strong>({{ruleresult.length}}):<br></span>
-                                <ul>
-                                    <li ng-repeat='result in ruleresult'>
-                                        <a ng-click="setCursor(result.line, result.col)" title="Click to highlight the affected line in the editor">Line {{result.line}}:</a><br>
-                                        <!-- this doesnt make any sense, for displaying results from a JSON file, of course.
-                                             How would we check this? by getLine or CodeMirror being disabled after JSON uploads?!
+      <div class="span16" id="results">
+        <h2>Output</h2>
+        <div id='output'>
+          <div class="alert-error">{{error}}</div>
 
-                                             Also, we might want to go back to escodegen.generate() for the JSON blobs, since we
-                                             (at least) have the node object to get something useful out of it
-                                        -->
-                                        <code ng-show="getLine(result.line-1)">{{ getLine(result.line-1) }}</code>
-                                    </li>
-                                </ul>
-                                <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
-                            </li>
-                        </ul>
+          <ul>
+            <li ng-repeat="fileResult in results">
+              <span>File:<strong>{{fileResult.filename}}</strong></span>
+              <ul>
+                <li ng-repeat="(rulename,ruleresult) in fileResult.findings" ng-show="ruleresult">
+                <span title="{{ruleresult[0].rule.desc}}">
+                  Rule:<strong>{{rulename}}</strong>({{ruleresult.length}}):
+                </span>
+                  <ul>
+                    <li ng-repeat='result in ruleresult'>
+                      <a ng-mouseover="setCursor(fileResult.filename,result.line, result.col)"
+                         title="Click to highlight the affected line in the editor">Line {{result.line}}:</a><br>
                     </li>
-                </ul>
-            </div>
-        </span>
-          </div>
-      </pane>
-      
-      
-      <pane heading='rules'>
-        <div  ng-controller='RuleListCtrl' class='rule-list'>
-          <h2> Rules </h2>
-          <div class='row'>
-            <div class='span8'>
-              <div class='rule-list'>
-                <ol>
-                  <li ng-repeat='rule in rules track by $index' >
-                    <a ng-click='editRule($index)'>{{rule.name}}</a>
-                  </li>
-                </ol>
-              </div>
-            </div>
-            <div class='span6'>
-              <div class='rule-detail' >
-                
-                <input type='text' id='rule_name' ng-model='current.name'>
-                
-                <br>
-                <textarea type='text' id='rule_detail' ng-model='current.test'></textarea>
-                <br>
-                <input type='text' id='rule_desc' ng-model='current.desc'>
-               
-                <br>
-                <input type='text' id='rule_rec' ng-model='current.rec'>
-               
-                <br>
-                <button ng-click='saveRule()'>
-            Update
-          </button>
-              </div>
-            </div>
+                  </ul>
+                  <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </pane>
+
+  <pane heading='rules'>
+    <div ng-controller='RuleListCtrl' class='rule-list'>
+      <h2> Rules </h2>
+
+      <div class='row'>
+        <div class='span8'>
+          <div class='rule-list'>
+            <ol>
+              <li ng-repeat='rule in rules track by $index'>
+                <a ng-click='editRule($index)'>{{rule.name}}</a>
+              </li>
+            </ol>
           </div>
         </div>
-      </pane>
+        <div class='span6'>
+          <div class='rule-detail'>
 
-    </tabs>
-  </body>
+            <input type='text' id='rule_name' ng-model='current.name'>
+
+            <br>
+            <textarea type='text' id='rule_detail' ng-model='current.test'></textarea>
+            <br>
+            <input type='text' id='rule_desc' ng-model='current.desc'>
+
+            <br>
+            <input type='text' id='rule_rec' ng-model='current.rec'>
+
+            <br>
+            <button ng-click='saveRule()'>
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </pane>
+
+</tabs>
+</body>
 </html>

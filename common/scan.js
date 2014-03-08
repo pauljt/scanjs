@@ -63,7 +63,7 @@
         }
       }
     },
-    scan : function(content, signatures, filename, copiedname) {
+    scan : function(content, signatures, filename) {
       //console.log(content);
       //console.log(signatures);
       if (typeof this.th === "undefined") {
@@ -119,6 +119,7 @@
         this.th = new ternHandler();
       }
       var scanresults = {};
+
       this.testNumber = 0;
       this.testTotal = signatures.length;
       if(this.Total <= 0) {
@@ -161,10 +162,12 @@
             scanresults[rule.name].push({
               rule : rule,
               filename : filename,
-              copiedname : filename,
               line : node.loc.start.line,
               col : node.loc.start.col,
               node : node
+              //this adds a snippet based on lines. need to prettify first if going to use this.
+              //snippet:content.split('\n').splice(node.loc.start.line-1,node.loc.start.line+1).join('\n')
+
             });
           }
         });

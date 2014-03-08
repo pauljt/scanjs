@@ -1,22 +1,19 @@
 scanjsModule.factory('ScanSvc', function($rootScope) {
   var ScanService = {};
   return {
-    results:[],
+    //results:[],
     ready:false,
     rules:null,
     init:function(rules){
       this.rules=rules;
       this.ready=true;
     },
-    newScan: function(source, file) {
+    newScan: function(file,source) {
       console.log('running scan');
       var fileName = file || 'inline';
       try {
-        this.results= ScanJS.scan(source, this.rules, fileName ,'#');
-        // workaround the fact that { fileName: this.results } actually produces an object with the "fileName" key, not the variable value
-        var resultsToSend = {};
-        resultsToSend[fileName] = this.results;
-        $rootScope.$broadcast('NewResults', resultsToSend);
+        var findings= ScanJS.scan(source, this.rules, fileName);
+        $rootScope.$broadcast('NewResults', {"filename":fileName,"findings":findings});
       } catch(e) {
       if (e instanceof SyntaxError) { // e.g., parse failure
           $rootScope.$broadcast('ScanError', {name: e.name, loc: e.loc,message: e.message });
