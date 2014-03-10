@@ -13,11 +13,11 @@ function ScanCtrl($scope, ScanSvc) {
     }
     //empty last scan
     $scope.results=[];
-    console.log("start of run;", $scope.inputFiles[0].name,$scope.inputFiles[0].name)
+    console.log("start of run;", $scope.inputFiles[0].name);
     $scope.inputFiles.forEach(function (scriptFile, i) {
       ScanSvc.newScan(scriptFile.name,scriptFile.asText());
     });
-    console.log("end of run;", $scope.inputFiles[0].name,$scope.inputFiles[0].name)
+    console.log("end of run;", $scope.inputFiles[0].name);
 
   }
 
@@ -102,7 +102,7 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
     }
-    console.log("on results;", $scope.inputFiles[0].name,$scope.inputFiles[0].name)
+    console.log("on results;", $scope.inputFiles[0].name)
     $scope.results.push(result);
     $scope.error = "";
     console.log("results",$scope.results);
