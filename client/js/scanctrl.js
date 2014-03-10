@@ -6,6 +6,11 @@ function ScanCtrl($scope, ScanSvc) {
   var selectedFile = 0;
 
   $scope.run = function (source, filename) {
+    if ($scope.inputFiles.length<1)
+    {
+      alert('Load some js files, or a App package(zip) first!');
+      return;
+    }
     //empty last scan
     $scope.results=[];
     console.log("start of run;", $scope.inputFiles[0].name,$scope.inputFiles[1].name)
@@ -49,6 +54,7 @@ function ScanCtrl($scope, ScanSvc) {
             zip.file(fileName, e.target.result)
             $scope.inputFiles = zip.file(/.*/); //returns an array of files
             $scope.$apply();
+
           };
         })(file)
 
