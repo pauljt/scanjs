@@ -13,16 +13,16 @@ function ScanCtrl($scope, ScanSvc) {
     }
     //empty last scan
     $scope.results=[];
-    console.log("start of run;", $scope.inputFiles[0].name,$scope.inputFiles[1].name)
+    console.log("start of run;", $scope.inputFiles[0].name,$scope.inputFiles[0].name)
     $scope.inputFiles.forEach(function (scriptFile, i) {
       ScanSvc.newScan(scriptFile.name,scriptFile.asText());
     });
-    console.log("end of run;", $scope.inputFiles[0].name,$scope.inputFiles[1].name)
+    console.log("end of run;", $scope.inputFiles[0].name,$scope.inputFiles[0].name)
 
   }
 
   $scope.handleFileUpload = function handleFileUpload(fileList) {
-    if (fileList.length == 1 && fileList[0].name.endsWith(".zip")) {
+    if (fileList.length == 1 && /\.zip$/.test(fileList[0].name)) {
       //packaged app case
       var reader = new FileReader();
       reader.readAsArrayBuffer(fileList[0]);
@@ -102,7 +102,7 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
     }
-    console.log("on results;", $scope.inputFiles[0].name,$scope.inputFiles[1].name)
+    console.log("on results;", $scope.inputFiles[0].name,$scope.inputFiles[0].name)
     $scope.results.push(result);
     $scope.error = "";
     console.log("results",$scope.results);

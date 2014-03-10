@@ -18,6 +18,7 @@
   "dependencies": {
     "acorn": "~0.3.0",
     "tern": "~0.5.0",
-    "optimist": "~0.5.2"
+    "optimist": "~0.5.2",
+    "jszip": "~2.2.0"
   }
 }
