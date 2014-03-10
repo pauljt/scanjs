@@ -1,3 +1,6 @@
+@import url("bootstrap.css");
+@import url("codemirror.css");
+@import url("codemirror-mdn.css");
 #rulediv {
     background-color: #FFFFFF;
     height: 445px;
