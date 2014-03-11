@@ -7,6 +7,10 @@ scanjs
 Client-side instructions
 ------------------------
 - ```git clone https://github.com/mozilla/scanjs.git```
+- ```cd scanjs```
+- ```npm install```
+- ```node server.js```
+- Navigate to ```http://127.0.0.1:4000/client/```
 - Navigate to scanjs/client/index.html or see our [example page](http://mozilla.github.io/scanjs/client/)
 
 Server-side instructions

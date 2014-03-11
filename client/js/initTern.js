@@ -8,6 +8,6 @@ function getJSON(nme, loc) {
         defs[nme] = JSON.parse(x.response);
     }
 }
-getJSON('browser', 'js/lib/tern/defs/browser.json');
-getJSON('ecma5', 'js/lib/tern/defs/ecma5.json');
-getJSON('jquery', 'js/lib/tern/defs/jquery.json');
+getJSON('browser', '/client/js/lib/tern/defs/browser.json');
+getJSON('ecma5', '/client/js/lib/tern/defs/ecma5.json');
+getJSON('jquery', '/client/js/lib/tern/defs/jquery.json');
