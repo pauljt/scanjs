@@ -1,6 +1,5 @@
 scanjsModule.factory('ScanSvc', function($rootScope) {
-  var ScanService = {};
-  return {
+  var ScanService = {
     //results:[],
     ready:false,
     rules:null,
@@ -11,21 +10,27 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
     newScan: function(file,source) {
       console.log('running scan');
       var fileName = file || 'inline';
-      try {
-        var findings= ScanJS.scan(source, this.rules, fileName);
-        $rootScope.$broadcast('NewResults', {"filename":fileName,"findings":findings});
-      } catch(e) {
-      if (e instanceof SyntaxError) { // e.g., parse failure
-          $rootScope.$broadcast('ScanError', {name: e.name, loc: e.loc,message: e.message });
-          } else {
-          // if not, throw.
-          throw e;
-        }
-      }
+      this.scanWorker.postMessage({call: 'scan', arguments: [source, this.rules, fileName]});
     },
     addResults: function(results) {
-      this.results = results;
       $rootScope.$broadcast('NewResults', results);
     }
   };
+  ScanService.scanWorker = new Worker("js/scanworker.js");
+  ScanService.scanWorker.addEventListener("message", function (evt) {
+    if (('findings' in evt.data) && ('filename' in evt.data)) {
+      ScanService.addResults(evt.data);
+    }
+    else if ('error' in evt.data) {
+      var exception = evt.data.error;
+      if (e instanceof SyntaxError) {
+        $rootsScope.$broadcast('ScanError', {name: exception.name, loc: exception.loc, message: exception.message })
+      } else {
+        throw e; // keep throwing unexpected things.
+      }
+    }
+  });
+
+  ScanService.scanWorker.onerror = function (e) { console.log('ScanWorker Error: ', e) };
+  return ScanService;
 });

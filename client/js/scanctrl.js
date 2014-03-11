@@ -106,6 +106,9 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.results.push(result);
     $scope.error = "";
     console.log("results",$scope.results);
+    /* this is likely a bug in angular or how we use it: the HTML template sometimes does not update
+       when we change the $scope variables without it noticing. $scope.$apply() enforces this. */
+    $scope.$apply();
   });
 
   $scope.$on('ScanError', function (event, exception) {

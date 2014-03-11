@@ -398,6 +398,9 @@ var rules = [
 if (typeof module != 'undefined') {
 	module.exports = rules;
 } else {
+  if (typeof ScanJS === "undefined") {
+    ScanJS = {};
+  }
 	ScanJS.rules = rules;
 }
 })();
