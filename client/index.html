@@ -35,7 +35,7 @@
             <ul>
               <li ng-repeat="file in inputFiles track by $index">
                 <input type="checkbox" id="doScan_{{ $index }}" title="Set this checkbox if you want the file included in your scans" checked />
-                  <a ng-click="updateCodeMirror($index)"
+                <a href="#" ng-click="updateCodeMirror($index)"
                    title="Examine file in preview">{{file.name}}</a>
             </ul>
               <div ng-show="inputFiles.length">
@@ -60,7 +60,7 @@
                 </span>
                   <ul>
                     <li ng-repeat='result in ruleresult'>
-                      <a ng-mouseover="setCursor(fileResult.filename,result.line, result.col)"
+                      <a href="#" ng-mouseover="setCursor(fileResult.filename,result.line, result.col)"
                          title="Click to highlight the affected line in the editor">Line {{result.line}}:</a><br>
                     </li>
                   </ul>
@@ -83,7 +83,7 @@
           <div class='rule-list'>
             <ol>
               <li ng-repeat='rule in rules track by $index'>
-                <a ng-click='editRule($index)'>{{rule.name}}</a>
+                <a href="#" ng-click='editRule($index)'>{{rule.name}}</a>
               </li>
             </ol>
           </div>
