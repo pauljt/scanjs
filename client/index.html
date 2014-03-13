@@ -34,9 +34,13 @@
           <span class="span6">
             <ul>
               <li ng-repeat="file in inputFiles track by $index">
-                <a ng-click="updateCodeMirror($index)"
+                <input type="checkbox" id="doScan_{{ $index }}" title="Set this checkbox if you want the file included in your scans" checked />
+                  <a ng-click="updateCodeMirror($index)"
                    title="Examine file in preview">{{file.name}}</a>
             </ul>
+              <div ng-show="inputFiles.length">
+                <a href="#" ng-click="selectAll()">Select All</a>, <a href="#" ng-click="selectNone()">Select None</a>
+              </div>
           </span>
       </div>
 

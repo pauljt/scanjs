@@ -15,7 +15,9 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.results=[];
     console.log("start of run;", $scope.inputFiles[0].name);
     $scope.inputFiles.forEach(function (scriptFile, i) {
-      ScanSvc.newScan(scriptFile.name,scriptFile.asText());
+      if (document.getElementById('doScan_'+i).checked) {
+        ScanSvc.newScan(scriptFile.name,scriptFile.asText());
+      }
     });
     console.log("end of run;", $scope.inputFiles[0].name);
 
@@ -88,7 +90,22 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.codeMirror.setCursor(line - 1, col || 0);
     $scope.codeMirror.focus();
   }
-
+  $scope.selectAll = function () {
+    var element;
+    var i = $scope.inputFiles.length-1;
+    while (element=document.getElementById('doScan_'+i)) {
+      element.checked = true;
+      i--;
+    }
+  };
+  $scope.selectNone = function () {
+    var element;
+    var i = $scope.inputFiles.length-1;
+    while (element=document.getElementById('doScan_'+i)) {
+      element.checked = false;
+      i--;
+    }
+  };
   $scope.getSnippt = function (filename,line,numLines) {
     var file = $scope.inputFiles.find(function (f) {
       return f.name == filename
