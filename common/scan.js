@@ -64,6 +64,8 @@
       }
     },
     scan : function(content, signatures, filename) {
+      //console.log(content);
+      //console.log(signatures);
       var scanresults = {};
 
       this.testNumber = 0;
@@ -89,6 +91,8 @@
       }
 
       //run all the rules against content.
+
+      console.log('Running tests against ' + filename);
       for (var key in signatures) {
         this.testNumber++; // ??
         var rule = signatures[key];
@@ -119,6 +123,7 @@
           delete scanresults[rule.name]; // no need to store empty arrays
         }
       }
+      console.log(filename + ' had matches for ' + Object.keys(scanresults).length + ' rules.');
       return scanresults;
     }
   }
