@@ -1,3 +1,12 @@
+/* this makes sure that console.log can be used, even if it is undefined.
+   We won't see the message though, since this kind of postMessage isn't handled in scanservice.js  */
+if (typeof console === "undefined") {
+  console = {};
+  console.log = function consoleShim() {
+    postMessage({'type':'log', 'message': arguments.join(" "));
+  }
+}
+
 importScripts('lib/tern/node_modules/acorn/acorn.js',
               'lib/tern/node_modules/acorn/util/walk.js',
               'lib/tern/node_modules/acorn/acorn_loose.js',
