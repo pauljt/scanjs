@@ -45,25 +45,23 @@
         <h2>Output</h2>
         <div id='output'>
           <div class="alert-error">{{error}}</div>
-          [ <a href="" ng-click="predicate=''">unsorted</a> ]
+          <div id="results-wrapper" ng-show="results">
+              [ <a href="" ng-click="predicate=''">unsorted</a> ]
             <table id="results-table">
               <tr>
-
-                <th><a href="" ng-click="predicate = 'rule.name'; reverse=false">Rule</a>
-                  (<a href="" ng-click="predicate = '-rule.name'; reverse=false">^</a>)</th>
-                <th><a href="" ng-click="predicate = 'rule.filename'; reverse=false">rule.filename</a>
-                  (<a href="" ng-click="predicate = '-rule.filename'; reverse=false">^</a>)</th>
-                <th><a href="" ng-click="predicate = 'result.line'; reverse=false">Line</a>
-                  (<a href="" ng-click="predicate = '-result.line'; reverse=false">^</a>)</th>
+                <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+                <th><a href="" ng-click="predicate = 'rule.filename'; reverse=!reverse">rule.filename</a></th>
+                <th><a href="" ng-click="predicate = 'result.line'; reverse=!reverse">Line</a></th>
               </tr>
               <tr ng-repeat='result in results| orderBy:predicate:reverse'>
                 <td>{{result.rule.name }}</td>
                 <td>{{result.filename}}</td>
                 <td><a href="#" ng-click="setCursor(result.filename,result.line, result.col)"
-                       title="Click to highlight the affected line in the editor">Line {{result.line}}:</a>
+                       title="Click to highlight the affected line in the editor">Line {{result.line}}</a>
                 </td>
               </tr>
             </table>
+          </div>
         </div>
       </div>
     </div>
