@@ -103,7 +103,6 @@ function ScanCtrl($scope, ScanSvc) {
       return
     }
     $scope.results=$scope.results.concat(result.findings);
-    console.log( $scope.results);
     $scope.error = "";
     /* this is likely a bug in angular or how we use it: the HTML template sometimes does not update
        when we change the $scope variables without it noticing. $scope.$apply() enforces this. */
