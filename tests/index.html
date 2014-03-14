@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Scan.js Tests</title>
+  <!-- Third-party libs -->
+  <script src='/client/js/lib/jquery-2.1.0.min.js'></script>
+  <script src='/client/js/lib/tern/node_modules/acorn/acorn.js'></script>
+  <script src='/client/js/lib/tern/node_modules/acorn/util/walk.js'></script>
+  <script src='/client/js/lib/tern/node_modules/acorn/acorn_loose.js'></script>
+  <!-- CommonJS modules -->
+  <script src='/common/rules.js'></script>
+  <script src='/common/scan.js'></script>
+  <!-- Testing framework files -->
+  <link href='/tests/css/mocha.css' rel='stylesheet' media='screen'>
+  <script src='/tests/js/mocha.js'></script>
+  <script src='/tests/js/chai.js'></script>
+</head>
+<body>
+  <div id="mocha"><p><h1><b>Scan.js Mocha Unit Tests</b></h1></p></div>
+  <div id="messages"></div>
+  <div id="fixtures"></div>
+  <script> mocha.setup('bdd'); </script>
+
+  <!-- Test cases -->
+  <script src='/tests/cases/innerhtml.js'></script>
+
+  <!-- After document is ready, run the tests -->
+  <script> $(document).ready(function() { mocha.run(); }); </script>
+</body>
+</html>
