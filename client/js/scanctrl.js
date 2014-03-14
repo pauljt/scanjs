@@ -89,7 +89,7 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.codeMirror.focus();
   }
 
-  $scope.getSnippt = function (filename,line,numLines) {
+  $scope.getSnippet = function (filename,line,numLines) {
     var file = $scope.inputFiles.find(function (f) {
       return f.name == filename
     });
@@ -103,6 +103,7 @@ function ScanCtrl($scope, ScanSvc) {
       return
     }
     $scope.results=$scope.results.concat(result.findings);
+    console.log( $scope.results);
     $scope.error = "";
     /* this is likely a bug in angular or how we use it: the HTML template sometimes does not update
        when we change the $scope variables without it noticing. $scope.$apply() enforces this. */
@@ -112,6 +113,4 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.$on('ScanError', function (event, exception) {
     $scope.error = exception.name + " at Line " + exception.loc.line + ", Column " + exception.loc.column + ": " + exception.message;
   });
-
-
 }

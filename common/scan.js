@@ -66,7 +66,7 @@
     scan : function(content, signatures, filename) {
       //console.log(content);
       //console.log(signatures);
-      var scanresults = {};
+      var scanresults = [];
 
       this.testNumber = 0;
       this.testTotal = signatures.length;
@@ -107,7 +107,7 @@
         ScanJS.traverse(ast, function(node) {
           var result = testFunc.call(this, node);
           if(result) {
-            scanresults[rule.name].push({
+            scanresults.push({
               rule : rule,
               filename : filename,
               line : node.loc.start.line,
