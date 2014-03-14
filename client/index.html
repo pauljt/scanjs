@@ -33,11 +33,15 @@
             <button ng-click='run()'>Scan</button>
           </span>
           <span class="span6">
+            <div ng-show="inputFiles.length">
+            <a href="#" ng-click="selectAll()">Select All</a>, <a href="#" ng-click="selectNone()">Select None</a>
             <ul>
               <li ng-repeat="file in inputFiles track by $index">
+                <input type="checkbox" id="doScan_{{ $index }}" title="Set this checkbox if you want the file included in your scans" checked />
                 <a href="#" ng-click="updateCodeMirror($index)"
                    title="Examine file in preview">{{file.name}}</a>
             </ul>
+            </div>
           </span>
       </div>
 
@@ -51,8 +55,8 @@
             <table id="results-table">
               <tr>
                 <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
-                <th><a href="" ng-click="predicate = 'rule.filename'; reverse=!reverse">rule.filename</a></th>
-                <th><a href="" ng-click="predicate = 'result.line'; reverse=!reverse">Line</a></th>
+                <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
+                <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
               </tr>
               <tr ng-repeat='result in results| orderBy:predicate:reverse'>
                 <td>{{result.rule.name }}</td>
