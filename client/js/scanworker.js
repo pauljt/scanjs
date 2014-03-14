@@ -3,7 +3,7 @@
 if (typeof console === "undefined") {
   console = {};
   console.log = function consoleShim() {
-    postMessage({'type':'log', 'message': arguments.join(" "));
+    postMessage({'type':'log', 'message': arguments.join(" ")});
   }
 }
 
