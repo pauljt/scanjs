@@ -102,10 +102,8 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
     }
-    console.log("on results;", $scope.inputFiles[0].name)
-    $scope.results.push(result);
+    $scope.results=$scope.results.concat(result.findings);
     $scope.error = "";
-    console.log("results",$scope.results);
     /* this is likely a bug in angular or how we use it: the HTML template sometimes does not update
        when we change the $scope variables without it noticing. $scope.$apply() enforces this. */
     $scope.$apply();
