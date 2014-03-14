@@ -3,7 +3,7 @@
 if (typeof console === "undefined") {
   console = {};
   console.log = function consoleShim() {
-    postMessage({'type':'log', 'message': arguments.join(" "));
+    postMessage({'type':'log', 'message': arguments.join(" ")});
   }
 }
 
@@ -25,7 +25,7 @@ onmessage = function (evt) {
      rules = args[1];
     }
     var file = args[2];
-    var results = ScanJS.scan(source, rules, file);
-    postMessage({"filename": file, "findings": results});
+    var findings = ScanJS.scan(source, rules, file);
+    postMessage({"filename": file, "findings": findings});
   }
 };

@@ -4,6 +4,7 @@
   
   <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval">
   <link href='css/app.css' rel='stylesheet' media='screen'>
+  <link href='css/angular-csp.css' rel='stylesheet' media='screen'>
 
   <!-- Third-party libs -->
   <script src='js/lib/jquery-2.1.0.min.js'></script>
@@ -49,26 +50,23 @@
         <h2>Output</h2>
         <div id='output'>
           <div class="alert-error">{{error}}</div>
-
-          <ul>
-            <li ng-repeat="fileResult in results">
-              <span>File:<strong>{{fileResult.filename}}</strong></span>
-              <ul>
-                <li ng-repeat="(rulename,ruleresult) in fileResult.findings" ng-show="ruleresult">
-                <span title="{{ruleresult[0].rule.desc}}">
-                  Rule:<strong>{{rulename}}</strong>({{ruleresult.length}}):
-                </span>
-                  <ul>
-                    <li ng-repeat='result in ruleresult'>
-                      <a href="#" ng-mouseover="setCursor(fileResult.filename,result.line, result.col)"
-                         title="Click to highlight the affected line in the editor">Line {{result.line}}:</a><br>
-                    </li>
-                  </ul>
-                  <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
-                </li>
-              </ul>
-            </li>
-          </ul>
+          <div id="results-wrapper" ng-show="results">
+              [ <a href="" ng-click="predicate=''">unsorted</a> ]
+            <table id="results-table">
+              <tr>
+                <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+                <th><a href="" ng-click="predicate = 'rule.filename'; reverse=!reverse">rule.filename</a></th>
+                <th><a href="" ng-click="predicate = 'result.line'; reverse=!reverse">Line</a></th>
+              </tr>
+              <tr ng-repeat='result in results| orderBy:predicate:reverse'>
+                <td>{{result.rule.name }}</td>
+                <td>{{result.filename}}</td>
+                <td><a href="#" ng-click="setCursor(result.filename,result.line, result.col)"
+                       title="Click to highlight the affected line in the editor">Line {{result.line}}</a>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </div>
