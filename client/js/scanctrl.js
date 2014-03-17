@@ -4,6 +4,7 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.results=[];
 
   var selectedFile = 0;
+  var codeMirror_index = 0;
   $scope.loadPossible = false;
   localforage.length(function(len) {
     $scope.loadPossible = (len == 3);
@@ -84,6 +85,7 @@ function ScanCtrl($scope, ScanSvc) {
     if ($scope.inputFiles.length > 0) {
       $scope.codeMirror.setValue($scope.inputFiles[index].asText());
     }
+    codeMirror_index = index;
   }
 
   $scope.setCursor = function (filename,line, col) {
@@ -119,6 +121,7 @@ function ScanCtrl($scope, ScanSvc) {
       checkboxes.push(document.getElementById("doScan_" + i).checked);
     }
     localforage.setItem("checkboxes", JSON.stringify(checkboxes));
+    localforage.setItem("cm_index", JSON.stringify(codeMirror_index));
   };
   $scope.loadState = function() {
     // restore results as is
@@ -144,6 +147,10 @@ function ScanCtrl($scope, ScanSvc) {
         for (var i=0; i < ln; i++) {
           document.getElementById("doScan_" + i).checked = checkboxes[i];
         }
+      });
+      // code mirror showing something depends on input-files as well.
+      localforage.getItem("cm_index", function (res_cmi) {
+        $scope.updateCodeMirror(res_cmi);
       });
       $scope.$apply();
     });
