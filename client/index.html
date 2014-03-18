@@ -12,6 +12,7 @@
   <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
   <script src="js/lib/codemirror-compressed.js"></script>
   <script src='js/lib/jszip.min.js'></script>
+  <script src='js/lib/localforage.min.js'></script>
 
   <!-- CommonJS modules -->
   <script src='../common/rules.js'></script>
@@ -67,6 +68,8 @@
               </tr>
             </table>
           </div>
+            <button ng-click="saveState()">Save</button>
+            <button ng-click="loadState()" ng-disabled="{{ loadPossible }}">Load</button>
         </div>
       </div>
     </div>

@@ -4,6 +4,11 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.results=[];
 
   var selectedFile = 0;
+  var codeMirror_index = 0;
+  $scope.loadPossible = false;
+  localforage.length(function(len) {
+    $scope.loadPossible = (len == 3);
+  });
 
   $scope.run = function (source, filename) {
     if ($scope.inputFiles.length<1)
@@ -80,6 +85,7 @@ function ScanCtrl($scope, ScanSvc) {
     if ($scope.inputFiles.length > 0) {
       $scope.codeMirror.setValue($scope.inputFiles[index].asText());
     }
+    codeMirror_index = index;
   }
 
   $scope.setCursor = function (filename,line, col) {
@@ -89,7 +95,66 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.codeMirror.setValue(file.asText());
     $scope.codeMirror.setCursor(line - 1, col || 0);
     $scope.codeMirror.focus();
-  }
+  };
+  $scope.saveState = function() {
+    var includedAttributes = ['line','filename','rule', 'desc', 'name', 'rec','type'];
+    /* A list of attributes we want include. Example:
+    line: ..
+    filename: ..
+    rule: {
+      desc: ..
+      name: ..
+      rec: ..
+      type: ..
+      }
+    }
+     */
+    var serializedResults = JSON.stringify($scope.results, includedAttributes);
+    localforage.setItem('results', serializedResults, function() { });
+
+    var serializedInputFiles = $scope.inputFiles.map( function(el) { return {data: el.asText(), name: el.name }; });
+    localforage.setItem("inputFiles", JSON.stringify(serializedInputFiles), function(r) { });
+
+    var checkboxes = [];
+    var ln = angular.element($('#js-input')).scope().inputFiles.length;
+    for (var i=0; i < ln; i++) {
+      checkboxes.push(document.getElementById("doScan_" + i).checked);
+    }
+    localforage.setItem("checkboxes", JSON.stringify(checkboxes));
+    localforage.setItem("cm_index", JSON.stringify(codeMirror_index));
+  };
+  $scope.loadState = function() {
+    // restore results as is
+    localforage.getItem('results', function (results_storage) {
+      $scope.results = JSON.parse(results_storage);
+      $scope.$apply();
+      });
+    // restore files, by creaint JSZip things :)
+    localforage.getItem("inputFiles", function(inputFiles_storage) {
+      // mimic behavior from handleFileUpload
+      var files = JSON.parse(inputFiles_storage);
+      var zip = new JSZip();
+      files.forEach(function(file) {
+        zip.file(file.name, file.data);
+      });
+      $scope.inputFiles = zip.file(/.*/);
+
+      // nest checkbox import into the one for files, so we ensure the "inputFiles.length" check succeeds.
+      localforage.getItem("checkboxes", function (checkboxes_storage) {
+        var checkboxes = JSON.parse(checkboxes_storage);
+
+        var ln = angular.element($('#js-input')).scope().inputFiles.length
+        for (var i=0; i < ln; i++) {
+          document.getElementById("doScan_" + i).checked = checkboxes[i];
+        }
+      });
+      // code mirror showing something depends on input-files as well.
+      localforage.getItem("cm_index", function (res_cmi) {
+        $scope.updateCodeMirror(res_cmi);
+      });
+      $scope.$apply();
+    });
+  };
   $scope.selectAll = function () {
     var element;
     var i = $scope.inputFiles.length-1;
