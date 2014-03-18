@@ -2,8 +2,8 @@
    We won't see the message though, since this kind of postMessage isn't handled in scanservice.js  */
 if (typeof console === "undefined") {
   console = {};
-  console.log = function consoleShim() {
-    postMessage({'type':'log', 'message': arguments.join(" ")});
+  console.log = function consoleShim(mesg) {
+    postMessage({'type':'log', 'message': mesg});
   }
 }
 
