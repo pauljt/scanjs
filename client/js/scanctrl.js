@@ -11,21 +11,22 @@ function ScanCtrl($scope, ScanSvc) {
   });
 
   $scope.run = function (source, filename) {
-    if ($scope.inputFiles.length<1)
-    {
-      alert('Load some js files, or a App package(zip) first!');
-      return;
-    }
     //empty last scan
     $scope.results=[];
-    console.log("start of run;", $scope.inputFiles[0].name);
-    $scope.inputFiles.forEach(function (scriptFile, i) {
-      if (document.getElementById('doScan_'+i).checked) {
-        ScanSvc.newScan(scriptFile.name,scriptFile.asText());
-      }
-    });
-    console.log("end of run;", $scope.inputFiles[0].name);
 
+    if ($scope.inputFiles.length > 0) {
+      //user has uploaded file(s) to scan
+      console.log("start of run;", $scope.inputFiles[0].name);
+      $scope.inputFiles.forEach(function (scriptFile, i) {
+	if (document.getElementById('doScan_'+i).checked) {
+	  ScanSvc.newScan(scriptFile.name,scriptFile.asText());
+	}
+      });
+      console.log("end of run;", $scope.inputFiles[0].name);
+    }else {
+      //user has input (or not) into CodeMirror and wants to scan
+      ScanSvc.newScan("manual input", $scope.codeMirror.getValue());
+    }
   }
 
   $scope.handleFileUpload = function handleFileUpload(fileList) {
@@ -92,9 +93,16 @@ function ScanCtrl($scope, ScanSvc) {
     // use line-1, because editor lines start at 0?!?!?!?? :D
 
     var file = $scope.inputFiles.find(function(f){return f.name==filename});
-    $scope.codeMirror.setValue(file.asText());
-    $scope.codeMirror.setCursor(line - 1, col || 0);
-    $scope.codeMirror.focus();
+    if(typeof file != "undefined") {
+      //user uploaded files, so multiple code mirrors
+      $scope.codeMirror.setValue(file.asText());
+      $scope.codeMirror.setCursor(line - 1, col || 0);
+      $scope.codeMirror.focus();
+    } else {
+      //user manually input into CodeMirror
+      $scope.codeMirror.setCursor(line - 1, col || 0);
+      $scope.codeMirror.focus();
+    }
   };
   $scope.saveState = function() {
     var includedAttributes = ['line','filename','rule', 'desc', 'name', 'rec','type'];
