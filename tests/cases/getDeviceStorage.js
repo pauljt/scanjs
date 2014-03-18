@@ -1,0 +1,32 @@
+(function() {
+  describe('getDeviceStorage tests', function() {
+    context('ignores safe patterns', function() {
+      context(null, function () {
+	var good = 'var a  = "navigator.getDeviceStorage(storageName)";';
+	it(good, function(){
+	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
+	});
+      });
+    });
+    context('detects dangerous patterns', function() {
+      context(null, function () {
+	var bad = 'var instanceOfDeviceStorage = navigator.getDeviceStorage(storageName);';
+	it(bad, function(){
+	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
+	});
+      });
+      context(null, function () {
+	var bad = 'var a = navigator; a.getDeviceStorage(storageName);';
+	it(bad, function(){
+	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
+	});
+      });
+      context(null, function () {
+	var bad = 'window["navigator"]["getDeviceStorage"](storageName);';
+	it(bad, function(){
+	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
+	});
+      });
+    });
+  });
+})();

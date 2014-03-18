@@ -1,0 +1,32 @@
+(function() {
+  describe('generateCRMFRequest tests', function() {
+    context('ignores safe patterns', function() {
+      context(null, function() {
+	var good = 'generateCRMFRequest = "static string";';
+	it(good, function(){
+	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
+	});
+      });
+      context(null, function() {
+	var good = 'var a = "generateCRMFRequest";';
+	it(good, function(){
+	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
+	});
+      });
+    });
+    context('detects dangerous patterns', function() {
+      context(null, function() {
+	var bad = 'crypto.generateCRMFRequest("CN=0", 0, 0, null, "console.log(1)", 384, null, "rsa-dual-use");;';
+	it(bad, function(){
+	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
+	});
+      });
+      context(null, function() {
+	var bad = 'var a = crypto; a.generate = crypto.generateCRMFRequest; a.generate("CN=0", 0, 0, null, "console.log(1)", 384, null, "rsa-dual-use");';
+	it(bad, function(){
+	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
+	});
+      });
+    });
+  });
+})();

@@ -1,38 +1,26 @@
 (function() {
-  describe('innerHTML tests', function() {
+  describe('href tests', function() {
     context('ignores safe patterns', function() {
       context(null, function () {
-	var good = 'good.innerHTML = "static string";';
+	var good = 'var href = "static string";';
 	it(good, function(){
 	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
 	});
       });
       context(null, function () {
-	var good = 'var a = document.createElement("div"); a.setAttribute("innerHTML", "<h1>bad</h1>"); document.body.appendChild(a);';
+	var good = 'a.href = "http://mozilla.org";';
 	it(good, function(){
 	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
 	});
       });
       context(null, function () {
-	var good = 'var getInnerHtml = document.getElementById("node").innerHTML;';
+	var good = 'var a = document.createElement("a"); a.setAttribute("href", "http://mozilla.org"); document.body.appendChild(a);';
 	it(good, function(){
 	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
 	});
       });
       context(null, function () {
-	var good = '//div.innerHTML = this is a comment';
-	it(good, function(){
-	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
-	});
-      });
-      context(null, function () {
-	var good = 'div.innerHTML = 1';
-	it(good, function(){
-	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
-	});
-      });
-      context(null, function () {
-	var good = 'var a = 1; div.innerHTML = a';
+	var good = 'var a = document.createElement("a"); a.setAttribute("href", 1); document.body.appendChild(a);';
 	it(good, function(){
 	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
 	});
@@ -40,13 +28,25 @@
     });
     context('detects dangerous patterns', function() {
       context(null, function () {
-	var bad = 'dangerous.innerHTML=document.location;';
+	var bad = 'a.href ="javascript:alert(0);";';
 	it(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
       });
       context(null, function () {
-	var bad = 'div.innerHTML = "static string" + someVariable;';
+	var bad = 'a.href ="data:alert(0);";';
+	it(bad, function(){
+	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
+	});
+      });
+      context(null, function () {
+	var bad = 'something.a.href ="data:alert(0);";';
+	it(bad, function(){
+	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
+	});
+      });
+      context(null, function () {
+	var bad = 'var a = document.createElement("a"); a.setAttribute("href", "javascript:alert(0)"); document.body.appendChild(a);';
 	it(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
