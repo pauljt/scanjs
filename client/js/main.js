@@ -6,7 +6,7 @@ angular.element(document).ready(function() {
 
   var scanCtrlScope = angular.element(document.getElementById("input")).scope();
   scanCtrlScope.codeMirror = new CodeMirror(document.getElementById('codeMirrorDiv'), { mode: 'javascript',
-    lineNumbers: true, theme: 'mdn-like', value: "", readOnly:true, styleActiveLine: true});
+    lineNumbers: true, theme: 'mdn-like', value: "", styleActiveLine: true});
 
   // Event handlers:
   var jsInput = document.getElementById("js-input");
