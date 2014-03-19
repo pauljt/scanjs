@@ -46,8 +46,9 @@
 	});
       });
       context(null, function () {
+	// issue 73 - https://github.com/mozilla/scanjs/issues/73
 	var bad = 'var a = document.createElement("a"); a.setAttribute("href", "javascript:alert(0)"); document.body.appendChild(a);';
-	it(bad, function(){
+	it.skip(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
       });

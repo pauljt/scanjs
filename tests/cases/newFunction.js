@@ -16,8 +16,9 @@
 	});
       });
       context(null, function () {
+	// issue 76 - https://github.com/mozilla/scanjs/issues/76
 	var bad = 'var a = Function; new a("alert(0)")();';
-	it(bad, function(){
+	it.skip(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
       });

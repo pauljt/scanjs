@@ -22,8 +22,9 @@
 	});
       });
       context(null, function () {
+	// issue 82 - https://github.com/mozilla/scanjs/issues/82
 	var bad = 'window["navigator"]["getDeviceStorage"](storageName);';
-	it(bad, function(){
+	it.skip(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
       });

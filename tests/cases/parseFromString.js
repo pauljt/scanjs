@@ -7,11 +7,16 @@
 	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
 	});
       });
+      context(null, function () {
+	var good = 'doc = parser.parseFromString("<h1>somehtml</h1>", "text/html");';
+	it(good, function(){
+	  chai.expect(ScanJS.scan(good, ScanJS.rules, document.location.pathname)).to.be.empty;
+	});
+      });
     });
     context('detects dangerous patterns', function() {
       context(null, function () {
-	//currently expects: parseFromString("a", "b");
-	var bad = 'doc = parser.parseFromString("<h1>somehtml</h1>", "text/html");';
+	var bad = 'doc = parser.parseFromString(someVar, "text/html");';
 	it(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});

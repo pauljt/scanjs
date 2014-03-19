@@ -489,8 +489,9 @@
 	  });
 	});
 	context(null, function() {
+	  // issue 73 - https://github.com/mozilla/scanjs/issues/73
 	  var bad = 'iframe.setAttribute("mozapp", data.app);';
-	  it(bad, function () {
+	  it.skip(bad, function () {
 	    chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	  });
 	});
@@ -514,8 +515,9 @@
 	  });
 	});
 	context(null, function() {
+	  // issue 73 - https://github.com/mozilla/scanjs/issues/73
 	  var bad = 'var a = document.createElement("audio"); a.setAttribute("mozaudiochannel", data.app);';
-	  it(bad, function () {
+	  it.skip(bad, function () {
 	    chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	  });
 	});

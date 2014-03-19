@@ -28,14 +28,16 @@
 	});
       });
       context(null, function () {
+	// issue 76 - https://github.com/mozilla/scanjs/issues/76
 	var bad = 'var a = window.setTimeout; a("console.log(4)", 300);';
-	it(bad, function(){
+	it.skip(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
       });
       context(null, function () {
+	// issue 82 - https://github.com/mozilla/scanjs/issues/82
 	var bad = 'var a = "setTimeout"; window[a]("console.log(5)", 300);';
-	it(bad, function(){
+	it.skip(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
       });

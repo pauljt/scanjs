@@ -28,8 +28,9 @@
 	});
       });
       context(null, function () {
+	// issue 76 - https://github.com/mozilla/scanjs/issues/76
 	var bad = 'var o = window.open; o("http://www.mozilla.org", "name", {});';
-	it(bad, function(){
+	it.skip(bad, function(){
 	  chai.expect(ScanJS.scan(bad, ScanJS.rules, document.location.pathname)).not.to.be.empty;
 	});
       });
