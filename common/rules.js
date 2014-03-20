@@ -330,14 +330,14 @@ var rules = [
         "rec": "Be careful when using this API in combination with untrusted user data"
     },
     {
-        "type": "client_side_torage",
+        "type": "client_side_storage",
         "name": "localStorage",
         "test": "localStorage",
         "desc": "This API allows storing and retrieving data. Stored data might originally stem from untrusted user input.",
         "rec": "Treat database entries as untrusted and potentially hazardous as user data."
     },
     {
-        "type": "client_side_torage",
+        "type": "client_side_storage",
         "name": "sessionStorage",
         "test": "sessionStorage",
         "desc": "This API allows storing and retrieving data. Stored data might originally stem from untrusted user input.",
@@ -345,21 +345,21 @@ var rules = [
     },
 
     {
-        "type": "client_side_torage",
+        "type": "client_side_storage",
         "name": "indexedDB",
         "test": "indexedDB",
         "desc": "This API allows storing and retrieving data. Stored data might originally stem from untrusted user input.",
         "rec": "Treat database entries as untrusted and potentially hazardous as user data."
     },
     {
-        "type": "client_side_torage",
+        "type": "client_side_storage",
         "name": "indexeddb",
         "test": "indexeddb",
         "desc": "This API allows storing and retrieving data. Stored data might originally stem from untrusted user input.",
         "rec": "Treat database entries as untrusted and potentially hazardous as user data."
     },
     {
-        "type": "client_side_torage",
+        "type": "client_side_storage",
         "name": "mozSetMessageHandler",
         "test": "mozSetMessageHandler",
         "desc": "mozSetMessageHandler allows handling WebActivities. The origin of the activity and its data might be untrusted",
