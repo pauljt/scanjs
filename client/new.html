@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html ng-app='scanjs' ng-csp>
+  <head>
+    <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval">
+    <link href='/client/css/app.css' rel='stylesheet' media='screen'>
+    <link href='/client/css/angular-csp.css' rel='stylesheet' media='screen'>
+    <!-- Third-party libs -->
+    <script src='/client/js/lib/jquery-2.1.0.min.js'></script>
+    <script src='/client/js/lib/angular-1.2.13.min.js'></script>
+    <script src='/client/js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
+    <script src='/client/js/lib/codemirror-compressed.js'></script>
+    <script src='/client/js/lib/jszip.min.js'></script>
+    <script src='/client/js/lib/localforage.min.js'></script>
+    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <!-- CommonJS modules -->
+    <script src='/common/rules.js'></script>
+    <!-- Client specific files -->
+    <script src='/client/js/app.js'></script>
+    <script src='/client/js/main.js'></script>
+    <script src='/client/js/scanctrl.js'></script>
+    <script src='/client/js/rules.js'></script>
+    <script src='/client/js/scanservice.js'></script>
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a target="_window" class="navbar-brand" href="https://github.com/mozilla/scanjs">ScanJS</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Scan</a></li>
+            <li><a href="#">Rules</a></li>
+            <li><a href="#">Output</a></li>
+          </ul>
+        </div>
+      </div>
+    </div> <!-- role="navigation" -->
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1 sidebar">
+          <ul class="nav nav-sidebar">
+            <li id="scan-nav" class="active"><a href="#">Scan</a></li>
+            <li id="rule-nav"><a href="">Rules</a></li>
+            <li id="output-nav"><a href="#">Output</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item</a></li>
+            <li><a href="">Nav item again</a></li>
+          </ul>
+        </div>
+
+	<!-- scan div-->
+        <div id="scan" class="col-md-11 col-md-offset-1">
+	  <div id="input">
+	    <div class="row">
+	      <div class="col-md-6">
+		<h3><span class="label label-default">Manually enter JS code below or select files for scanning.</span></h3>
+	      </div>
+	      <div class="col-md-5 col-md-offset-1">
+		<span class="label">
+		  <input class="btn btn-default" type="file" id="js-input" multiple>
+		</span>
+	      </div>
+	    </div>
+	    <div id="codeMirrorDiv"></div>
+	    <button class="col-1 col-md-offset-6 btn-success btn-lg" ng-click='run()'>Scan</button>
+
+	    <div ng-show="inputFiles.length">
+	    <a href="#" ng-click="selectAll()">Select All</a>, <a href="#" ng-click="selectNone()">Select None</a>
+	    <ul>
+	      <li ng-repeat="file in inputFiles track by $index">
+		<input type="checkbox" id="doScan_{{ $index }}" title="Set this checkbox if you want the file included in your scans" checked />
+		<a href="#" ng-click="updateCodeMirror($index)"
+		   title="Examine file in preview">{{file.name}}</a>
+	    </ul>
+	    </div>
+	  </div> <!-- id=input -->
+	</div> <!-- id=scan -->
+
+	<!-- rules div -->
+        <div id="rules-div" class="col-md-11 col-md-offset-1" hidden="true">
+	  <div ng-controller='RuleListCtrl'>
+	    <div class="table-responsive">
+	      <table class="table table-striped">
+		<thead>
+		  <tr>
+		    <th>Rule Name</th>
+		    <th>Rule Description</th>
+		    <th>Rule Recommendation</th>
+		    <th>Rule Definition</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr ng-repeat='rule in rules' title={{rule.name}}>
+		    <td>{{rule.name}}</td>
+		    <td>{{rule.desc}}</td>
+		    <td>{{rule.rec}}</td>
+		    <td><pre class="prettyprint lang-js">{{rule.test}}</pre></td>
+		  </tr>
+		</tbody>
+	      </table>
+	    </div>
+	  </div>
+	</div>
+
+	<!-- output div -->
+        <div id="output" class="col-md-11 col-md-offset-1" hidden="true">
+	  <div ng-controller='RuleListCtrl' class='rule-list'>
+	    <div class="table-responsive">
+	      <table class="table table-striped">
+		<thead>
+		  <tr>
+		    <th>Name</th>
+		    <th>Description</th>
+		    <th>Recommendation</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <tr ng-repeat='result in results | orderBy:predicate:reverse' data-toggle="tooltip" data-placement="left" title={{rule.test}}>
+		    <td >{{rule.name}}</a></td>
+		    <td>{{rule.desc}}</td>
+		    <td>{{rule.rec}}</td>
+		  </tr>
+		</tbody>
+	      </table>
+	    </div>
+	  </div>
+	</div>
+	
+      </div> <!-- row -->
+    </div> <!-- container-fluid -->
+
+  </body>
+</html>
