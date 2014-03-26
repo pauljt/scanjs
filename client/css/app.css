@@ -15,7 +15,7 @@ pre.prettyprint{
 
 .nav > li > a:hover,
 .nav > li > a:focus {
-  background-color: #FF9500;
+  background-color: #0095DD;
 }
 
 a {
@@ -27,5 +27,14 @@ a {
 }
 
 .jumbotron {
+  background: #D4DDE4;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
   background-color: #EAEFF2;
+}
+
+.sidebar-inputfiles{
+    font-size: x-small;
 }
