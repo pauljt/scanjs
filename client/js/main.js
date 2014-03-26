@@ -13,6 +13,7 @@ angular.element(document).ready(function() {
   // same handler for both elements
   var fileHandler = angular.element(jsInput).scope().handleFileUpload;
   jsInput.addEventListener("change", function(evt) {
+    alert(1);
     fileHandler(this.files);
   });
 

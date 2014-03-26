@@ -3,34 +3,28 @@ $( document ).ready(function() {
     $('.active').removeClass("active");
   }
   
-  function hideAllDivs() {
+  function hideAll() {
     $('#scan').hide()
-    $('#rules-div').hide()
+    $('#rules').hide()
     $('#output').hide()
   }
 
-  function ruleLayout() {
-    clearActive();
-    hideAllDivs();
-    $("#rules-div").show()
-    $("#rule-nav")[0].setAttribute("class", "active");
+  function scanHeader() {
+    hideAll();
+    $("#scan").show();
   }
 
-  function scanLayout() {
-    clearActive();
-    hideAllDivs();
-    $("#scan").show()
-    $("#scan-nav")[0].setAttribute("class", "active");
+  function rulesHeader() {
+    hideAll();
+    $("#rules").show();
   }
 
-  function outputLayout() {
-    clearActive();
-    hideAllDivs();
-    $("#output").show()
-    $("#output-nav")[0].setAttribute("class", "active");
+  function outputHeader() {
+    hideAll();
+    $("#output").show();
   }
   
-  document.getElementById("rule-nav").addEventListener("click", ruleLayout);
-  document.getElementById("scan-nav").addEventListener("click", scanLayout);
-  document.getElementById("output-nav").addEventListener("click", outputLayout);
+  document.getElementById("scan-header").addEventListener("click", scanHeader);
+  document.getElementById("rules-header").addEventListener("click", rulesHeader);
+  document.getElementById("output-header").addEventListener("click", outputHeader);
 });

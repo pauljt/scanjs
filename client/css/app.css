@@ -8,3 +8,24 @@ pre.prettyprint{
     overflow: auto;
     font-size: x-small;
 }
+
+.navbar {
+  background: #4D4E53;
+}
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+  background-color: #FF9500;
+}
+
+a {
+  cursor:pointer;
+}
+
+.sidebar {
+  background-color: #EAEFF2;
+}
+
+.jumbotron {
+  background-color: #EAEFF2;
+}
