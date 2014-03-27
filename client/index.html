@@ -9,160 +9,165 @@
     <link href='css/app.css' rel='stylesheet' media='screen'>
     <link href='css/angular-csp.css' rel='stylesheet' media='screen'>
     <!-- Third-party libs -->
-    <script src='js/lib/jquery-2.1.0.min.js'></script>
+    <!--<script src='js/lib/jquery-2.1.0.min.js'></script>-->
     <script src='js/lib/angular-1.2.13.min.js'></script>
     <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
     <script src='js/lib/codemirror-compressed.js'></script>
     <script src='js/lib/jszip.min.js'></script>
     <script src='js/lib/localforage.min.js'></script>
+    <script src='js/lib/acorn.js'></script>
+
 
     <!-- CommonJS modules -->
     <script src='../common/rules.js'></script>
+    <script src='../common/scan.js'></script>
     <!-- Client specific files -->
-    <script src='js/app.js'></script>
+    <!-- <script src='js/app.js'></script>-->
     <script src='js/main.js'></script>
     <script src='js/scanctrl.js'></script>
     <script src='js/rules.js'></script>
+    <script src='js/experimentctrl.js'></script>
     <script src='js/scanservice.js'></script>
   </head>
 
   <body>
-    <!-- header -->
-    <div id="header" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
-        <div class="nav navbar-nav navbar-left">
-          <a target="_window" class="navbar-brand" href="https://github.com/mozilla/scanjs">ScanJS</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-left">
-            <li><a id="scan-header">scan</a></li>
-            <li><a id="rules-header">rules</a></li>
-            <li><a id="output-header">output</a></li>
-          </ul>
+
+  <div id="header" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar-brand">ScanJS
+    </div>
+    <ul class="nav navbar-nav navbar-left">
+      <li><a id="scan-header">scan</a></li>
+      <li><a id="rules-header">rules</a></li>
+      <li><a id="experiment-header">experiment</a></li>
+    </ul>
+  </div>
+  <!-- header -->
+
+  <div ng-controller="ScanCtrl" id="scan-wrapper" class="ng-scope panel panel-default ">
+    <div id="scan-intro" class="jumbotron col-md-4">
+      <h3>Choose files to scan</h3>
+      <p>Select a list of .js files, or a zip file containing .js files. <input class="btn btn-default left-block" type="file" id="scan-file-input" multiple></p>
+      <p>Or load your last scan <button ng-click='loadState()'>Load </button></p>
+    </div>
+
+    <div id="scan-files-selected" class=" col-md-4 hidden">
+      <h4>
+        Select files
+      </h4>
+      <p>
+        Select files below, then <button class="btn btn-default left-block" ng-click='run()'>Scan</button>
+      </p>
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Enable (<a class="small" ng-click="selectAll()">Select All </a>,
+            <a class="small" ng-click="selectNone()"> Select
+            None</a>)
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="file in inputFiles track by $index">
+          <td><a href="#" ng-click="showFile($index)" title="Examine file in preview">{{file.name}}</a>
+          </td>
+          <td><input type="checkbox" id="doScan_{{ $index }}"
+                     title="Set this checkbox if you want the file included in your scans" checked/></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="scan-results" class="col-md-6 hidden">
+      <h4>Results</h4>
+      <div id="results-wrapper" ng-show="results">
+        <table id="results-table" class="table table-striped">
+          <thead>
+          <tr>
+            <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
+            <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
+            <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+            <th>Description of Issue</th>
+          </tr>
+          </thead>
+          <tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
+            <td>{{result.filename}}</td>
+            <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a>
+            <td>{{result.rule.name }}</td>
+            <td>{{result.rule.desc}}</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div id="code-mirror-wrapper" class="col-md-6 ">
+      <h4>File Viewer</h4>
+      <div class="codeMirrorDiv " id="codeMirrorDiv">
+      </div>
+    </div>
+  </div>
+  <!-- end scan-wrapper -->
+
+  <div id="rules-wrapper" class="panel container-fluid hidden">
+    <div id="rules-div" class="col-md-12">
+      <div ng-controller='RuleListCtrl'>
+        <div class="jumbotron">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th>Rule Name</th>
+                <th>Rule Description</th>
+                <th>Rule Recommendation</th>
+                <th>Rule Definition</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat='rule in rules' title={{rule.name}} id={{rule.name}}>
+                <td>{{rule.name}}</td>
+                <td>{{rule.desc}}</td>
+                <td>{{rule.rec}}</td>
+                <td>
+                  <pre class="prettyprint lang-js">{{rule.test}}</pre>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div> <!-- header -->
+    </div>
+  </div>
+  <!-- rules -->
 
-    <!-- scan -->
-    <div ng-controller="ScanCtrl" id="scan" class="ng-scope container-fluid">
-      <span id="scan-landing" class="col-md-6">
-        <div id="input">
-          <div class="row">
-            <div id="scan-intro" class="jumbotron">
-              <p>
-                Select JS files, a ZIP file containing JS files, or <a id="manual-link">manually input JS.</a>
-              </p>
-	      <span class="label">
-		<input class="btn btn-default center-block" type="file" id="js-input" multiple></input>
-	      </span>
-              <button id="start-scan-files" class="btn-lg btn-success" hidden="true" ng-click='run()'>Scan</button>
+  <div id="experiment-wrapper" class="panel hidden" ng-controller="ExperimentCtrl">
+    <div class="col-md-6">
+      <h4>Edit code to test  scan rules.</h4>
+      <div class="codeMirror" id="experiment-mirror" ng-keyup="runManualScan()">
 
-            </div>
-            <!-- jumbotron -->
-          </div>
-          <!-- row -->
-
-          <div id="scan-files-selected" class="row">
-            <div class="jumbotron">
-              <table class="table table-striped">
-                <thead>
-                <tr>
-                  <th>Filename</th>
-                  <th>Enable (<a class="small" ng-click="selectAll()">Select All </a>, <a class="small" ng-click="selectNone()">Select None</a>)
-                  </th>
-
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="file in inputFiles track by $index">
-                  <td><a href="#" ng-click="updateCodeMirror($index)" title="Examine file in preview">{{file.name}}</a>
-                  </td>
-                  <td><input type="checkbox" id="doScan_{{ $index }}"
-                             title="Set this checkbox if you want the file included in your scans" checked/></td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="codeMirrorDiv jumbotron" id="codeMirrorDiv" hidden="true">
-        </div>
-        </span><!-- scan-landing -->
-
-      <span id="results" class="col-md-6" displa>
-        <div id="results">
-          <div id="output-div" class="col-md-12">
-            <div id="output" class="jumbotron" hidden="true">
-              <div class="jumbotron small">
-                <div id="codeMirrorDivResults"></div>
-              </div>
-              <div id="results-wrapper" ng-show="results">
-                <table id="results-table" class="table table-striped">
-                  <thead>
-                  <tr>
-                    <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
-                    <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
-                    <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
-                    <th>Description of Issue</th>
-                  </tr>
-                  </thead>
-                  <tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
-                    <td>{{result.filename}}</td>
-                    <td><a ng-click="setCursor(result.filename,result.line, result.col)">Line {{result.line}}</a>
-                    <td>{{result.rule.name }}</td>
-                    <td>{{result.rule.desc}}</a>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </span> <!-- results -->
       </div>
-
-
-      <div id="scan-manual" class="col-md-10 col-md-offset-2" hidden="true" ng-controller="ScanCtrl">
-	<div class="jumbotron">
-	  <p>
-	    Manually input Javascript below:
-	  </p>
-	  <div class="codeMirror" id="codeMirrorDivManual"></div>
-	  <button class="btn-success btn-lg center-block" ng-click="runManualScan()">Scan</button>
-	</div>
-      </div>
-    </div><!-- scan-manual -->
-
-    <div id="rules" class="container-fluid" hidden="true">
-        <div id="rules-div" class="col-md-12">
-	  <div ng-controller='RuleListCtrl'>
-	    <div class="jumbotron">
-	      <div class="table-responsive">
-		<table class="table table-striped">
-		  <thead>
-		    <tr>
-		      <th>Rule Name</th>
-		      <th>Rule Description</th>
-		      <th>Rule Recommendation</th>
-		      <th>Rule Definition</th>
-		    </tr>
-		  </thead>
-		  <tbody>
-		    <tr ng-repeat='rule in rules' title={{rule.name}} id={{rule.name}}>
-		      <td>{{rule.name}}</td>
-		      <td>{{rule.desc}}</td>
-		      <td>{{rule.rec}}</td>
-		      <td><pre class="prettyprint lang-js">{{rule.test}}</pre></td>
-		    </tr>
-		  </tbody>
-		</table>
-	      </div>
-	    </div>
-	  </div>
-	</div>
-    </div> <!-- rules -->
-
-
+    </div>
+    <div id="manual-results-wrapper" class="col-md-6" >
+      <h4>
+        Results
+      </h4>
+      <table class="table table-striped" >
+        <thead>
+        <tr>
+          <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
+          <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+          <th>Description of Issue</th>
+        </tr>
+        </thead>
+        <tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
+          <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a>
+          <td>{{result.rule.name }}</td>
+          <td>{{result.rule.desc}}</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <!-- scan-manual -->
 
   </body>
 </html>

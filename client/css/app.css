@@ -51,9 +51,6 @@ a {
 
 .CodeMirror {
   border: 1px solid #EAEFF2;
-  height: auto;
+  height:500px;
 }
-.CodeMirror-scroll {
-  overflow-y: hidden;
-  overflow-x: auto;
-}
+

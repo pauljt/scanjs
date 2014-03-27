@@ -3,14 +3,7 @@ $( document ).ready(function() {
     $('.active').removeClass("active");
   }
   
-  function hideAll() {
-    $('#scan').hide()
-    $('#rules').hide()
-    $('#results').hide()
-    $("#scan-landing").hide();
-    $("#scan-manual").hide();
-    $("#codeMirrorDiv").hide();
-  }
+
 
   function scanHeader() {
     hideAll();
@@ -45,9 +38,6 @@ $( document ).ready(function() {
     $("#scan-manual").show();
   }
 
-  document.getElementById("scan-header").addEventListener("click", scanHeader);
-  document.getElementById("rules-header").addEventListener("click", rulesHeader);
-  document.getElementById("output-header").addEventListener("click", outputHeader);
-  document.getElementById("manual-link").addEventListener("click", manualInput);
+
 
 });

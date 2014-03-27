@@ -1,8 +1,10 @@
 function ScanCtrl($scope, ScanSvc) {
   $scope.codeMirror = undefined;
-  $scope.codeMirrorResults = undefined;
+  $scope.codeMirrorManual = undefined;
   $scope.inputFiles = [];
   $scope.results=[];
+  $scope.manualResults=[];
+  $scope.inputFilename="";
 
   var selectedFile = 0;
   var codeMirror_index = 0;
@@ -14,27 +16,32 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.run = function (source, filename) {
     //empty last scan
     $scope.results=[];
-    console.log("start of run;", $scope.inputFiles[0].name);
     $scope.inputFiles.forEach(function (scriptFile, i) {
       if (document.getElementById('doScan_'+i).checked) {
         ScanSvc.newScan(scriptFile.name,scriptFile.asText());
       }
     });
-    console.log("end of run;", $scope.inputFiles[0].name);
-    //enable results div
-    $("#pre-output").hide();
-    $("#output").show();
+
+    //update UI
+    document.querySelector("#scan-files-selected").classList.toggle("hidden",true);
+    document.querySelector("#scan-results").classList.toggle("hidden",false);
   }
 
   $scope.runManualScan = function (source, filename) {
     code = $scope.codeMirrorManual.getValue();
-    ScanSvc.newScan("manual input",code);
+    $scope.manualResults=ScanJS.scan(source, rules, file);
+    $scope.$apply();
   }
 
   $scope.handleFileUpload = function handleFileUpload(fileList) {
+    //enable fileselect div
+    document.querySelector("#scan-intro").classList.toggle("hidden",true);
+    document.querySelector("#scan-files-selected").classList.toggle("hidden",false);
+
     if (fileList.length == 1 && /\.zip$/.test(fileList[0].name)) {
       //packaged app case
       var reader = new FileReader();
+      $scope.inputFilename=fileList[0].name;
       reader.readAsArrayBuffer(fileList[0]);
       reader.onload = function () {
         var zip = new JSZip(this.result);
@@ -44,6 +51,7 @@ function ScanCtrl($scope, ScanSvc) {
     }
     else {
       //uploading individual js file(s) case
+      $scope.inputFilename="Multiple files"
       var jsType = /(text\/javascript|application\/javascript|application\/x-javascript)/;
       var zip = new JSZip(); //create a jszip to manage the files
 
@@ -59,7 +67,6 @@ function ScanCtrl($scope, ScanSvc) {
         reader.onload = (function (file) {
           var fileName = file.name;
           return function(e){
-            console.log("reading",file.name, e.target.result.split(0,10))
             //add file to zip
             zip.file(fileName, e.target.result)
             $scope.inputFiles = zip.file(/.*/); //returns an array of files
@@ -77,13 +84,8 @@ function ScanCtrl($scope, ScanSvc) {
     }
   }
 
-
-  $scope.updateCodeMirror = function (index) {
-    $('[id^=sidebar-file]').removeClass("active");
-    $("#sidebar-file-"+index).addClass("active");
-    $("#scan-files-selected").hide();
-    $("#scan-intro").hide();
-    $("#codeMirrorDiv").show();
+  $scope.showFile = function (index) {
+    document.querySelector("#code-mirror-wrapper").classList.toggle("hidden",false);
     if($scope.inputFiles.length<1){
       return;
     }
@@ -96,14 +98,14 @@ function ScanCtrl($scope, ScanSvc) {
     codeMirror_index = index;
   }
 
-  $scope.setCursor = function (filename,line, col) {
-    scope = angular.element(document.getElementById("input")).scope();
-    var file = scope.inputFiles.find(function(f){return f.name==filename});
-
-    scope.codeMirrorResults.setValue(file.asText());
-    scope.codeMirrorResults.setCursor(line - 1, col || 0);
-    scope.codeMirrorResults.focus();
+  $scope.showResult = function (filename,line, col) {
+    document.querySelector("#code-mirror-wrapper").classList.toggle("hidden",false);
+    var file = $scope.inputFiles.find(function(f){return f.name==filename});
+    $scope.codeMirror.setValue(file.asText());
+    $scope.codeMirror.setCursor(line - 1, col || 0);
+    $scope.codeMirror.focus();
   };
+
   $scope.saveState = function() {
     var includedAttributes = ['line','filename','rule', 'desc', 'name', 'rec','type'];
     /* A list of attributes we want include. Example:
@@ -131,13 +133,18 @@ function ScanCtrl($scope, ScanSvc) {
     localforage.setItem("checkboxes", JSON.stringify(checkboxes));
     localforage.setItem("cm_index", JSON.stringify(codeMirror_index));
   };
+
+  //TODO loadstate isn't called anymore, need to make it work with new workflow
   $scope.loadState = function() {
     // restore results as is
     localforage.getItem('results', function (results_storage) {
+      if(!results_storage){
+        alert('No previous scan found.')
+      }
       $scope.results = JSON.parse(results_storage);
       $scope.$apply();
       });
-    // restore files, by creaint JSZip things :)
+    // restore files, by creating JSZip things :)
     localforage.getItem("inputFiles", function(inputFiles_storage) {
       // mimic behavior from handleFileUpload
       var files = JSON.parse(inputFiles_storage);
@@ -156,13 +163,10 @@ function ScanCtrl($scope, ScanSvc) {
           document.getElementById("doScan_" + i).checked = checkboxes[i];
         }
       });
-      // code mirror showing something depends on input-files as well.
-      localforage.getItem("cm_index", function (res_cmi) {
-        $scope.updateCodeMirror(res_cmi);
-      });
       $scope.$apply();
     });
   };
+
   $scope.selectAll = function () {
     var element;
     var i = $scope.inputFiles.length-1;
@@ -197,6 +201,7 @@ function ScanCtrl($scope, ScanSvc) {
     /* this is likely a bug in angular or how we use it: the HTML template sometimes does not update
        when we change the $scope variables without it noticing. $scope.$apply() enforces this. */
     $scope.$apply();
+    $scope.saveState();
   });
 
   $scope.$on('ScanError', function (event, exception) {

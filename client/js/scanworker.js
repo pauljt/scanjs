@@ -7,9 +7,9 @@ if (typeof console === "undefined") {
   }
 }
 
-importScripts('lib/tern/node_modules/acorn/acorn.js',
-              'lib/tern/node_modules/acorn/util/walk.js',
-              'lib/tern/node_modules/acorn/acorn_loose.js',
+importScripts('lib/acorn.js',
+              'lib/walk.js',
+              'lib/acorn_loose.js',
               '../../common/scan.js',
               '../../common/rules.js');
 
