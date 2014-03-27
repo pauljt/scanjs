@@ -48,9 +48,6 @@ $( document ).ready(function() {
   document.getElementById("scan-header").addEventListener("click", scanHeader);
   document.getElementById("rules-header").addEventListener("click", rulesHeader);
   document.getElementById("output-header").addEventListener("click", outputHeader);
-  document.getElementById("reset").addEventListener("click", reset);
-  document.getElementById("scan-manual-sidebar").addEventListener("click", manualInput);
   document.getElementById("manual-link").addEventListener("click", manualInput);
-  document.getElementById("scan-landing-sidebar").addEventListener("click", scanHeader);
 
 });
