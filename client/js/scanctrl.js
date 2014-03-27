@@ -1,5 +1,6 @@
 function ScanCtrl($scope, ScanSvc) {
   $scope.codeMirror = undefined;
+  $scope.codeMirrorResults = undefined;
   $scope.inputFiles = [];
   $scope.results=[];
 
@@ -25,7 +26,9 @@ function ScanCtrl($scope, ScanSvc) {
       }
     });
     console.log("end of run;", $scope.inputFiles[0].name);
-
+    //enable results div
+    $("#pre-output").hide();
+    $("#output").show();
   }
 
   $scope.handleFileUpload = function handleFileUpload(fileList) {
@@ -76,6 +79,11 @@ function ScanCtrl($scope, ScanSvc) {
 
 
   $scope.updateCodeMirror = function (index) {
+    $('[id^=sidebar-file]').removeClass("active");
+    $("#sidebar-file-"+index).addClass("active");
+    $("#scan-files-selected").hide();
+    $("#scan-intro").hide();
+    $("#codeMirrorDiv").show();
     if($scope.inputFiles.length<1){
       return;
     }
@@ -89,12 +97,12 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.setCursor = function (filename,line, col) {
-    // use line-1, because editor lines start at 0?!?!?!?? :D
+    scope = angular.element(document.getElementById("input")).scope();
+    var file = scope.inputFiles.find(function(f){return f.name==filename});
 
-    var file = $scope.inputFiles.find(function(f){return f.name==filename});
-    $scope.codeMirror.setValue(file.asText());
-    $scope.codeMirror.setCursor(line - 1, col || 0);
-    $scope.codeMirror.focus();
+    scope.codeMirrorResults.setValue(file.asText());
+    scope.codeMirrorResults.setCursor(line - 1, col || 0);
+    scope.codeMirrorResults.focus();
   };
   $scope.saveState = function() {
     var includedAttributes = ['line','filename','rule', 'desc', 'name', 'rec','type'];

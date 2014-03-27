@@ -2,11 +2,34 @@ var scanjsModule = angular.module('scanjs', ['ui.bootstrap']);
 
 angular.element(document).ready(function() {
   // loading codeMirror requires the textArea
-
-
   var scanCtrlScope = angular.element(document.getElementById("input")).scope();
-  scanCtrlScope.codeMirror = new CodeMirror(document.getElementById('codeMirrorDiv'), { mode: 'javascript',
-    lineNumbers: true, theme: 'mdn-like', value: "", readOnly:true, styleActiveLine: true});
+  scanCtrlScope.codeMirror = new CodeMirror(document.getElementById('codeMirrorDiv'), {
+    mode: 'javascript',
+    lineNumbers: true,
+    theme: 'mdn-like',
+    value: "",
+    readOnly:true,
+    tabsize: 2,
+    styleActiveLine: true
+  });
+
+  scanCtrlScope.codeMirrorResults = new CodeMirror(document.getElementById('codeMirrorDivResults'), {
+    mode: 'javascript',
+    lineNumbers: true,
+    theme: 'mdn-like',
+    value: "Click links below to view",
+    readOnly:true,
+    tabsize: 2,
+    styleActiveLine: true
+  });
+
+  scanCtrlScope.codeMirrorManual = new CodeMirror(document.getElementById('codeMirrorDivManual'), {
+    mode: 'javascript',
+    lineNumbers: true,
+    theme: 'mdn-like',
+    tabsize: 2,
+    value: "",
+  });
 
   // Event handlers:
   var jsInput = document.getElementById("js-input");
@@ -18,9 +41,4 @@ angular.element(document).ready(function() {
     fileHandler(this.files);
     $("#start-scan-files").show();
   });
-
- /* var jsonInput = document.getElementById("json-input");
-  jsonInput.addEventListener("change", function(evt) {
-    fileHandler(this.files);
-  });*/
 });

@@ -6,12 +6,21 @@ $( document ).ready(function() {
   function hideAll() {
     $('#scan').hide()
     $('#rules').hide()
-    $('#output').hide()
+    $('#results').hide()
+    $("#scan-landing").hide();
+    $("#scan-manual").hide();
+    $("#codeMirrorDiv").hide();
   }
 
   function scanHeader() {
     hideAll();
-    $("#scan").show();
+    clearActive();
+    $("#scan").show();;
+    $("#scan-intro").show();
+    $("#scan-landing").show();
+    $("#scan-landing-sidebar").addClass("active")
+    $("#scan-manual").hide();
+    $("#scan-files-selected").show();
   }
 
   function rulesHeader() {
@@ -21,13 +30,12 @@ $( document ).ready(function() {
 
   function outputHeader() {
     hideAll();
-    $("#output").show();
+    $("#results").show();
   }
 
   function reset() {
     confirm("This will delete all results and clear currently loaded input data");
     $("#scan-manual-sidebar").show();
-
   }
 
   function manualInput() {
@@ -37,18 +45,12 @@ $( document ).ready(function() {
     $("#scan-manual").show();
   }
 
-  function scanLanding() {
-    clearActive();
-    $("#scan-landing-sidebar").addClass("active")
-    $("#scan-landing").show();
-    $("#scan-manual").hide();
-  }
-
   document.getElementById("scan-header").addEventListener("click", scanHeader);
   document.getElementById("rules-header").addEventListener("click", rulesHeader);
   document.getElementById("output-header").addEventListener("click", outputHeader);
   document.getElementById("reset").addEventListener("click", reset);
   document.getElementById("scan-manual-sidebar").addEventListener("click", manualInput);
   document.getElementById("manual-link").addEventListener("click", manualInput);
-  document.getElementById("scan-landing-sidebar").addEventListener("click", scanLanding);
+  document.getElementById("scan-landing-sidebar").addEventListener("click", scanHeader);
+
 });

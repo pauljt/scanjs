@@ -2,6 +2,7 @@
 <html ng-app='scanjs' ng-csp>
   <head>
     <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval">
+    <title>ScanJS</title>
     <link href='/client/css/app.css' rel='stylesheet' media='screen'>
     <link href='/client/css/angular-csp.css' rel='stylesheet' media='screen'>
     <!-- Third-party libs -->
@@ -45,18 +46,18 @@
       <!-- navbar/sidebar -->
       <div class="col-md-2 sidebar">
 	<ul class="nav nav-sidebar">
-	  <li id="scan-landing-sidebar" class="active"><a href="#">upload</a></li>
-	  <li id="scan-manual-sidebar"><a href="">manual</a></li>
+	  <li id="scan-landing-sidebar" class="active"><a>upload</a></li>
+	  <li id="scan-manual-sidebar"><a>manual</a></li>
 	</ul>
-	<ul ng-repeat="file in inputFiles" class="nav nav-sidebar">
-	  <li class="sidebar-inputfiles"><a href="">{{file.name}}</a></li>
+	<ul ng-repeat="file in inputFiles track by $index" class="nav nav-sidebar">
+	  <li id="sidebar-file-{{$index}}" class="sidebar-inputfiles"><a ng-click="updateCodeMirror($index)">{{file.name}}</a></li>
 	</ul>
       </div>
 
       <div id="scan-landing" class="col-md-10 col-md-offset-2">
 	<div id="input">
 	  <div class="row">
-	    <div class="jumbotron">
+	    <div id="scan-intro" class="jumbotron">
 	      <button id="reset" class="btn-lg btn-danger pull-right">Reset</button>
 	      <p>
 		Select JS files, a ZIP file containing JS files, or <a
@@ -70,12 +71,12 @@
 	    </div> <!-- jumbotron -->
 	  </div> <!-- row -->
 
-	  <div id="scan-files-selected" class="row" hidden="true">
+	  <div id="scan-files-selected" class="row">
 	    <div class="jumbotron">
 	       <table class="table table-striped">
 		  <thead>
 		    <tr>
-		      <th>Enable</th>
+		      <th>Enable (<a class="small" ng-click="selectAll()">Select All</a>, <a class="small" ng-click="selectNone()">Select None</a>)</th>
 		      <th>Filename</th>
 		    </tr>
 		  </thead>
@@ -89,28 +90,25 @@
 	      </div>
 	    </div>
 	  </div>
+
+	  <div class="codeMirrorDiv jumbotron" id="codeMirrorDiv" hidden="true">
+	  </div>
+
 	</div> <!-- input -->
       </div> <!-- scan-landing -->
 
       <div id="scan-manual" class="col-md-10 col-md-offset-2" hidden="true">
-	<div id="input" class="jumbotron">
-	  <div id="codeMirrorDiv"></div>
-	  <button class="col-1 col-md-offset-6 btn-success btn-lg" ng-click='run()'>Scan</button>
+	<div class="jumbotron">
+	  <p>
+	    Manually input Javascript below:
+	  </p>
+	  <div class="codeMirror" id="codeMirrorDivManual"></div>
+	  <button class="btn-success btn-lg center-block" ng-click='run()'>Scan</button>
 	</div>
       </div>
     </div><!-- scan-manual -->
 
     <div id="rules" class="container-fluid" hidden="true">
-	<!-- navbar/sidebar -->
-	<!-- I don't think we need a sidebar, at least yet... maybe we should
-	     have one for future, idk
-        <div class="col-md-1 sidebar">
-          <ul class="nav nav-sidebar">
-	    <li id="" class="active"><a href="#">Rules<span ng-show="rules.length"></span></a></li>
-          </ul>
-        </div>
-	-->
-
         <div id="rules-div" class="col-md-12">
 	  <div ng-controller='RuleListCtrl'>
 	    <div class="jumbotron">
@@ -137,39 +135,41 @@
 	    </div>
 	  </div>
 	</div>
-    </div> <!-- container-fluid -->
+    </div> <!-- rules -->
 
-    <div id="output" class="container-fluid" hidden="true">
-	<!-- navbar/sidebar -->
-        <div class="col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li id="" class="active"><a href="#">Results</a></li>
-          </ul>
-        </div>
-
-        <div id="output-div" class="col-md-10 col-md-offset-2">
-	  <div ng-controller='RuleListCtrl' class='rule-list'>
-	    <div class="table-responsive">
-	      <table class="table table-striped">
+    <div id="results" class="container-fluid" hidden="true" ng-controller="ScanCtrl">
+      <div id="results">
+	<div id="output-div" class="col-md-12">
+	  <div id="pre-output" class="jumbotron">
+	    <div class="center-block">
+	      <p>Need to run Scan before viewing results!</p>
+	    </div>
+	  </div>
+	  <div id="output" class="jumbotron" hidden="true">
+	    <div id="codeMirrorDivResults"></div>
+	    <div id="results-wrapper" ng-show="results">
+	      <table id="results-table" class="table table-striped">
 		<thead>
 		  <tr>
-		    <th>Rule</th>
-		    <th>Filename</th>
-		    <th>Link</th>
+		    <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
+		    <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
+		    <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+		    <th>Description of Issue</th>
 		  </tr>
 		</thead>
-		<tbody>
-		  <tr ng-repeat='rule in rules     | orderBy:predicate:reverse' data-toggle="tooltip" data-placement="left" title={{rule.test}}>
-		    <td >{{rule.name}}</a></td>
-		    <td>{{rule.desc}}</td>
-		    <td>{{rule.rec}}</td>
-		  </tr>
-		</tbody>
+		<tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
+		  <td>{{result.filename}}</td>
+		  <td><a ng-click="setCursor(result.filename,result.line, result.col)">Line {{result.line}}</a>
+		  <td>{{result.rule.name }}</td>
+		  <td>{{result.rule.desc}}</a>
+		  </td>
+		</tr>
 	      </table>
 	    </div>
 	  </div>
 	</div>
-    </div> <!-- output -->
+      </div>
+    </div> <!-- results -->
 
   </body>
 </html>

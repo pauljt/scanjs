@@ -2,6 +2,12 @@
 @import url("dashboard.css");
 @import url("codemirror.css");
 @import url("codemirror-mdn.css");
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
 pre.prettyprint{
     width: auto;
     max-width: 600px;
@@ -30,11 +36,24 @@ a {
   background: #D4DDE4;
 }
 
+.table {
+  border: 1px solid #EAEFF2;
+}
+
 .table-striped > tbody > tr:nth-child(odd) > td,
 .table-striped > tbody > tr:nth-child(odd) > th {
   background-color: #EAEFF2;
 }
 
 .sidebar-inputfiles{
-    font-size: x-small;
+  font-size: x-small;
+}
+
+.CodeMirror {
+  border: 1px solid #EAEFF2;
+  height: auto;
+}
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
 }
