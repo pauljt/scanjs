@@ -12,11 +12,6 @@ function ScanCtrl($scope, ScanSvc) {
   });
 
   $scope.run = function (source, filename) {
-    if ($scope.inputFiles.length<1)
-    {
-      alert('Load some js files, or a App package(zip) first!');
-      return;
-    }
     //empty last scan
     $scope.results=[];
     console.log("start of run;", $scope.inputFiles[0].name);
