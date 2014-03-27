@@ -31,6 +31,11 @@ function ScanCtrl($scope, ScanSvc) {
     $("#output").show();
   }
 
+  $scope.runManualScan = function (source, filename) {
+    code = $scope.codeMirrorManual.getValue();
+    ScanSvc.newScan("manual input",code);
+  }
+
   $scope.handleFileUpload = function handleFileUpload(fileList) {
     if (fileList.length == 1 && /\.zip$/.test(fileList[0].name)) {
       //packaged app case

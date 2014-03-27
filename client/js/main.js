@@ -25,10 +25,10 @@ angular.element(document).ready(function() {
 
   scanCtrlScope.codeMirrorManual = new CodeMirror(document.getElementById('codeMirrorDivManual'), {
     mode: 'javascript',
-    lineNumbers: true,
     theme: 'mdn-like',
+    value: "a.innerHTML = somethingFromUser",
     tabsize: 2,
-    value: "",
+    styleActiveLine: true
   });
 
   // Event handlers:

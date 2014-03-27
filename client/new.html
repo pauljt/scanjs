@@ -90,20 +90,17 @@
 	      </div>
 	    </div>
 	  </div>
-
 	  <div class="codeMirrorDiv jumbotron" id="codeMirrorDiv" hidden="true">
-	  </div>
-
-	</div> <!-- input -->
+	</div>
       </div> <!-- scan-landing -->
 
-      <div id="scan-manual" class="col-md-10 col-md-offset-2" hidden="true">
+      <div id="scan-manual" class="col-md-10 col-md-offset-2" hidden="true" ng-controller="ScanCtrl">
 	<div class="jumbotron">
 	  <p>
 	    Manually input Javascript below:
 	  </p>
 	  <div class="codeMirror" id="codeMirrorDivManual"></div>
-	  <button class="btn-success btn-lg center-block" ng-click='run()'>Scan</button>
+	  <button class="btn-success btn-lg center-block" ng-click="runManualScan()">Scan</button>
 	</div>
       </div>
     </div><!-- scan-manual -->
@@ -146,7 +143,9 @@
 	    </div>
 	  </div>
 	  <div id="output" class="jumbotron" hidden="true">
-	    <div id="codeMirrorDivResults"></div>
+	    <div class="jumbotron small">
+	      <div id="codeMirrorDivResults"></div>
+	    </div>
 	    <div id="results-wrapper" ng-show="results">
 	      <table id="results-table" class="table table-striped">
 		<thead>
