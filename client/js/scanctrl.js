@@ -23,8 +23,12 @@ function ScanCtrl($scope, ScanSvc) {
     });
 
     //update UI
-    document.querySelector("#scan-files-selected").classList.toggle("hidden",true);
+    document.querySelector("#scan-input").classList.toggle("hidden",true);
     document.querySelector("#scan-results").classList.toggle("hidden",false);
+
+    //update navbar
+    document.querySelector("#scan-input-nav").classList.toggle("active",false);
+    document.querySelector("#scan-output-nav").classList.toggle("active",true);
   }
 
   $scope.runManualScan = function (source, filename) {
@@ -33,9 +37,15 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.$apply();
   }
 
+  $scope.navBarClick= function(evt){
+    var showInput=evt.target.text=="input";
+    document.querySelector("#scan-input").classList.toggle("hidden",!showInput);
+    document.querySelector("#scan-results").classList.toggle("hidden",showInput);
+  }
+
   $scope.handleFileUpload = function handleFileUpload(fileList) {
     //enable fileselect div
-    document.querySelector("#scan-intro").classList.toggle("hidden",true);
+    //document.querySelector("#scan-intro").classList.toggle("hidden",true);
     document.querySelector("#scan-files-selected").classList.toggle("hidden",false);
 
     if (fileList.length == 1 && /\.zip$/.test(fileList[0].name)) {
