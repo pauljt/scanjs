@@ -43,32 +43,35 @@
   </div>
   <!-- header -->
 
-  <div ng-controller="ScanCtrl" id="scan-wrapper" class="ng-scope panel panel-default row">
+  <div ng-controller="ScanCtrl" id="scan-wrapper" class="ng-scope panel panel-default">
     <!-- sidebar -->
-    <div class="col-md-1 sidebar">
+    <div class="col-md-2 sidebar">
       <ul ng-click="navBarClick($event)" class="nav nav-sidebar">
-        <li id="scan-input-nav" class="active"><a>input</a></li>
+        <li id="scan-input-nav" class="active"><a>Input</a></li>
         <ul>
           <li>
             Files: {{inputFiles.length}}
           </li>
         </ul>
-        <li id="scan-output-nav"><a>output</a></li>
+        <li id="scan-output-nav"><a>Ouput</a></li>
+        <ul>
+          <li><a ng-click="filterResults()">All issues ({{results.length}})</a></li>
+          <li ng-repeat="issue in issueList">
+            <a ng-click="filterResults(issue)">{{issue}}</a>
+          </li>
+        </ul>
       </ul>
     </div> <!-- sidebar -->
 
-    <div class="col-md-4 col-md-offset-1">
+    <div class="col-md-4 col-md-offset-2">
 
     <div id="scan-input">
-      <div id="scan-intro" class="jumbotron">
-        <h3>Choose files to scan</h3>
-        <p>Select a list of .js files, or a zip file containing .js files. <input class="btn btn-default left-block" type="file" id="scan-file-input" multiple></p>
-        <p>Or load your last scan <button ng-click='loadState()'>Load </button></p>
+      <div id="scan-intro" >
+        <h4>Choose files to scan</h4>
+        <p>Select a list of .js files, or a zip file containing .js files.</p>
+        <input type="file" id="scan-file-input" multiple></p>
 
         <div id="scan-files-selected" class="hidden">
-          <h4>
-            Select files
-          </h4>
           <p>
             Select files below, then <button class="btn btn-default left-block" ng-click='run()'>Scan</button>
           </p>
@@ -107,14 +110,14 @@
             <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
             <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
             <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
-            <th>Description of Issue</th>
+            <!--<th>Description of Issue</th>-->
           </tr>
           </thead>
-          <tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
+          <tr ng-repeat='result in filteredResults| orderBy:predicate:reverse' title={{result.rule.rec}}>
             <td>{{result.filename}}</td>
             <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a>
             <td>{{result.rule.name }}</td>
-            <td>{{result.rule.desc}}</a>
+           <!-- <td>{{result.rule.desc}}</a>-->
             </td>
           </tr>
         </table>

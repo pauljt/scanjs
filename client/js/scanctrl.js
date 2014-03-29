@@ -3,8 +3,10 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.codeMirrorManual = undefined;
   $scope.inputFiles = [];
   $scope.results=[];
+  $scope.filteredResults=[];
   $scope.manualResults=[];
   $scope.inputFilename="";
+  $scope.issueList=[];
 
   var selectedFile = 0;
   var codeMirror_index = 0;
@@ -35,6 +37,24 @@ function ScanCtrl($scope, ScanSvc) {
     code = $scope.codeMirrorManual.getValue();
     $scope.manualResults=ScanJS.scan(source, rules, file);
     $scope.$apply();
+  }
+
+  $scope.updateIssueList = function(){
+    $scope.issueList = $scope.results.reduce(function(p, c) {
+      if (p.indexOf(c.rule.name) < 0)
+        p.push(c.rule.name);
+      return p;
+    }, []);
+  }
+
+  $scope.filterResults=function(issue){
+    if(typeof issue==undefined){
+      $scope.filteredResults=$scope.results;
+    }
+    $scope.filteredResults=$scope.results.filter(function(result){
+      console.log("test",result.rule.name,issue);
+    })
+    console.log($scope.filteredResults);
   }
 
   $scope.navBarClick= function(evt){
@@ -136,8 +156,7 @@ function ScanCtrl($scope, ScanSvc) {
     localforage.setItem("inputFiles", JSON.stringify(serializedInputFiles), function(r) { });
 
     var checkboxes = [];
-    var ln = angular.element($('#js-input')).scope().inputFiles.length;
-    for (var i=0; i < ln; i++) {
+    for (var i=0; i < $scope.inputFiles.length; i++) {
       checkboxes.push(document.getElementById("doScan_" + i).checked);
     }
     localforage.setItem("checkboxes", JSON.stringify(checkboxes));
@@ -168,7 +187,7 @@ function ScanCtrl($scope, ScanSvc) {
       localforage.getItem("checkboxes", function (checkboxes_storage) {
         var checkboxes = JSON.parse(checkboxes_storage);
 
-        var ln = angular.element($('#js-input')).scope().inputFiles.length
+        var ln=scope.inputFiles.length
         for (var i=0; i < ln; i++) {
           document.getElementById("doScan_" + i).checked = checkboxes[i];
         }
@@ -207,7 +226,9 @@ function ScanCtrl($scope, ScanSvc) {
       return
     }
     $scope.results=$scope.results.concat(result.findings);
+    $scope.filteredResults=$scope.results;
     $scope.error = "";
+    $scope.updateIssueList();
     /* this is likely a bug in angular or how we use it: the HTML template sometimes does not update
        when we change the $scope variables without it noticing. $scope.$apply() enforces this. */
     $scope.$apply();
