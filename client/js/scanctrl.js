@@ -4,7 +4,6 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.inputFiles = [];
   $scope.results=[];
   $scope.filteredResults=[];
-  $scope.manualResults=[];
   $scope.inputFilename="";
   $scope.issueList=[];
 
@@ -33,12 +32,6 @@ function ScanCtrl($scope, ScanSvc) {
     document.querySelector("#scan-output-nav").classList.toggle("active",true);
   }
 
-  $scope.runManualScan = function (source, filename) {
-    code = $scope.codeMirrorManual.getValue();
-    $scope.manualResults=ScanJS.scan(source, rules, file);
-    $scope.$apply();
-  }
-
   $scope.updateIssueList = function(){
     $scope.issueList = $scope.results.reduce(function(p, c) {
       if (p.indexOf(c.rule.name) < 0)
@@ -48,19 +41,35 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.filterResults=function(issue){
-    if(typeof issue==undefined){
+    if(!issue){
       $scope.filteredResults=$scope.results;
     }
-    $scope.filteredResults=$scope.results.filter(function(result){
-      console.log("test",result.rule.name,issue);
-    })
-    console.log($scope.filteredResults);
+    else{
+      $scope.filteredResults=$scope.results.filter(function(result){
+        return result.rule.name==issue;
+      })
+    }
   }
 
-  $scope.navBarClick= function(evt){
-    var showInput=evt.target.text=="input";
-    document.querySelector("#scan-input").classList.toggle("hidden",!showInput);
-    document.querySelector("#scan-results").classList.toggle("hidden",showInput);
+  $scope.navShowInput = function () {
+    console.log('showinput')
+    //show input tab, hide results
+    document.querySelector("#scan-input").classList.toggle("hidden", false);
+    document.querySelector("#scan-results").classList.toggle("hidden", true);
+    //make input the active nav element
+    document.querySelector("#scan-input-nav").classList.toggle("active", true);
+    document.querySelector("#scan-output-nav").classList.toggle("active", false);
+  }
+
+  $scope.navShowOutput = function (filterIssue) {
+    console.log('showoutput')
+    //show input tab, hide results
+    document.querySelector("#scan-input").classList.toggle("hidden", true);
+    document.querySelector("#scan-results").classList.toggle("hidden", false);
+    //make input the active nav element
+    document.querySelector("#scan-input-nav").classList.toggle("active", false);
+    document.querySelector("#scan-output-nav").classList.toggle("active", true);
+    $scope.filterResults(filterIssue);
   }
 
   $scope.handleFileUpload = function handleFileUpload(fileList) {

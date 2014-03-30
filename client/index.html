@@ -46,18 +46,17 @@
   <div ng-controller="ScanCtrl" id="scan-wrapper" class="ng-scope panel panel-default">
     <!-- sidebar -->
     <div class="col-md-2 sidebar">
-      <ul ng-click="navBarClick($event)" class="nav nav-sidebar">
-        <li id="scan-input-nav" class="active"><a>Input</a></li>
+      <ul class="nav nav-sidebar">
+        <li id="scan-input-nav" ng-click="navShowInput()" class="active"><a>Input</a></li>
         <ul>
           <li>
             Files: {{inputFiles.length}}
           </li>
         </ul>
-        <li id="scan-output-nav"><a>Ouput</a></li>
+        <li id="scan-output-nav" ng-click="navShowOutput()" ><a>Output ({{results.length}})</a></li>
         <ul>
-          <li><a ng-click="filterResults()">All issues ({{results.length}})</a></li>
           <li ng-repeat="issue in issueList">
-            <a ng-click="filterResults(issue)">{{issue}}</a>
+            <a ng-click="navShowOutput(issue)">{{issue}}</a>
           </li>
         </ul>
       </ul>
