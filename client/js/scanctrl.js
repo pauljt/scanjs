@@ -45,9 +45,15 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.filteredResults=$scope.results;
     }
     else{
-      $scope.filteredResults=$scope.results.filter(function(result){
-        return result.rule.name==issue;
-      })
+      if(typeof issue.name != "undefined") {
+	$scope.filteredResults=$scope.results.filter(function(result){
+	  return result.filename === issue.name;
+	});
+      }else {
+	$scope.filteredResults=$scope.results.filter(function(result){
+	  return result.rule.name == issue;
+	});
+      }
     }
   }
 
@@ -135,10 +141,12 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.codeMirror.setValue($scope.inputFiles[index].asText());
     }
     codeMirror_index = index;
+    document.querySelector("#filename-badge").textContent = $scope.inputFiles[index].name;
   }
 
   $scope.showResult = function (filename,line, col) {
     document.querySelector("#code-mirror-wrapper").classList.toggle("hidden",false);
+    document.querySelector("#filename-badge").textContent = filename;
     var file = $scope.inputFiles.find(function(f){return f.name === filename});
     $scope.codeMirror.setValue(file.asText());
     $scope.codeMirror.setCursor(line - 1, col || 0);

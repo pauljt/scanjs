@@ -22,12 +22,12 @@
     <script src='../common/rules.js'></script>
     <script src='../common/scan.js'></script>
     <!-- Client specific files -->
-    <!-- <script src='js/app.js'></script>-->
     <script src='js/main.js'></script>
     <script src='js/scanctrl.js'></script>
     <script src='js/rules.js'></script>
     <script src='js/experimentctrl.js'></script>
     <script src='js/scanservice.js'></script>
+    <script src='js/prettify.js'></script>
   </head>
 
   <body>
@@ -48,12 +48,25 @@
     <div class="col-md-2 sidebar">
       <ul class="nav nav-sidebar">
         <li id="scan-input-nav" ng-click="navShowInput()" class="active"><a>Input<span class="badge pull-right">{{inputFiles.length}}</span></a></li>
-        <li id="scan-output-nav" ng-click="navShowOutput()" ><a>Output <span class="badge pull-right">{{results.length}}</span></a></li>
-        <ul>
-          <li ng-repeat="issue in issueList">
-            <a ng-click="navShowOutput(issue)">{{issue}}</a>
-          </li>
-        </ul>
+	<li id="scan-output-nav">
+	  <a ng-click="navShowOutput()" >Output <span class="badge pull-right">{{results.length}}</span></a>
+	  <ul>
+	    <p>Rules</p>
+	    <ul>
+	      <li ng-repeat="issue in issueList">
+		<a ng-click="navShowOutput(issue)">{{issue}}</a>
+	      </li>
+	    </ul>
+	  </ul>
+	  <ul>
+	    <p>Files</p>
+	    <ul>
+	      <li ng-repeat="file in inputFiles">
+		<a ng-click="navShowOutput(file)">{{file.name}}</a>
+	      </li>
+	    </ul>
+	  </ul>
+	</li>
       </ul>
     </div> <!-- sidebar -->
 
@@ -93,7 +106,7 @@
     </div>
 
     <div id="scan-results" class="hidden">
-      <h4>Results</h4>
+      <h4>Results <span class="badge pull-right">{{filteredResults.length}}</span></h4>
       <div id="results-wrapper" ng-show="results<1">
         Scan results will be loaded here.
       </div>
@@ -120,9 +133,8 @@
 
     </div>
     <div id="code-mirror-wrapper" class="col-md-6">
-      <h4>File Viewer</h4>
-      <div class="codeMirrorDiv " id="codeMirrorDiv">
-      </div>
+      <h4>File Viewer <span id="filename-badge" class="badge pull-right"></span></h4>
+      <div class="codeMirrorDiv" id="codeMirrorDiv"></div>
     </div>
 
   </div>
@@ -131,6 +143,7 @@
   <div id="rules-wrapper" class="panel container-fluid hidden">
     <div id="rules-div" class="col-md-12">
       <div ng-controller='RuleListCtrl'>
+	<span class="badge pull-right">{{rules.length}}</span>
         <div class="jumbotron">
           <div class="table-responsive">
             <table class="table table-striped">

@@ -2,6 +2,7 @@
 @import url("dashboard.css");
 @import url("codemirror.css");
 @import url("codemirror-mdn.css");
+@import url("prettify.css");
 
 html, body {
   height: 100%;
