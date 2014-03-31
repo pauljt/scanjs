@@ -50,7 +50,7 @@
         <li id="scan-input-nav" ng-click="navShowInput()" class="active"><a>Input<span class="badge pull-right">{{inputFiles.length}}</span></a></li>
 	<li id="scan-output-nav">
 	  <a ng-click="navShowOutput()" >Output <span class="badge pull-right">{{results.length}}</span></a>
-	  <ul>
+	  <ul id="scan-output-rules" class="hidden">
 	    <p>Rules</p>
 	    <ul>
 	      <li ng-repeat="issue in issueList">
@@ -58,7 +58,7 @@
 	      </li>
 	    </ul>
 	  </ul>
-	  <ul>
+	  <ul id="scan-output-files" class="hidden">
 	    <p>Files</p>
 	    <ul>
 	      <li ng-repeat="file in inputFiles">

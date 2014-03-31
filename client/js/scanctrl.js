@@ -26,6 +26,8 @@ function ScanCtrl($scope, ScanSvc) {
     //update UI
     document.querySelector("#scan-input").classList.toggle("hidden",true);
     document.querySelector("#scan-results").classList.toggle("hidden",false);
+    document.querySelector("#scan-output-rules").classList.toggle("hidden", false);
+    document.querySelector("#scan-output-files").classList.toggle("hidden", false);
 
     //update navbar
     document.querySelector("#scan-input-nav").classList.toggle("active",false);
@@ -62,6 +64,8 @@ function ScanCtrl($scope, ScanSvc) {
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", false);
     document.querySelector("#scan-results").classList.toggle("hidden", true);
+    document.querySelector("#scan-output-rules").classList.toggle("hidden", true);
+    document.querySelector("#scan-output-files").classList.toggle("hidden", true);
     //make input the active nav element
     document.querySelector("#scan-input-nav").classList.toggle("active", true);
     document.querySelector("#scan-output-nav").classList.toggle("active", false);
@@ -72,6 +76,8 @@ function ScanCtrl($scope, ScanSvc) {
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", true);
     document.querySelector("#scan-results").classList.toggle("hidden", false);
+    document.querySelector("#scan-output-rules").classList.toggle("hidden", false);
+    document.querySelector("#scan-output-files").classList.toggle("hidden", false);
     //make input the active nav element
     document.querySelector("#scan-input-nav").classList.toggle("active", false);
     document.querySelector("#scan-output-nav").classList.toggle("active", true);
