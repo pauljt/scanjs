@@ -1,23 +1,56 @@
 @import url("bootstrap.css");
+@import url("dashboard.css");
 @import url("codemirror.css");
 @import url("codemirror-mdn.css");
-#rulediv {
-    background-color: #FFFFFF;
-    height: 445px;
-    margin: 20px auto;
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+pre.prettyprint{
+    width: auto;
+    max-width: 600px;
     overflow: auto;
-    padding: 20px 0 20px 20px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    font-size: x-small;
 }
-textarea {
-    width: 600px;
-    min-width: 200px;
-    max-height: 200px;
-    height: 400px;
+
+.navbar {
+  background: #4D4E53;
 }
-.rule-list {
-    height: 700px;
-    overflow: auto;
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+  background-color: #0095DD;
 }
+
+a {
+  cursor:pointer;
+}
+
+.sidebar {
+  background-color: #EAEFF2;
+}
+
+.jumbotron {
+  background: #D4DDE4;
+}
+
+.table {
+  border: 1px solid #EAEFF2;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+  background-color: #EAEFF2;
+}
+
+.sidebar-inputfiles{
+  font-size: x-small;
+}
+
+.CodeMirror {
+  border: 1px solid #EAEFF2;
+  height:500px;
+}
+
