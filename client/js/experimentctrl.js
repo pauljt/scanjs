@@ -6,7 +6,6 @@ function ExperimentCtrl($scope) {
     console.log('scanning')
     code = $scope.codeMirror.getValue();
     $scope.results=ScanJS.scan(code, ScanJS.rules, "ManualInput");
-
   }
 
   $scope.showResult = function (filename,line, col) {
@@ -16,5 +15,5 @@ function ExperimentCtrl($scope) {
     $scope.codeMirror.setCursor(line - 1, col || 0);
     $scope.codeMirror.focus();
   };
+  
 }
-

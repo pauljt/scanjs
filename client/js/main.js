@@ -1,15 +1,14 @@
 var scanjsModule = angular.module('scanjs', ['ui.bootstrap']);
-var panels;
 
 angular.element(document).ready(function() {
   //makes navbar shows/hides elements with the 'panel' class
-  panels=document.getElementsByClassName("panel");
-  document.querySelector("#header").addEventListener("click", function(evt){
+  var panels=document.getElementsByClassName("panel");
+  document.querySelector("#header-links").addEventListener("click", function(evt){
     var active=evt.target.id.split('-')[0]+"-wrapper";
     Array.prototype.forEach.call(panels,function(panel){
       panel.classList.toggle("hidden",panel.id!=active);
     });
-    if(active=='experiment-wrapper'){
+    if(active === 'experiment-wrapper'){
       //fixes bug where codemirror is blank until you click it
       var experimentCtrlScope = angular.element(document.getElementById("experiment-wrapper")).scope();
       experimentCtrlScope.codeMirror.refresh();
@@ -44,7 +43,5 @@ angular.element(document).ready(function() {
     tabsize: 2,
     styleActiveLine: true
   });
-
-
 
 });

@@ -77,7 +77,7 @@ function ScanCtrl($scope, ScanSvc) {
     //document.querySelector("#scan-intro").classList.toggle("hidden",true);
     document.querySelector("#scan-files-selected").classList.toggle("hidden",false);
 
-    if (fileList.length == 1 && /\.zip$/.test(fileList[0].name)) {
+    if (fileList.length === 1 && /\.zip$/.test(fileList[0].name)) {
       //packaged app case
       var reader = new FileReader();
       $scope.inputFilename=fileList[0].name;
@@ -139,7 +139,7 @@ function ScanCtrl($scope, ScanSvc) {
 
   $scope.showResult = function (filename,line, col) {
     document.querySelector("#code-mirror-wrapper").classList.toggle("hidden",false);
-    var file = $scope.inputFiles.find(function(f){return f.name==filename});
+    var file = $scope.inputFiles.find(function(f){return f.name === filename});
     $scope.codeMirror.setValue(file.asText());
     $scope.codeMirror.setCursor(line - 1, col || 0);
     $scope.codeMirror.focus();
@@ -223,14 +223,14 @@ function ScanCtrl($scope, ScanSvc) {
   };
   $scope.getSnippet = function (filename,line,numLines) {
     var file = $scope.inputFiles.find(function (f) {
-      return f.name == filename
+      return f.name === filename
     });
     var content=file.asText();
     return content.split('\n').splice(line,line+numLines).join('\n');
   }
 
   $scope.$on('NewResults', function (event, result) {
-    if (Object.keys(result).length == 0) {
+    if (Object.keys(result).length === 0) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
     }

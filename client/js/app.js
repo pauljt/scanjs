@@ -3,8 +3,6 @@ $( document ).ready(function() {
     $('.active').removeClass("active");
   }
   
-
-
   function scanHeader() {
     hideAll();
     clearActive();
@@ -37,7 +35,5 @@ $( document ).ready(function() {
     $("#scan-landing").hide();
     $("#scan-manual").show();
   }
-
-
 
 });
