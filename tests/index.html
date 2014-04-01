@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval'">
   <title>Scan.js Tests</title>
   <!-- Third-party libs -->
   <script src='/client/js/lib/jquery-2.1.0.min.js'></script>
@@ -15,12 +16,12 @@
   <link href='/tests/css/mocha.css' rel='stylesheet' media='screen'>
   <script src='/tests/js/mocha.js'></script>
   <script src='/tests/js/chai.js'></script>
+  <script src='/tests/js/main.js'></script>
 </head>
 <body>
   <div id="mocha"><p><h1><b>Scan.js Mocha Unit Tests</b></h1></p></div>
   <div id="messages"></div>
   <div id="fixtures"></div>
-  <script> mocha.setup('bdd'); </script>
 
   <!-- Test cases -->
   <script src='/tests/cases/innerhtml.js'></script>
@@ -53,8 +54,5 @@
 
   <!-- mozilla specific tests -->
   <script src='/tests/cases/moz/moz.js'></script>
-
-  <!-- After document is ready, run the tests -->
-  <script> $(document).ready(function() { mocha.run(); }); </script>
 </body>
 </html>
