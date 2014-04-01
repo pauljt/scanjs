@@ -50,22 +50,22 @@
         <li id="scan-input-nav" ng-click="navShowInput()" class="active"><a>Input<span class="badge pull-right">{{inputFiles.length}}</span></a></li>
 	<li id="scan-output-nav">
 	  <a ng-click="navShowOutput()" >Output <span class="badge pull-right">{{results.length}}</span></a>
-	  <ul id="scan-output-rules" class="hidden">
-	    <p>Rules</p>
+	  <div id="scan-output-rules" class="hidden">
+	    <div class="bg-info">Rules</div>
 	    <ul>
 	      <li ng-repeat="issue in issueList">
 		<a ng-click="navShowOutput(issue)">{{issue}}</a>
 	      </li>
 	    </ul>
-	  </ul>
-	  <ul id="scan-output-files" class="hidden">
-	    <p>Files</p>
+	  </div>
+	  <div id="scan-output-files" class="hidden">
+	    <p class="bg-info">Files</p>
 	    <ul>
 	      <li ng-repeat="file in inputFiles">
-		<a ng-click="navShowOutput(file)">{{file.name}}</a>
+		<a title="{{file.name}}" ng-click="navShowOutput(file)">{{file.name}}</a>
 	      </li>
 	    </ul>
-	  </ul>
+	  </div>
 	</li>
       </ul>
     </div> <!-- sidebar -->
@@ -143,7 +143,7 @@
   <div id="rules-wrapper" class="panel container-fluid hidden">
     <div id="rules-div" class="col-md-12">
       <div ng-controller='RuleListCtrl'>
-	<span class="badge pull-right">{{rules.length}}</span>
+	<span class="badge pull-right">Number of Rules: {{rules.length}}</span>
         <div class="jumbotron">
           <div class="table-responsive">
             <table class="table table-striped">
