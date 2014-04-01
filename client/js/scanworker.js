@@ -7,18 +7,18 @@ if (typeof console === "undefined") {
   }
 }
 
-importScripts('lib/tern/node_modules/acorn/acorn.js',
-              'lib/tern/node_modules/acorn/util/walk.js',
-              'lib/tern/node_modules/acorn/acorn_loose.js',
+importScripts('lib/acorn.js',
+              'lib/walk.js',
+              'lib/acorn_loose.js',
               '../../common/scan.js',
               '../../common/rules.js');
 
 onmessage = function (evt) {
-  if (evt.data.call == 'scan') {
+  if (evt.data.call === 'scan') {
     var args = evt.data.arguments;
     var source = args[0];
     var rules;
-    if (args[1].length == 0) {
+    if (args[1].length === 0) {
       // empty string or empty array -> default to standard rules.
       rules = ScanJS.rules;
     } else {
