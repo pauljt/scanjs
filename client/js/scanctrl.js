@@ -26,6 +26,8 @@ function ScanCtrl($scope, ScanSvc) {
     //update UI
     document.querySelector("#scan-input").classList.toggle("hidden",true);
     document.querySelector("#scan-results").classList.toggle("hidden",false);
+    document.querySelector("#scan-output-rules").classList.toggle("hidden", false);
+    document.querySelector("#scan-output-files").classList.toggle("hidden", false);
 
     //update navbar
     document.querySelector("#scan-input-nav").classList.toggle("active",false);
@@ -45,9 +47,15 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.filteredResults=$scope.results;
     }
     else{
-      $scope.filteredResults=$scope.results.filter(function(result){
-        return result.rule.name==issue;
-      })
+      if(typeof issue.name != "undefined") {
+	$scope.filteredResults=$scope.results.filter(function(result){
+	  return result.filename === issue.name;
+	});
+      }else {
+	$scope.filteredResults=$scope.results.filter(function(result){
+	  return result.rule.name == issue;
+	});
+      }
     }
   }
 
@@ -56,6 +64,8 @@ function ScanCtrl($scope, ScanSvc) {
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", false);
     document.querySelector("#scan-results").classList.toggle("hidden", true);
+    document.querySelector("#scan-output-rules").classList.toggle("hidden", true);
+    document.querySelector("#scan-output-files").classList.toggle("hidden", true);
     //make input the active nav element
     document.querySelector("#scan-input-nav").classList.toggle("active", true);
     document.querySelector("#scan-output-nav").classList.toggle("active", false);
@@ -66,6 +76,8 @@ function ScanCtrl($scope, ScanSvc) {
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", true);
     document.querySelector("#scan-results").classList.toggle("hidden", false);
+    document.querySelector("#scan-output-rules").classList.toggle("hidden", false);
+    document.querySelector("#scan-output-files").classList.toggle("hidden", false);
     //make input the active nav element
     document.querySelector("#scan-input-nav").classList.toggle("active", false);
     document.querySelector("#scan-output-nav").classList.toggle("active", true);
@@ -135,10 +147,12 @@ function ScanCtrl($scope, ScanSvc) {
       $scope.codeMirror.setValue($scope.inputFiles[index].asText());
     }
     codeMirror_index = index;
+    document.querySelector("#filename-badge").textContent = $scope.inputFiles[index].name;
   }
 
   $scope.showResult = function (filename,line, col) {
     document.querySelector("#code-mirror-wrapper").classList.toggle("hidden",false);
+    document.querySelector("#filename-badge").textContent = filename;
     var file = $scope.inputFiles.find(function(f){return f.name === filename});
     $scope.codeMirror.setValue(file.asText());
     $scope.codeMirror.setCursor(line - 1, col || 0);
