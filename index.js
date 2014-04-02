@@ -26,7 +26,11 @@ var dive = function(dir, action) {
   list = fs.readdirSync(dir);
   list.forEach(function(file) {
     var fullpath = dir + '/' + file;
-    var stat = fs.statSync(fullpath);
+    try {
+      var stat = fs.statSync(fullpath);
+    } catch(e) {
+      console.log("SKIPPING FILE: Could not stat " + fullpath);
+    }
     if(stat && stat.isDirectory()) {
       dive(fullpath, action);
     } else {
