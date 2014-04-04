@@ -7,10 +7,6 @@ var path = require('path');
 global.acorn = require(__dirname + '/client/js/lib/acorn.js');
 global.tern = require('tern');
 global.defs = {};
-// XXX ugly ----v
-defs.browser = JSON.parse(fs.readFileSync('client/js/lib/defs/browser.json', 'utf8' ));
-defs.ecma5 = JSON.parse(fs.readFileSync('client/js/lib/defs/ecma5.json', 'utf8' ));
-defs.jquery = JSON.parse(fs.readFileSync('client/js/lib/defs/jquery.json', 'utf8' ));
 
 var ScanJS = require(__dirname + '/common/scan');
 var signatures = require(__dirname + '/common/rules');
