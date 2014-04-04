@@ -50,7 +50,9 @@
       <ul class="nav nav-sidebar">
         <li id="scan-input-nav" ng-click="navShowInput()" class="active"><a>Input<span class="badge pull-right">{{inputFiles.length}}</span></a></li>
 	<li id="scan-output-nav">
-	  <a ng-click="navShowOutput()" >Output <span class="badge pull-right">{{results.length}}</span></a>
+	  <a ng-click="navShowOutput()">Output
+          <img ng-show="throb" src="img/throbber.gif">
+          <span class="badge pull-right">{{results.length}}</span></a>
 	  <div id="scan-output-rules" class="hidden">
 	    <div class="bg-info">Rules</div>
 	    <ul>

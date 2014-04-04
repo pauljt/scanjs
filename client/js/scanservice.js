@@ -19,12 +19,21 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
   ScanService.scanWorker = new Worker("js/scanworker.js");
   ScanService.scanWorker.addEventListener("message", function (evt) {
     if (('findings' in evt.data) && ('filename' in evt.data)) {
+      if (evt.data.findings.length > 0) {
+        if (evt.data.findings[0].type == 'error') {
+          $rootScope.$broadcast('ScanError', evt.data.findings[0])
+          return;
+        }
+      }
       ScanService.addResults(evt.data);
     }
     else if ('error' in evt.data) {
+      // This is for errors in the worker, not in the scanning.
+      // Exceptions (like SyntaxErrors) when scanning files
+      // are in the findings.
       var exception = evt.data.error;
       if (e instanceof SyntaxError) {
-        $rootsScope.$broadcast('ScanError', {name: exception.name, loc: exception.loc, message: exception.message })
+        $rootScope.$broadcast('ScanError', {name: exception.name, loc: exception.loc, message: exception.message })
       } else {
         throw e; // keep throwing unexpected things.
       }
