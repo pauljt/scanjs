@@ -5,8 +5,6 @@
 var fs = require('fs');
 var path = require('path');
 global.acorn = require(__dirname + '/client/js/lib/acorn.js');
-global.tern = require('tern');
-global.defs = {};
 
 var ScanJS = require(__dirname + '/common/scan');
 var signatures = require(__dirname + '/common/rules');
