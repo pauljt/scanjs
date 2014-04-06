@@ -1,3 +1,57 @@
-[{"name":".foo","type":"member","target":"foo","desc":"A Member Expression with the name of 'foo'"},
-  {"name":"foo=","type":"assignment","target":"foo","desc":"An assignment to an identifier named 'foo'"},
-  {"name":"foo()","type":"call","target":"foo","desc":"Calling a function with the name 'foo'"}]
+[
+  {
+    "name": ".foo",
+    "type": "member",
+    "node": "MemberExpression",
+    "param": "{'property_name':'foo'}",
+    "testmatch": "bar.foo",
+    "testmiss": "foo.bar",
+    "desc": "A Member Expression with the name of 'foo'",
+    "threat": "example",
+    "subthreat": "example"
+  },
+  {
+    "name": "foo=",
+    "type": "assignment",
+    "node": "AssignmentExpression",
+    "param": "{'left_name':'foo'}",
+    "testmatch": "foo=bar",
+    "testmiss": "bar=foo",
+    "desc": "An assignment to an identifier named 'foo'",
+    "threat": "example",
+    "subthreat": "example"
+  },
+  {
+    "name": "foo()",
+    "type": "call",
+    "node": "CallExpression",
+    "param": "{'callee_name':'foo'}",
+    "testmatch": "foo()",
+    "testmiss": "bar()",
+    "desc": "Calling a function with the name 'foo'",
+    "threat": "example",
+    "subthreat": "example"
+  },
+  {
+    "name": "foo.bar",
+    "type": "objmember",
+    "node": "MemberExpression",
+    "param": "{'object_name':'foo','property_name':'bar'}",
+    "testmatch": "foo.bar",
+    "testmiss": "foo.baz;baz.bar;",
+    "desc": "A member expression with object of 'foo' and member named 'bar'",
+    "threat": "example",
+    "subthreat": "example"
+  },
+  {
+    "name": "foo.bar()",
+    "type": "objmembercall",
+    "node": "CallExpression",
+    "param": "{'callee_object_name':'foo','callee_property_name':'bar'}",
+    "testmatch": "foo.bar()",
+    "testmiss": "foo.bar;baz.bar();",
+    "desc": "A member expression with calls the member named 'bar' from object foo",
+    "threat": "example",
+    "subthreat": "example"
+  }
+]
