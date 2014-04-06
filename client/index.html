@@ -17,11 +17,13 @@
     <script src='js/lib/localforage.min.js'></script>
     <script src='js/lib/acorn.js'></script>
     <script src='js/lib/utils.js'></script>
+    <script src='js/lib/walk.js'></script>
 
 
     <!-- CommonJS modules -->
     <script src='../common/rules.js'></script>
     <script src='../common/scan.js'></script>
+    <script src='../common/AcornWalker.js'></script>
     <!-- Client specific files -->
     <script src='js/main.js'></script>
     <script src='js/scanctrl.js'></script>
@@ -175,13 +177,16 @@
   <!-- rules -->
 
   <div id="experiment-wrapper" class="panel hidden" ng-controller="ExperimentCtrl">
-    <div class="col-md-6">
+    <div class="col-md-5">
       <h4>Edit code to test  scan rules.</h4>
       <div class="codeMirror" id="experiment-mirror" ng-keyup="runManualScan()">
 
       </div>
     </div>
-    <div id="manual-results-wrapper" class="col-md-6" >
+    <div class=""col="col-md-3">
+
+    </div>
+    <div id="manual-results-wrapper" class="col-md-4" >
       <h4>
         Results
       </h4>

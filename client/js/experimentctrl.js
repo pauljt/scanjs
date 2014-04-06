@@ -3,9 +3,9 @@ function ExperimentCtrl($scope) {
   $scope.results=[];
 
   $scope.runManualScan = function (source, filename) {
-    console.log('scanning')
     code = $scope.codeMirror.getValue();
-    $scope.results=ScanJS.scan(code, ScanJS.rules, "ManualInput");
+    aw_scan(code);
+    //$scope.results=ScanJS.scan(code, ScanJS.rules, "ManualInput");
   }
 
   $scope.showResult = function (filename,line, col) {
