@@ -39,7 +39,7 @@ angular.element(document).ready(function() {
     mode: 'javascript',
     lineNumbers: true,
     theme: 'mdn-like',
-    value: "a.innerHTML = somethingFromUser",
+    value: "bar.foo\nfoo=something\nfoo(something)",
     tabsize: 2,
     styleActiveLine: true
   });

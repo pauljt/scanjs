@@ -1,0 +1,3 @@
+[{"name":".foo","type":"member","target":"foo","desc":"A Member Expression with the name of 'foo'"},
+  {"name":"foo=","type":"assignment","target":"foo","desc":"An assignment to an identifier named 'foo'"},
+  {"name":"foo()","type":"call","target":"foo","desc":"Calling a function with the name 'foo'"}]

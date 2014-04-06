@@ -1,10 +1,16 @@
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") return mod(exports); // CommonJS
+  if (typeof define == "function" && define.amd) return define(["exports"], mod); // AMD
+  mod(this.AcornScanJS || (this.AcornScanJS = {})); // Plain browser env
+})(function(exports) {
+
 var ruleData = [
   {"name": ".foo", "type": "member", "target": "foo"},
   {"name": "foo=", "type": "assignment", "target": "foo"},
   {"name": "foo()", "type": "call", "target": "foo"}
 ];
 var rules;
-var found = function (node) {
+var aw_found = function (node) {
   console.log("Found node:", node)
 }
 
@@ -13,7 +19,7 @@ var templateRules = {
     nodeType: "MemberExpression",
     test: function (rule, node) {
       if (node.property.name == rule.target) {
-        found(node);
+        aw_found(rule,node);
       }
     }
   },
@@ -21,7 +27,7 @@ var templateRules = {
     nodeType: "CallExpression",
     test: function (rule, node) {
       if (node.callee.name == rule.target) {
-        found(node);
+        aw_found(rule,node);
       }
     }
   },
@@ -29,16 +35,13 @@ var templateRules = {
     nodeType: "AssignmentExpression",
     test: function (rule, node) {
       if (node.left.name == rule.target) {
-        found(node);
+        aw_found(rule,node);
       }
     }
   }
 }
 
-//todo move this to an init function, and only enable scanning once ready
-aw_generateRules(ruleData);
-
-function aw_loadRules(rulesFile) {
+function aw_loadRulesFile(rulesFile,callback) {
 
   var request = new XMLHttpRequest();
 
@@ -47,9 +50,10 @@ function aw_loadRules(rulesFile) {
   request.onload = function () {
     if (request.status >= 200 && request.status < 400) {
       rulesData = JSON.parse(request.responseText);
-      rules = createRules(rulesData);
+      aw_loadRules(rulesData);
+      callback(rules);
     } else {
-      console.log('Error loading ' + rulesFile)
+      console.log('Error loading ' + rules)
     }
   };
 
@@ -59,7 +63,7 @@ function aw_loadRules(rulesFile) {
   request.send();
 }
 
-function aw_generateRules(rulesData) {
+function aw_loadRules(rulesData) {
   rules = {};
 
   //each node type may have multiple tests, so first create arrays of test funcs
@@ -99,3 +103,14 @@ function aw_scan(code) {
   console.log('scanning with ', rules)
   acorn.walk.simple(ast, rules);
 }
+  
+  function aw_setCallback(found_callback){
+    aw_found=found_callback;
+  }
+
+  exports.scan = aw_scan;
+  exports.loadRulesFile = aw_loadRulesFile;
+  exports.loadRules = aw_loadRules;
+  exports.setResultCallback = aw_setCallback;
+
+});
