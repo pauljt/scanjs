@@ -156,10 +156,17 @@
     if (typeof filename != 'undefined') {
       results.filename = filename;
     }
+    var ast;
+    try{
+      ast = acorn.parse(code, {
+        locations: true
+      });
+      console.log(ast);
+    }catch(e){
+      console.log("Script could not be parsed by Acorn.")
+      return;
+    }
 
-    var ast = acorn.parse(code, {
-      locations: true
-    });
 
     if (!rules) {
       throw new Error("Tried to run scan with no rules loaded.")

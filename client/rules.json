@@ -240,6 +240,24 @@
     "testhit": "parseFromString(bar+'bar')",
     "testmiss": "parseFromString",
     "desc": "Calling a function with the name 'foo'",
-    "threat": "example"
+    "threat": "Interesting Function"
+  },
+  {
+    "name": "addEventListener()",
+    "type": "call",
+    "parameters": "{'callee_name':'addEventListener'}",
+    "testhit": "addEventListener(bar+'bar')",
+    "testmiss": "addEventListener",
+    "desc": "\n",
+    "threat": "Input Sink"
+  },
+  {
+    "name": "onmessage=",
+    "type": "assignment",
+    "parameters": "{'left_name':'onmessage'}",
+    "testhit": "onmessage=bar",
+    "testmiss": "onmessage",
+    "desc": "Check to make sure message handler validates to protect against malicious cross-origin message.",
+    "threat": "Input Validation"
   }
 ]
