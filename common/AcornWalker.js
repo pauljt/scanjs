@@ -10,18 +10,19 @@
     {"name": "foo()", "type": "call", "target": "foo"}
   ];
   var rules;
-  var filename;
   var results = [];
   var aw_found = function (rule, node) {
+
     results.push({
       rule: rule,
-      filename: filename,
+      filename: results.filename,
       line: node.loc.start.line,
       col: node.loc.start.col,
       node: node
       //this adds a snippet based on lines. need to prettify first if going to use this.
       //snippet:content.split('\n').splice(node.loc.start.line-1,node.loc.start.line+1).join('\n')
     });
+
     aw_found_callback(rule, node);
   }
   var aw_found_callback = function () {
@@ -86,13 +87,14 @@
 
     var request = new XMLHttpRequest();
 
-    request.open('GET', rulesFile, true);
+    request.open('GET', rulesFile, false);
 
     request.onload = function () {
       if (request.status >= 200 && request.status < 400) {
         rulesData = JSON.parse(request.responseText);
         aw_loadRules(rulesData);
-        callback(rules);
+        if (typeof callback == "function")
+          callback(rules);
       } else {
         console.log('Error loading ' + rules)
       }
@@ -108,17 +110,15 @@
     var ruleTests = {};
 
     //each node type may have multiple tests, so first create arrays of test funcs
-    //TODO test with multiple template tests which share the same expresion type
+    //TODO test with multiple template tests which share the same expression type
     for (i in rulesData) {
-      var rule=rulesData[i];
-
-
+      var rule = rulesData[i];
 
       //little hack that makes importing rules from spreadsheet easier
       //maybe remove once we have a proper rule manager/editor...
-      if(!rule.param){
+      if (!rule.param) {
 
-        var json=rule.parameters.replace(/'/g, '"');
+        var json = rule.parameters.replace(/'/g, '"');
         console.log(json);
         rule.param = JSON.parse(json);
       }
@@ -149,26 +149,33 @@
     }
   }
 
-  function aw_scan(code, signatures, filename) {
+  function aw_scan(code, filename) {
     results = [];
-    if (!rules) {
-      console.log("Tried to run scan with no rules loaded.")
-      return;
+    results.filename = "Manual input"
+
+    if (typeof filename != 'undefined') {
+      results.filename = filename;
     }
 
     var ast = acorn.parse(code, {
       locations: true
     });
 
+    if (!rules) {
+      throw new Error("Tried to run scan with no rules loaded.")
+      return;
+    }
     acorn.walk.simple(ast, rules);
+
+
     return results;
   }
 
   function aw_setCallback(found_callback) {
     aw_found_callback = found_callback;
   }
-  exports.rules=rules;
-  exports.filename=filename;
+
+  exports.rules = aw_scan;
   exports.scan = aw_scan;
   exports.loadRulesFile = aw_loadRulesFile;
   exports.loadRules = aw_loadRules;
