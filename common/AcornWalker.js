@@ -10,11 +10,12 @@
     {"name": "foo()", "type": "call", "target": "foo"}
   ];
   var rules;
+  var filename;
   var results = [];
   var aw_found = function (rule, node) {
     results.push({
       rule: rule,
-      filename: "manual input",
+      filename: filename,
       line: node.loc.start.line,
       col: node.loc.start.col,
       node: node
@@ -148,12 +149,13 @@
     }
   }
 
-  function aw_scan(code) {
+  function aw_scan(code, signatures, filename) {
     results = [];
     if (!rules) {
       console.log("Tried to run scan with no rules loaded.")
       return;
     }
+
     var ast = acorn.parse(code, {
       locations: true
     });
@@ -165,7 +167,8 @@
   function aw_setCallback(found_callback) {
     aw_found_callback = found_callback;
   }
-
+  exports.rules=rules;
+  exports.filename=filename;
   exports.scan = aw_scan;
   exports.loadRulesFile = aw_loadRulesFile;
   exports.loadRules = aw_loadRules;
