@@ -6,7 +6,7 @@ var fs = require('fs');
 var path = require('path');
 global.acorn = require(__dirname + '/client/js/lib/acorn.js');
 
-var ScanJS = require(__dirname + '/common/scan');
+var AcornScanJS = require(__dirname + '/common/scan');
 var signatures = require(__dirname + '/common/rules');
 
 var argv = require('optimist').usage('Usage: $node scan.js -t [path/to/app] -o [resultFile.json]').demand(['t']).argv;
@@ -62,7 +62,7 @@ if( typeof process != 'undefined' && process.argv[2]) {
       if(ext == '.js') {
         var content = fs.readFileSync(fullpath, 'utf8');
         try {
-          results[fullpath] = ScanJS.scan(content, signatures, fullpath);
+          results[fullpath] = AcornScanJS.scan(content, signatures, fullpath);
         } catch(e) {
           if (e instanceof SyntaxError) { // e.g., parse failure
             //XXX this might be easy to overlook when scanning a big folder
