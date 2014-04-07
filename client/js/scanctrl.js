@@ -12,10 +12,6 @@ function ScanCtrl($scope, ScanSvc) {
   var pending = 0;
   var selectedFile = 0;
   var codeMirror_index = 0;
-  $scope.loadPossible = false;
-  localforage.length(function(len) {
-    $scope.loadPossible = (len == 3);
-  });
 
   $scope.run = function (source, filename) {
     //empty last scan
@@ -183,6 +179,9 @@ function ScanCtrl($scope, ScanSvc) {
     var serializedResults = JSON.stringify($scope.results, includedAttributes);
     localforage.setItem('results', serializedResults, function() { });
 
+    var serializedErrors = JSON.stringify($scope.errors);
+    localforage.setItem('errors', serializedErrors, function() { });
+
     var serializedInputFiles = $scope.inputFiles.map( function(el) { return {data: el.asText(), name: el.name }; });
     localforage.setItem("inputFiles", JSON.stringify(serializedInputFiles), function(r) { });
 
@@ -195,15 +194,19 @@ function ScanCtrl($scope, ScanSvc) {
   };
 
   //TODO loadstate isn't called anymore, need to make it work with new workflow
-  $scope.loadState = function() {
-    // restore results as is
+  //TODO -> call loadState() around in main.js, line 36 (using the scanCtrlScope) and expose "reset" button in the UI.
+  $scope.restoreState = function() {
+    var apply = false;
     localforage.getItem('results', function (results_storage) {
-      if(!results_storage){
-        alert('No previous scan found.')
-      }
       $scope.results = JSON.parse(results_storage);
-      $scope.$apply();
+      apply = true;
       });
+    localforage.getItem('errors', function (errors_storage) {
+      if (errors_storage) {
+        $scope.errors = JSON.parse(errors_storage);
+        apply = true;
+      }
+    });
     // restore files, by creating JSZip things :)
     localforage.getItem("inputFiles", function(inputFiles_storage) {
       // mimic behavior from handleFileUpload
@@ -223,8 +226,9 @@ function ScanCtrl($scope, ScanSvc) {
           document.getElementById("doScan_" + i).checked = checkboxes[i];
         }
       });
-      $scope.$apply();
+      apply = true;
     });
+    if (apply) { $scope.$apply(); }
   };
 
   $scope.selectAll = function () {
