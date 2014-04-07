@@ -3,6 +3,7 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.codeMirrorManual = undefined;
   $scope.inputFiles = [];
   $scope.results=[];
+  $scope.errors=[];
   $scope.filteredResults=[];
   $scope.inputFilename="";
   $scope.issueList=[];
@@ -19,10 +20,10 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.run = function (source, filename) {
     //empty last scan
     $scope.results=[];
+    $scope.errors=[];
     $scope.inputFiles.forEach(function (scriptFile, i) {
       if (document.getElementById('doScan_'+i).checked) {
         pending++; $scope.throb = true;
-        console.log("pending++", pending); //XXX
         ScanSvc.newScan(scriptFile.name,scriptFile.asText());
       }
     });
@@ -248,10 +249,10 @@ function ScanCtrl($scope, ScanSvc) {
     });
     var content=file.asText();
     return content.split('\n').splice(line,line+numLines).join('\n');
-  }
+  };
 
   $scope.$on('NewResults', function (event, result) {
-    pending--; console.log("pending--", pending);
+    pending--;
     if (pending == 0) { $scope.throb = false; }
     if (Object.keys(result).length === 0) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
@@ -268,10 +269,11 @@ function ScanCtrl($scope, ScanSvc) {
   });
 
   $scope.$on('ScanError', function (event, exception) {
-    console.log("scanerror w00t");
-    pending--; console.log("pending--", pending);
+    pending--;
     if (pending == 0) { $scope.throb = false; }
-    $scope.error = exception.name + " at Line " + exception.loc.line + ", Column " + exception.loc.column + ": " + exception.message;
-    $scope.$apply(); //TODO ???
+    $scope.errors.push(exception);
+    $scope.updateIssueList();
+    $scope.$apply();
+    $scope.saveState();
   });
 }

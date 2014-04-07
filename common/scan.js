@@ -86,14 +86,12 @@
       }
       catch(e) {
         if (e instanceof SyntaxError) {
-          console.log("ScanJS: ERROR: Skipping " + filename +" (parsing failure)");
-          console.log('ScanException: '+e+ "\n");
           scanresults.push({
             //TODO decide whether to leave our or include this (increases results size)
             type: 'error',
             name: e.name,
             pos: e.pos,
-            loc: { column: e.column, line: e.line},
+            loc: { column: e.loc.column, line: e.loc.line},
             message: e.message,
             filename: filename
           });
@@ -102,7 +100,7 @@
           //TODO investigate this.
           return scanresults;
         } else {
-          console.log("uenxpected error!!");
+          console.log("uenxpected error!!", e);
           throw e;
         }
       }

@@ -33,7 +33,7 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
       // are in the findings.
       var exception = evt.data.error;
       if (e instanceof SyntaxError) {
-        $rootScope.$broadcast('ScanError', {name: exception.name, loc: exception.loc, message: exception.message })
+        $rootScope.$broadcast('ScanError', {filename: evt.data.filename, name: exception.name, loc: exception.loc, message: exception.message })
       } else {
         throw e; // keep throwing unexpected things.
       }
