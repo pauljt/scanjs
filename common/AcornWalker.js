@@ -116,7 +116,10 @@
       //little hack that makes importing rules from spreadsheet easier
       //maybe remove once we have a proper rule manager/editor...
       if(!rule.param){
-        rule.param = JSON.parse(rule.parameters.replace("'", "\"", "gi"));
+
+        var json=rule.parameters.replace(/'/g, '"');
+        console.log(json);
+        rule.param = JSON.parse(json);
       }
 
       //rule is based on one of our templates
