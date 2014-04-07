@@ -10,9 +10,22 @@
     {"name": "foo()", "type": "call", "target": "foo"}
   ];
   var rules;
-  var aw_found = function (node) {
-    console.log("Found node:", node)
+  var results = [];
+  var aw_found = function (rule, node) {
+    results.push({
+      rule: rule,
+      filename: "manual input",
+      line: node.loc.start.line,
+      col: node.loc.start.col,
+      node: node
+      //this adds a snippet based on lines. need to prettify first if going to use this.
+      //snippet:content.split('\n').splice(node.loc.start.line-1,node.loc.start.line+1).join('\n')
+    });
+    aw_found_callback(rule, node);
   }
+  var aw_found_callback = function () {
+  };
+
 
   var templateRules = {
     member: {
@@ -39,6 +52,14 @@
         }
       }
     },
+    memberassignment: {
+      nodeType: "AssignmentExpression",
+      test: function (rule, node) {
+        if (node.left.type == 'MemberExpression' && node.left.property.name == rule.param.left_property_name) {
+          aw_found(rule, node);
+        }
+      }
+    },
     objmember: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
@@ -51,7 +72,7 @@
     objmembercall: {
       nodeType: "CallExpression",
       test: function (rule, node) {
-        if (node.callee.type=='MemberExpression'&&
+        if (node.callee.type == 'MemberExpression' &&
           node.callee.property.name == rule.param.callee_property_name &&
           node.callee.object.name == rule.param.callee_object_name) {
           aw_found(rule, node);
@@ -83,39 +104,49 @@
   }
 
   function aw_loadRules(rulesData) {
-    rules = {};
+    var ruleTests = {};
 
     //each node type may have multiple tests, so first create arrays of test funcs
+    //TODO test with multiple template tests which share the same expresion type
     for (i in rulesData) {
-      var rule = rulesData[i];
+      var rule=rulesData[i];
+
+
+
       //little hack that makes importing rules from spreadsheet easier
       //maybe remove once we have a proper rule manager/editor...
-      rule.param = JSON.parse(rule.param.replace("'","\"","gi"));
+      if(!rule.param){
+        rule.param = JSON.parse(rule.parameters.replace("'", "\"", "gi"));
+      }
 
+      //rule is based on one of our templates
       if (templateRules[rule.type]) {
         var nodeType = templateRules[rule.type].nodeType;
-        if (!rules[nodeType]) {
-          rules[nodeType] = [];
+        if (!ruleTests[nodeType]) {
+          ruleTests[nodeType] = [];
+
         }
         var test = templateRules[rule.type].test.bind(undefined, rule);
-        console.log('adding test', test)
-        rules[nodeType].push(test);
+        ruleTests[nodeType].push(test);
+      }
+      else {
+        //todo add support for custom rules? Or maybe we can just add new things to the template?
       }
     }
 
-    //for each nodeType, convert the array of funcs to a single function, with the array as a bound parameter
-    for (nodeType in rules) {
-      console.log(nodeType)
+    rules = {};
+    //create a single function for each nodeType, which calls all the test functions
+    for (nodeType in ruleTests) {
       rules[nodeType] = function (tests, node) {
-        console.log("testing", node);
         tests.forEach(function (arg) {
           arg.call(this, node);
         });
-      }.bind(undefined, rules[nodeType]);
+      }.bind(undefined, ruleTests[nodeType]);
     }
   }
 
   function aw_scan(code) {
+    results = [];
     if (!rules) {
       console.log("Tried to run scan with no rules loaded.")
       return;
@@ -123,12 +154,13 @@
     var ast = acorn.parse(code, {
       locations: true
     });
-    console.log('scanning with ', rules)
+
     acorn.walk.simple(ast, rules);
+    return results;
   }
 
   function aw_setCallback(found_callback) {
-    aw_found = found_callback;
+    aw_found_callback = found_callback;
   }
 
   exports.scan = aw_scan;

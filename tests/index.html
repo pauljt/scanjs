@@ -5,25 +5,31 @@
   <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval'">
   <title>Scan.js Tests</title>
   <!-- Third-party libs -->
-  <script src='/client/js/lib/jquery-2.1.0.min.js'></script>
-  <script src='/client/js/lib/acorn.js'></script>
-  <script src='/client/js/lib/walk.js'></script>
-  <script src='/client/js/lib/acorn_loose.js'></script>
+  <script src='../client/js/lib/jquery-2.1.0.min.js'></script>
+  <script src='../client/js/lib/acorn.js'></script>
+  <script src='../client/js/lib/walk.js'></script>
+  <script src='../client/js/lib/acorn_loose.js'></script>
   <!-- CommonJS modules -->
-  <script src='/common/rules.js'></script>
-  <script src='/common/scan.js'></script>
+  <script src='../common/rules.js'></script>
+  <script src='../common/scan.js'></script>
+  <script src='../common/AcornWalker.js'></script>
   <!-- Testing framework files -->
-  <link href='/tests/css/mocha.css' rel='stylesheet' media='screen'>
-  <script src='/tests/js/mocha.js'></script>
-  <script src='/tests/js/chai.js'></script>
-  <script src='/tests/js/main.js'></script>
+  <link href='css/mocha.css' rel='stylesheet' media='screen'>
+  <script src='js/mocha.js'></script>
+  <script src='js/chai.js'></script>
+  <script src='js/main.js'></script>
 </head>
 <body>
   <div id="mocha"><p><h1><b>Scan.js Mocha Unit Tests</b></h1></p></div>
   <div id="messages"></div>
   <div id="fixtures"></div>
 
-  <!-- Test cases -->
+
+  <!-- rule test cases -->
+  <script src='/tests/cases/ruletests.js'></script>
+
+
+  <!-- Test cases
   <script src='/tests/cases/innerhtml.js'></script>
   <script src='/tests/cases/CustomEvent.js'></script>
   <script src='/tests/cases/action.js'></script>
@@ -51,8 +57,10 @@
   <script src='/tests/cases/src.js'></script>
   <script src='/tests/cases/getDeviceStorage.js'></script>
   <script src='/tests/cases/window.open.js'></script>
+  -->
 
-  <!-- mozilla specific tests -->
+  <!-- mozilla specific tests
   <script src='/tests/cases/moz/moz.js'></script>
+  -->
 </body>
 </html>

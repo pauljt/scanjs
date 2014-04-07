@@ -2,9 +2,8 @@
   {
     "name": ".foo",
     "type": "member",
-    "node": "MemberExpression",
-    "param": "{'property_name':'foo'}",
-    "testmatch": "bar.foo",
+    "parameters": "{'property_name':'foo'}",
+    "testhit": "bar.foo",
     "testmiss": "foo.bar",
     "desc": "A Member Expression with the name of 'foo'",
     "threat": "example",
@@ -13,20 +12,28 @@
   {
     "name": "foo=",
     "type": "assignment",
-    "node": "AssignmentExpression",
-    "param": "{'left_name':'foo'}",
-    "testmatch": "foo=bar",
+    "parameters": "{'left_name':'foo'}",
+    "testhit": "foo=bar+1;",
     "testmiss": "bar=foo",
     "desc": "An assignment to an identifier named 'foo'",
     "threat": "example",
     "subthreat": "example"
   },
   {
+    "name": ".bar=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'bar'}",
+    "testhit": "foo.bar=stuff",
+    "testmiss": "foo=foo.bar==stuff",
+    "desc": "",
+    "threat": "example",
+    "subthreat": "example"
+  },
+  {
     "name": "foo()",
     "type": "call",
-    "node": "CallExpression",
-    "param": "{'callee_name':'foo'}",
-    "testmatch": "foo()",
+    "parameters": "{'callee_name':'foo'}",
+    "testhit": "foo(bar+'bar')",
     "testmiss": "bar()",
     "desc": "Calling a function with the name 'foo'",
     "threat": "example",
@@ -35,23 +42,191 @@
   {
     "name": "foo.bar",
     "type": "objmember",
-    "node": "MemberExpression",
-    "param": "{'object_name':'foo','property_name':'bar'}",
-    "testmatch": "foo.bar",
+    "parameters": "{'object_name':'foo','property_name':'bar'}",
+    "testhit": "foo.bar",
     "testmiss": "foo.baz;baz.bar;",
     "desc": "A member expression with object of 'foo' and member named 'bar'",
     "threat": "example",
     "subthreat": "example"
   },
   {
-    "name": "foo.bar()",
+    "name": "bar.baz()",
     "type": "objmembercall",
-    "node": "CallExpression",
-    "param": "{'callee_object_name':'foo','callee_property_name':'bar'}",
-    "testmatch": "foo.bar()",
-    "testmiss": "foo.bar;baz.bar();",
+    "parameters": "{'callee_object_name':'bar','callee_property_name':'baz'}",
+    "testhit": "bar.baz()",
+    "testmiss": "baz.bar();baz();",
     "desc": "A member expression with calls the member named 'bar' from object foo",
     "threat": "example",
     "subthreat": "example"
+  },
+  {
+    "name": "eval",
+    "type": "call",
+    "parameters": "{'callee_name':'eval'}",
+    "testhit": "eval('jsCode'+usercontrolledVal )",
+    "testmiss": "eval",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "Function",
+    "type": "call",
+    "parameters": "{'callee_name':'Function'}",
+    "testhit": "Function('jsCode'+usercontrolledVal ) ;\n Function('arg','arg2','jsCode'+usercontrolledVal )",
+    "testmiss": "Function",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "setTimeout",
+    "type": "call",
+    "parameters": "{'callee_name':'setTimeout'}",
+    "testhit": "setTimeout('jsCode'+usercontrolledVal ,timeMs)",
+    "testmiss": "setTimeout",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "setInterval",
+    "type": "call",
+    "parameters": "{'callee_name':'setInterval'}",
+    "testhit": "setInterval('jsCode'+usercontrolledVal ,timMs)",
+    "testmiss": "setInterval",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "setImmediate",
+    "type": "call",
+    "parameters": "{'callee_name':'setImmediate'}",
+    "testhit": "setImmediate('jsCode'+usercontrolledVal )",
+    "testmiss": "setImmediate",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "execScript",
+    "type": "call",
+    "parameters": "{'callee_name':'execScript'}",
+    "testhit": "execScript('jsCode'+usercontrolledVal ,'JScript')",
+    "testmiss": "execSript",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "crypto.generateCRMFRequest",
+    "type": "objmembercall",
+    "parameters": "{'callee_object_name':'crypto','callee_property_name':'generateCRMFRequest'}",
+    "testhit": "crypto.generateCRMFRequest('CN=0',0,0,null,'jsCode'+usercontrolledVal,384,null,'rsa-dual-use')",
+    "testmiss": "crypto.generateCRMFRequest",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "document.write ",
+    "type": "objmembercall",
+    "parameters": "{'callee_object_name':'document','callee_property_name':'write'}",
+    "testhit": "document.write('test')",
+    "testmiss": "document.write",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": "document.writeln",
+    "type": "objmembercall",
+    "parameters": "{'callee_object_name':'document','callee_property_name':'writeln'}",
+    "testhit": "document.writeln('test')",
+    "testmiss": "document.writeln",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".innerHTML ",
+    "type": "member",
+    "parameters": "{'property_name':'innerHTML'}",
+    "testhit": "a.innerHTML",
+    "testmiss": "innerHTML",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".createContextualFragment",
+    "type": "member",
+    "parameters": "{'property_name':'createContextualFragment'}",
+    "testhit": "foo.createContextualFragment",
+    "testmiss": "createContextualFragment",
+    "desc": "",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".location=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'location'}",
+    "testhit": "foo.location=bar",
+    "testmiss": "foo.location==bar",
+    "desc": "Possible location sink",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".href=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'href'}",
+    "testhit": "foo.href=bar",
+    "testmiss": "foo.href==bar",
+    "desc": "Possible location sink",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".pathname=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'pathname'}",
+    "testhit": "foo.pathname=bar",
+    "testmiss": "foo.pathname==bar",
+    "desc": "Possible location sink",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".search=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'search'}",
+    "testhit": "foo.search=bar",
+    "testmiss": "foo.search==bar",
+    "desc": "Possible location sink",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".protocol=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'protocol'}",
+    "testhit": "foo.protocol=bar",
+    "testmiss": "foo.protocol==bar",
+    "desc": "Possible location sink",
+    "threat": "",
+    "subthreat": ""
+  },
+  {
+    "name": ".hostname=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'hostname'}",
+    "testhit": "foo.hostname=bar",
+    "testmiss": "foo.hostname==bar",
+    "desc": "Possible location sink",
+    "threat": "",
+    "subthreat": ""
   }
 ]
