@@ -52,7 +52,9 @@
       <ul class="nav nav-sidebar">
         <li id="scan-input-nav" ng-click="navShowInput()" class="active"><a>Input<span class="badge pull-right">{{inputFiles.length}}</span></a></li>
 	<li id="scan-output-nav">
-	  <a ng-click="navShowOutput()" >Output <span class="badge pull-right">{{results.length}}</span></a>
+	  <a ng-click="navShowOutput()">Output
+          <img ng-show="throb" src="img/throbber.png">
+          <span class="badge pull-right">{{results.length}}</span></a>
 	  <div id="scan-output-rules" class="hidden">
 	    <div class="bg-info">Rules</div>
 	    <ul>
@@ -110,7 +112,7 @@
 
     <div id="scan-results" class="hidden">
       <h4>Results <span class="badge pull-right">{{filteredResults.length}}</span></h4>
-      <div id="results-wrapper" ng-show="results<1">
+      <div id="results-wrapper" ng-show="((results.length == 0) && (errors.length == 0))">
         Scan results will be loaded here.
       </div>
       <div id="results-wrapper" ng-show="results">
@@ -125,13 +127,34 @@
           </thead>
           <tr ng-repeat='result in filteredResults| orderBy:predicate:reverse' title={{result.rule.rec}}>
             <td>{{result.filename}}</td>
-            <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a>
+            <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a></td>
             <td>{{result.rule.name }}</td>
            <!-- <td>{{result.rule.desc}}</a>-->
             </td>
           </tr>
         </table>
       </div>
+      <h4>Errors <span class="badge pull-right">{{errors.length}}</span></h4>
+      <div id="error-wrapper" ng-show="(errors.length > 0)">
+            <table id="error-table" class="table table-striped">
+                <thead>
+                <tr>
+                    <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
+                    <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
+                    <th><a href="" ng-click="predicate = 'name'; reverse=!reverse">Name</a></th>
+                    <th><a href="" ng-click="predicate = 'message'; reverse=!reverse">Message</a></th>
+                </tr>
+                </thead>
+                <tr ng-repeat='error in errors'>
+                    <td>{{ error.filename }}</td>
+                    <td><a ng-click="showResult(error.filename, error.loc.line, error.loc.col)">Line {{error.loc.line }}</a></td>
+                    <td>{{ error.name }}</td>
+                    <td>{{ error.message }}</td>
+                    </td>
+                </tr>
+            </table>
+      </div>
+
     </div>
 
     </div>

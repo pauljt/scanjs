@@ -61,16 +61,11 @@ if( typeof process != 'undefined' && process.argv[2]) {
 
       if(ext == '.js') {
         var content = fs.readFileSync(fullpath, 'utf8');
-        try {
-          results[fullpath] = AcornScanJS.scan(content, signatures, fullpath);
-        } catch(e) {
-          if (e instanceof SyntaxError) { // e.g., parse failure
-            //XXX this might be easy to overlook when scanning a big folder
-            console.log("SKIPPING FILE: SyntaxError in "+ fullpath+", at Line "+ e.loc.line +", Column "+e.loc.column+ ": " + e.message);
-          } else {
-            throw e;
-          }
+        var scanresult = ScanJS.scan(content, signatures, fullpath);
+        if (scanresult.type == 'error') {
+          console.log("SKIPPING FILE: Error in "+ fullpath+", at Line "+ scanresult.error.loc.line +", Column "+scanresult.error.loc.column+ ": " + scanresult.error.message);
         }
+        results[fullpath] = scanresult;
       }
     });
     // Flatten report file to remove files with no findings and tests with no results (i.e. empty arr)

@@ -3,22 +3,23 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.codeMirrorManual = undefined;
   $scope.inputFiles = [];
   $scope.results=[];
+  $scope.errors=[];
   $scope.filteredResults=[];
   $scope.inputFilename="";
   $scope.issueList=[];
+  $scope.throb = false;
 
+  var pending = 0;
   var selectedFile = 0;
   var codeMirror_index = 0;
-  $scope.loadPossible = false;
-  localforage.length(function(len) {
-    $scope.loadPossible = (len == 3);
-  });
 
   $scope.run = function (source, filename) {
     //empty last scan
     $scope.results=[];
+    $scope.errors=[];
     $scope.inputFiles.forEach(function (scriptFile, i) {
       if (document.getElementById('doScan_'+i).checked) {
+        pending++; $scope.throb = true;
         ScanSvc.newScan(scriptFile.name,scriptFile.asText());
       }
     });
@@ -36,9 +37,12 @@ function ScanCtrl($scope, ScanSvc) {
 
   $scope.updateIssueList = function(){
     $scope.issueList = $scope.results.reduce(function(p, c) {
-      if (p.indexOf(c.rule.name) < 0)
-        p.push(c.rule.name);
-      return p;
+      if ((c.type == 'finding') && (typeof p !== "undefined")) {
+        if (p.indexOf(c.rule.name) < 0) {
+          p.push(c.rule.name);
+        }
+        return p;
+      }
     }, []);
   }
 
@@ -175,6 +179,9 @@ function ScanCtrl($scope, ScanSvc) {
     var serializedResults = JSON.stringify($scope.results, includedAttributes);
     localforage.setItem('results', serializedResults, function() { });
 
+    var serializedErrors = JSON.stringify($scope.errors);
+    localforage.setItem('errors', serializedErrors, function() { });
+
     var serializedInputFiles = $scope.inputFiles.map( function(el) { return {data: el.asText(), name: el.name }; });
     localforage.setItem("inputFiles", JSON.stringify(serializedInputFiles), function(r) { });
 
@@ -187,15 +194,19 @@ function ScanCtrl($scope, ScanSvc) {
   };
 
   //TODO loadstate isn't called anymore, need to make it work with new workflow
-  $scope.loadState = function() {
-    // restore results as is
+  //TODO -> call loadState() around in main.js, line 36 (using the scanCtrlScope) and expose "reset" button in the UI.
+  $scope.restoreState = function() {
+    var apply = false;
     localforage.getItem('results', function (results_storage) {
-      if(!results_storage){
-        alert('No previous scan found.')
-      }
       $scope.results = JSON.parse(results_storage);
-      $scope.$apply();
+      apply = true;
       });
+    localforage.getItem('errors', function (errors_storage) {
+      if (errors_storage) {
+        $scope.errors = JSON.parse(errors_storage);
+        apply = true;
+      }
+    });
     // restore files, by creating JSZip things :)
     localforage.getItem("inputFiles", function(inputFiles_storage) {
       // mimic behavior from handleFileUpload
@@ -215,8 +226,9 @@ function ScanCtrl($scope, ScanSvc) {
           document.getElementById("doScan_" + i).checked = checkboxes[i];
         }
       });
-      $scope.$apply();
+      apply = true;
     });
+    if (apply) { $scope.$apply(); }
   };
 
   $scope.selectAll = function () {
@@ -241,9 +253,11 @@ function ScanCtrl($scope, ScanSvc) {
     });
     var content=file.asText();
     return content.split('\n').splice(line,line+numLines).join('\n');
-  }
+  };
 
   $scope.$on('NewResults', function (event, result) {
+    pending--;
+    if (pending == 0) { $scope.throb = false; }
     if (Object.keys(result).length === 0) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
@@ -259,6 +273,11 @@ function ScanCtrl($scope, ScanSvc) {
   });
 
   $scope.$on('ScanError', function (event, exception) {
-    $scope.error = exception.name + " at Line " + exception.loc.line + ", Column " + exception.loc.column + ": " + exception.message;
+    pending--;
+    if (pending == 0) { $scope.throb = false; }
+    $scope.errors.push(exception);
+    $scope.updateIssueList();
+    $scope.$apply();
+    $scope.saveState();
   });
 }
