@@ -85,9 +85,24 @@
         });
       }
       catch(e) {
-        console.log("ERROR: Skipping " + filename +" (parsing failure)");
-        console.log('Exception: '+e+ "\n");
-        throw e;
+        if (e instanceof SyntaxError) {
+          scanresults.push({
+            //TODO decide whether to leave our or include this (increases results size)
+            type: 'error',
+            name: e.name,
+            pos: e.pos,
+            loc: { column: e.loc.column, line: e.loc.line},
+            message: e.message,
+            filename: filename
+          });
+          // Assuming that we can't get more than 1 SyntaxError per file
+          // from acorn and there's nothing left to do.
+          //TODO investigate this.
+          return scanresults;
+        } else {
+          console.log("uenxpected error!!", e);
+          throw e;
+        }
       }
 
       //run all the rules against content.
@@ -108,6 +123,8 @@
           var result = testFunc.call(this, node);
           if(result) {
             scanresults.push({
+              //TODO decide whether to leave our or include this (increases results size)
+              type: 'finding',
               rule : rule,
               filename : filename,
               line : node.loc.start.line,
