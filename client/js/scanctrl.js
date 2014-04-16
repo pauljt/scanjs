@@ -221,7 +221,7 @@ function ScanCtrl($scope, ScanSvc) {
       localforage.getItem("checkboxes", function (checkboxes_storage) {
         var checkboxes = JSON.parse(checkboxes_storage);
 
-        var ln=scope.inputFiles.length
+        var ln=$scope.inputFiles.length
         for (var i=0; i < ln; i++) {
           document.getElementById("doScan_" + i).checked = checkboxes[i];
         }
