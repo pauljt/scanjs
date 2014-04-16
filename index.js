@@ -8,7 +8,7 @@ global.acorn = require(__dirname + '/client/js/lib/acorn.js');
 acorn.walk = require('acorn/util/walk.js');
 
 var AcornScanJS = require(__dirname + '/common/AcornWalker');
-var signatures = JSON.parse(fs.readFileSync("client/rules.json", "utf8"));
+var signatures = JSON.parse(fs.readFileSync(__dirname + "/common/rules.json", "utf8"));
 AcornScanJS.loadRules(signatures);
 
 var argv = require('optimist').usage('Usage: $node scan.js -t [path/to/app] -o [resultFile.json]').demand(['t']).argv;

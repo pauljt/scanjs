@@ -11,10 +11,9 @@ importScripts('lib/acorn.js',
   'lib/walk.js',
   'lib/acorn_loose.js',
   '../../common/scan.js',
-  '../../common/rules.js',
   '../../common/AcornWalker.js');
 
-AcornScanJS.loadRulesFile("../rules.json")
+AcornScanJS.loadRulesFile("../../common/rules.json")
 
 onmessage = function (evt) {
   if (evt.data.call === 'scan') {
