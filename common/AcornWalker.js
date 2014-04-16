@@ -14,6 +14,7 @@
   var aw_found = function (rule, node) {
 
     results.push({
+      type: 'finding',
       rule: rule,
       filename: results.filename,
       line: node.loc.start.line,
