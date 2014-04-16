@@ -161,16 +161,27 @@
       ast = acorn.parse(code, {
         locations: true
       });
-      console.log(ast);
     }catch(e){
-      console.log("Script could not be parsed by Acorn.")
-      return;
+      return [{
+        type: 'error',
+        name: e.name,
+        pos: e.pos,
+        loc: { column: e.loc.column, line: e.loc.line },
+        message: e.message,
+        filename: filename
+      }];
     }
 
 
     if (!rules) {
-      throw new Error("Tried to run scan with no rules loaded.")
-      return;
+      return [{
+        type: 'error',
+        name: 'RulesError',
+        pos: 0,
+        loc: { column: 0, line: 0 },
+        message: "Could not scan with no rules loaded.",
+        filename: filename
+      }];
     }
     acorn.walk.simple(ast, rules);
 
