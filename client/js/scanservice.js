@@ -8,7 +8,7 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
       this.ready=true;
     },
     newScan: function(file,source) {
-      console.log('running scan');
+      //console.log('running scan');
       var fileName = file || 'inline';
       this.scanWorker.postMessage({call: 'scan', arguments: [source, fileName]});
     },
