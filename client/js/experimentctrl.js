@@ -3,7 +3,7 @@ function ExperimentCtrl($scope) {
   $scope.results=[];
   $scope.ready=false;
 
-  AcornScanJS.loadRulesFile("rules.json",function onLoaded(rules){
+  AcornScanJS.loadRulesFile("../common/rules.json",function onLoaded(rules){
     $scope.ready=true;
   });
 
