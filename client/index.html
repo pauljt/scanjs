@@ -17,11 +17,13 @@
     <script src='js/lib/localforage.min.js'></script>
     <script src='js/lib/acorn.js'></script>
     <script src='js/lib/utils.js'></script>
+    <script src='js/lib/walk.js'></script>
 
 
     <!-- CommonJS modules -->
-    <script src='../common/rules.js'></script>
-    <script src='../common/scan.js'></script>
+    <!--<script src='../common/rules.js'></script>
+    <script src='../common/scan.js'></script>-->
+    <script src='../common/AcornWalker.js'></script>
     <!-- Client specific files -->
     <script src='js/main.js'></script>
     <script src='js/scanctrl.js'></script>
@@ -137,13 +139,13 @@
             <table id="error-table" class="table table-striped">
                 <thead>
                 <tr>
-                    <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
-                    <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
-                    <th><a href="" ng-click="predicate = 'name'; reverse=!reverse">Name</a></th>
-                    <th><a href="" ng-click="predicate = 'message'; reverse=!reverse">Message</a></th>
+                    <th><a href="" ng-click="predicate_e = 'filename'; reverse=!reverse">Filename</a></th>
+                    <th><a href="" ng-click="predicate_e = 'loc.line'; reverse=!reverse">Line</a></th>
+                    <th><a href="" ng-click="predicate_e = 'name'; reverse=!reverse">Name</a></th>
+                    <th><a href="" ng-click="predicate_e = 'message'; reverse=!reverse">Message</a></th>
                 </tr>
                 </thead>
-                <tr ng-repeat='error in errors'>
+                <tr ng-repeat='error in errors| orderBy:predicate_e:reverse'>
                     <td>{{ error.filename }}</td>
                     <td><a ng-click="showResult(error.filename, error.loc.line, error.loc.col)">Line {{error.loc.line }}</a></td>
                     <td>{{ error.name }}</td>
@@ -198,13 +200,16 @@
   <!-- rules -->
 
   <div id="experiment-wrapper" class="panel hidden" ng-controller="ExperimentCtrl">
-    <div class="col-md-6">
+    <div class="col-md-5">
       <h4>Edit code to test  scan rules.</h4>
       <div class="codeMirror" id="experiment-mirror" ng-keyup="runManualScan()">
 
       </div>
     </div>
-    <div id="manual-results-wrapper" class="col-md-6" >
+    <div class=""col="col-md-3">
+
+    </div>
+    <div id="manual-results-wrapper" class="col-md-4" >
       <h4>
         Results
       </h4>

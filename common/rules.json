@@ -1,0 +1,263 @@
+[
+  {
+    "name": ".foo",
+    "type": "member",
+    "parameters": "{'property_name':'foo'}",
+    "testhit": "bar.foo",
+    "testmiss": "foo.bar",
+    "desc": "A Member Expression with the name of 'foo'",
+    "threat": "example"
+  },
+  {
+    "name": "foo=",
+    "type": "assignment",
+    "parameters": "{'left_name':'foo'}",
+    "testhit": "foo=bar+1;",
+    "testmiss": "bar=foo",
+    "desc": "An assignment to an identifier named 'foo'",
+    "threat": "example"
+  },
+  {
+    "name": ".bar=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'bar'}",
+    "testhit": "foo.bar=stuff",
+    "testmiss": "foo=foo.bar==stuff",
+    "desc": "",
+    "threat": "example"
+  },
+  {
+    "name": "foo()",
+    "type": "call",
+    "parameters": "{'callee_name':'foo'}",
+    "testhit": "foo(bar+'bar')",
+    "testmiss": "bar()",
+    "desc": "Calling a function with the name 'foo'",
+    "threat": "example"
+  },
+  {
+    "name": "foo.bar",
+    "type": "objmember",
+    "parameters": "{'object_name':'foo','property_name':'bar'}",
+    "testhit": "foo.bar",
+    "testmiss": "foo.baz;baz.bar;",
+    "desc": "A member expression with object of 'foo' and member named 'bar'",
+    "threat": "example"
+  },
+  {
+    "name": "bar.baz()",
+    "type": "objmembercall",
+    "parameters": "{'callee_object_name':'bar','callee_property_name':'baz'}",
+    "testhit": "bar.baz()",
+    "testmiss": "baz.bar();baz();",
+    "desc": "A member expression with calls the member named 'bar' from object foo",
+    "threat": "example"
+  },
+  {
+    "name": "eval",
+    "type": "call",
+    "parameters": "{'callee_name':'eval'}",
+    "testhit": "eval('jsCode'+usercontrolledVal )",
+    "testmiss": "eval",
+    "desc": "Controlling of the first argument to eval(...) results in direct script execution.",
+    "threat": "Execution Sink"
+  },
+  {
+    "name": "Function",
+    "type": "call",
+    "parameters": "{'callee_name':'Function'}",
+    "testhit": "Function('jsCode'+usercontrolledVal ) ;\n Function('arg','arg2','jsCode'+usercontrolledVal )",
+    "testmiss": "Function",
+    "desc": "",
+    "threat": "Execution Sink"
+  },
+  {
+    "name": "setTimeout",
+    "type": "call",
+    "parameters": "{'callee_name':'setTimeout'}",
+    "testhit": "setTimeout('jsCode'+usercontrolledVal ,timeMs)",
+    "testmiss": "setTimeout",
+    "desc": "",
+    "threat": "Execution Sink"
+  },
+  {
+    "name": "setInterval",
+    "type": "call",
+    "parameters": "{'callee_name':'setInterval'}",
+    "testhit": "setInterval('jsCode'+usercontrolledVal ,timMs)",
+    "testmiss": "setInterval",
+    "desc": "",
+    "threat": "Execution Sink"
+  },
+  {
+    "name": "setImmediate",
+    "type": "call",
+    "parameters": "{'callee_name':'setImmediate'}",
+    "testhit": "setImmediate('jsCode'+usercontrolledVal )",
+    "testmiss": "setImmediate",
+    "desc": "",
+    "threat": "Execution Sink"
+  },
+  {
+    "name": "execScript",
+    "type": "call",
+    "parameters": "{'callee_name':'execScript'}",
+    "testhit": "execScript('jsCode'+usercontrolledVal ,'JScript')",
+    "testmiss": "execSript",
+    "desc": "",
+    "threat": "Execution Sink"
+  },
+  {
+    "name": "crypto.generateCRMFRequest",
+    "type": "objmembercall",
+    "parameters": "{'callee_object_name':'crypto','callee_property_name':'generateCRMFRequest'}",
+    "testhit": "crypto.generateCRMFRequest('CN=0',0,0,null,'jsCode'+usercontrolledVal,384,null,'rsa-dual-use')",
+    "testmiss": "crypto.generateCRMFRequest",
+    "desc": "",
+    "threat": "Execution Sink"
+  },
+  {
+    "name": "document.write ",
+    "type": "objmembercall",
+    "parameters": "{'callee_object_name':'document','callee_property_name':'write'}",
+    "testhit": "document.write('test')",
+    "testmiss": "document.write",
+    "desc": "",
+    "threat": "HTMLElement Sink"
+  },
+  {
+    "name": "document.writeln",
+    "type": "objmembercall",
+    "parameters": "{'callee_object_name':'document','callee_property_name':'writeln'}",
+    "testhit": "document.writeln('test')",
+    "testmiss": "document.writeln",
+    "desc": "",
+    "threat": "HTMLElement Sink"
+  },
+  {
+    "name": ".innerHTML ",
+    "type": "member",
+    "parameters": "{'property_name':'innerHTML'}",
+    "testhit": "a.innerHTML",
+    "testmiss": "innerHTML",
+    "desc": "",
+    "threat": "HTMLElement Sink"
+  },
+  {
+    "name": ".outerHTML ",
+    "type": "member",
+    "parameters": "{'property_name':'outerHTML'}",
+    "testhit": "a.outerHTML",
+    "testmiss": "outerHTML",
+    "desc": "",
+    "threat": "HTMLElement Sink"
+  },
+  {
+    "name": "insertAdjacentHTML()",
+    "type": "call",
+    "parameters": "{'callee_name':'insertAdjacentHTML'}",
+    "testhit": "insertAdjacentHTML(foo)",
+    "testmiss": "insertAdjacentHTML",
+    "desc": "",
+    "threat": "HTMLElement Sink"
+  },
+  {
+    "name": ".createContextualFragment",
+    "type": "member",
+    "parameters": "{'property_name':'createContextualFragment'}",
+    "testhit": "foo.createContextualFragment",
+    "testmiss": "createContextualFragment",
+    "desc": "",
+    "threat": "HTMLElement Sink"
+  },
+  {
+    "name": ".location=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'location'}",
+    "testhit": "foo.location=bar",
+    "testmiss": "foo.location==bar",
+    "desc": "Possible location sink",
+    "threat": "Location Sink"
+  },
+  {
+    "name": ".href=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'href'}",
+    "testhit": "foo.href=bar",
+    "testmiss": "foo.href==bar",
+    "desc": "Possible location sink",
+    "threat": "Location Sink"
+  },
+  {
+    "name": ".pathname=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'pathname'}",
+    "testhit": "foo.pathname=bar",
+    "testmiss": "foo.pathname==bar",
+    "desc": "Possible location sink",
+    "threat": "Location Sink"
+  },
+  {
+    "name": ".search=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'search'}",
+    "testhit": "foo.search=bar",
+    "testmiss": "foo.search==bar",
+    "desc": "Possible location sink",
+    "threat": "Location Sink"
+  },
+  {
+    "name": ".protocol=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'protocol'}",
+    "testhit": "foo.protocol=bar",
+    "testmiss": "foo.protocol==bar",
+    "desc": "Possible location sink",
+    "threat": "Location Sink"
+  },
+  {
+    "name": ".hostname=",
+    "type": "memberassignment",
+    "parameters": "{'left_property_name':'hostname'}",
+    "testhit": "foo.hostname=bar",
+    "testmiss": "foo.hostname==bar",
+    "desc": "Possible location sink",
+    "threat": "Location Sink"
+  },
+  {
+    "name": ".src",
+    "type": "member",
+    "parameters": "{'property_name':'src'}",
+    "testhit": "bar.src",
+    "testmiss": "src.bar",
+    "desc": ".src on certain HTMLElements can be location sinks, or direct script execution. ",
+    "threat": "Location Sink"
+  },
+  {
+    "name": "parseFromString()",
+    "type": "call",
+    "parameters": "{'callee_name':'parseFromString'}",
+    "testhit": "parseFromString(bar+'bar')",
+    "testmiss": "parseFromString",
+    "desc": "Calling a function with the name 'foo'",
+    "threat": "Interesting Function"
+  },
+  {
+    "name": "addEventListener()",
+    "type": "call",
+    "parameters": "{'callee_name':'addEventListener'}",
+    "testhit": "addEventListener(bar+'bar')",
+    "testmiss": "addEventListener",
+    "desc": "\n",
+    "threat": "Input Sink"
+  },
+  {
+    "name": "onmessage=",
+    "type": "assignment",
+    "parameters": "{'left_name':'onmessage'}",
+    "testhit": "onmessage=bar",
+    "testmiss": "onmessage",
+    "desc": "Check to make sure message handler validates to protect against malicious cross-origin message.",
+    "threat": "Input Validation"
+  }
+]
