@@ -4,6 +4,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var beautify = require('js-beautify').js_beautify;
 global.acorn = require(__dirname + '/client/js/lib/acorn.js');
 acorn.walk = require('acorn/util/walk.js');
 
@@ -63,6 +64,8 @@ if( typeof process != 'undefined' && process.argv[2]) {
 
       if(ext == '.js') {
         var content = fs.readFileSync(fullpath, 'utf8');
+        //beautify source so result snippet is meaningful
+        var content = beautify(content, { indent_size: 2 })
         var scanresult = AcornScanJS.scan(content, fullpath);
         if (scanresult.type == 'error') {
           console.log("SKIPPING FILE: Error in "+ fullpath+", at Line "+ scanresult.error.loc.line +", Column "+scanresult.error.loc.column+ ": " + scanresult.error.message);

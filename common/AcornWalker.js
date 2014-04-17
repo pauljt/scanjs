@@ -11,6 +11,8 @@
   ];
   var rules;
   var results = [];
+  var current_source;
+
   var aw_found = function (rule, node) {
 
     results.push({
@@ -19,9 +21,9 @@
       filename: results.filename,
       line: node.loc.start.line,
       col: node.loc.start.col,
-      node: node
-      //this adds a snippet based on lines. need to prettify first if going to use this.
-      //snippet:content.split('\n').splice(node.loc.start.line-1,node.loc.start.line+1).join('\n')
+      // node: node, // add a lot of cruft, removing by default
+      //this adds a snippet based on lines. Not really useful unless source is prettified first
+      snippet:current_source.split('\n').splice(node.loc.start.line-1,node.loc.start.line+1).join('\n')
     });
 
     aw_found_callback(rule, node);
@@ -120,7 +122,6 @@
       if (!rule.param) {
 
         var json = rule.parameters.replace(/'/g, '"');
-        console.log(json);
         rule.param = JSON.parse(json);
       }
 
@@ -150,16 +151,18 @@
     }
   }
 
-  function aw_scan(code, filename) {
+  function aw_scan(source, filename) {
     results = [];
     results.filename = "Manual input"
+
+    current_source=source;
 
     if (typeof filename != 'undefined') {
       results.filename = filename;
     }
     var ast;
     try{
-      ast = acorn.parse(code, {
+      ast = acorn.parse(source, {
         locations: true
       });
     }catch(e){
