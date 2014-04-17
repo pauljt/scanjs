@@ -139,13 +139,13 @@
             <table id="error-table" class="table table-striped">
                 <thead>
                 <tr>
-                    <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
-                    <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
-                    <th><a href="" ng-click="predicate = 'name'; reverse=!reverse">Name</a></th>
-                    <th><a href="" ng-click="predicate = 'message'; reverse=!reverse">Message</a></th>
+                    <th><a href="" ng-click="predicate_e = 'filename'; reverse=!reverse">Filename</a></th>
+                    <th><a href="" ng-click="predicate_e = 'loc.line'; reverse=!reverse">Line</a></th>
+                    <th><a href="" ng-click="predicate_e = 'name'; reverse=!reverse">Name</a></th>
+                    <th><a href="" ng-click="predicate_e = 'message'; reverse=!reverse">Message</a></th>
                 </tr>
                 </thead>
-                <tr ng-repeat='error in errors'>
+                <tr ng-repeat='error in errors| orderBy:predicate_e:reverse'>
                     <td>{{ error.filename }}</td>
                     <td><a ng-click="showResult(error.filename, error.loc.line, error.loc.col)">Line {{error.loc.line }}</a></td>
                     <td>{{ error.name }}</td>
