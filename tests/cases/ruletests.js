@@ -1,6 +1,6 @@
 describe('testing ../client/rules.json', function () {
   $.ajax({
-    url: '../client/rules.json',
+    url: '../common/rules.json',
     async: false,
     dataType: 'json'
   }).done(function (ruleData) {
