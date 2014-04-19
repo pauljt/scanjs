@@ -4,7 +4,6 @@
     <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval'">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-
     <title>ScanJS</title>
     <link href='css/app.css' rel='stylesheet' media='screen'>
     <link href='css/angular-csp.css' rel='stylesheet' media='screen'>
@@ -50,11 +49,21 @@
     <!-- sidebar -->
     <div class="col-md-2 sidebar">
       <ul class="nav nav-sidebar">
-        <li id="scan-input-nav" ng-click="navShowInput()" class="active"><a>Input<span class="badge pull-right">{{inputFiles.length}}</span></a></li>
+	<li id="scan-input-nav" ng-click="navShowInput()" class="active">
+	  <a>Input
+	    <span class="badge pull-right">{{inputFiles.length}}</span>
+	    <span ng-show="throbInput" class="pull-right">
+	      <i class="rotating fa fa-spinner icon-throb"></i>
+	    </span>
+	  </a>
+	</li>
 	<li id="scan-output-nav">
 	  <a ng-click="navShowOutput()">Output
-          <img ng-show="throb" src="img/throbber.png">
-          <span class="badge pull-right">{{results.length}}</span></a>
+	    <span class="badge pull-right">{{results.length}}</span>
+	    <span ng-show="throbOutput" class="pull-right">
+	      <i class="rotating fa fa-spinner icon-throb"></i>
+	    </span>
+	  </a>
 	  <div id="scan-output-rules" class="hidden">
 	    <div class="bg-info">Rules</div>
 	    <ul>

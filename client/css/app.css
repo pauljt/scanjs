@@ -3,6 +3,7 @@
 @import url("codemirror.css");
 @import url("codemirror-mdn.css");
 @import url("prettify.css");
+@import url("font-awesome.css");
 
 html, body {
   height: 100%;
@@ -57,4 +58,56 @@ a {
 
 .badge {
   margin: 3px 3px 3px 3px;
+}
+
+@-webkit-keyframes rotating {
+    0% {
+      -webkit-transform: rotate(0deg); 
+      color: #333;
+    }
+    25% {
+      -webkit-transform: rotate(90deg);
+      color: #70706F;
+    }
+    50% {
+      -webkit-transform: rotate(180deg);
+      color: #ADADAB;
+    }
+    75% {
+      -webkit-transform: rotate(270deg);
+      color: #EAEAE7;
+    }
+    100% {
+      -webkit-transform: rotate(360deg);
+      color: #333;
+    }
+}
+
+@keyframes rotating {
+    0% {
+      transform: rotate(0deg); 
+      color: #333;
+    }
+    25% {
+      transform: rotate(90deg);
+      color: #70706F;
+    }
+    50% {
+      transform: rotate(180deg);
+      color: #ADADAB;
+    }
+    75% {
+      transform: rotate(270deg);
+      color: #EAEAE7;
+    }
+    100% {
+      transform: rotate(360deg);
+      color: #333;
+    }
+}
+
+.rotating {
+  margin: 5px 3px 0 3px;
+  -webkit-animation: rotating 1s linear infinite;
+  animation: rotating 1s linear infinite;
 }
