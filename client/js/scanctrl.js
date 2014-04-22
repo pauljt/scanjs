@@ -64,7 +64,6 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.navShowInput = function () {
-    console.log('showinput')
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", false);
     document.querySelector("#scan-results").classList.toggle("hidden", true);
@@ -76,7 +75,6 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.navShowOutput = function (filterIssue) {
-    console.log('showoutput')
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", true);
     document.querySelector("#scan-results").classList.toggle("hidden", false);
