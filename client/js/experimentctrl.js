@@ -13,6 +13,12 @@ function ExperimentCtrl($scope) {
     }
     $scope.results=[];
     code = $scope.codeMirror.getValue();
+    //put ast on global variable for debugging purposes.
+    try{
+      window.ast=acorn.parse(code);
+    }catch(e){
+
+    }
     //AcornScanJS.setResultCallback(found);
     $scope.results=AcornScanJS.scan(code);
   }

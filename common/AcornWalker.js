@@ -41,9 +41,46 @@
         }
       }
     },
+    objmember: {
+      nodeType: "MemberExpression",
+      test: function (rule, node) {
+        if (node.property.name == rule.param.property_name &&
+          node.object.name == rule.param.object_name) {
+          aw_found(rule, node);
+        }
+      }
+    },
     call: {
       nodeType: "CallExpression",
       test: function (rule, node) {
+        if (node.callee.name == rule.param.callee_name) {
+          aw_found(rule, node);
+        }
+      }
+    },
+    membercall: {
+      nodeType: "CallExpression",
+      test: function (rule, node) {
+        //todo
+        if (node.callee.name == rule.param.callee_name) {
+          aw_found(rule, node);
+        }
+      }
+    },
+    objmembercall: {
+      nodeType: "CallExpression",
+      test: function (rule, node) {
+        if (node.callee.type == 'MemberExpression' &&
+          node.callee.property.name == rule.param.callee_property_name &&
+          node.callee.object.name == rule.param.callee_object_name) {
+          aw_found(rule, node);
+        }
+      }
+    },
+    callwithargs: {
+      nodeType: "CallExpression",
+      test: function (rule, node) {
+        //todo add checks for the args part
         if (node.callee.name == rule.param.callee_name) {
           aw_found(rule, node);
         }
@@ -64,26 +101,9 @@
           aw_found(rule, node);
         }
       }
-    },
-    objmember: {
-      nodeType: "MemberExpression",
-      test: function (rule, node) {
-        if (node.property.name == rule.param.property_name &&
-          node.object.name == rule.param.object_name) {
-          aw_found(rule, node);
-        }
-      }
-    },
-    objmembercall: {
-      nodeType: "CallExpression",
-      test: function (rule, node) {
-        if (node.callee.type == 'MemberExpression' &&
-          node.callee.property.name == rule.param.callee_property_name &&
-          node.callee.object.name == rule.param.callee_object_name) {
-          aw_found(rule, node);
-        }
-      }
     }
+
+
   };
 
   function aw_loadRulesFile(rulesFile, callback) {
@@ -117,20 +137,61 @@
     for (i in rulesData) {
       var rule = rulesData[i];
 
-      //little hack that makes importing rules from spreadsheet easier
-      //maybe remove once we have a proper rule manager/editor...
-      if (!rule.param) {
-
-        var json = rule.parameters.replace(/'/g, '"');
-        rule.param = JSON.parse(json);
+      //parse rule parameter
+      try {
+        rule.node = acorn.parse(rule.source);
+      } catch (e) {
+        console.log("Can't parse rule:" + rule.name + "(" + rule.source + "). Rule skipped.");
+        continue;
       }
+
+      //add a test for every statement in the rule.source
+      rule.node.body.forEach(function (statement, i, body) {
+        var template;
+        var args=[];
+        //member, objmember
+        if (statement.expression.type == "MemberExpression") {
+          if(statement.expression.object.name=="$"){
+            //rule is $.foo, this is a member rule
+            template=templateRules.member;
+          }else{
+            template=templateRules.objmember;
+          }
+        }
+        //call, membercall,objmembercall or callwithargs
+        else if (statement.expression.type == "CallExpression") {
+          if(statement.expression.callee.type=="Identifier"){
+            if(statement.expression.arguments.length>0) {
+              template=templateRules.callwithargs
+            }else {
+              template=templateRules.call;
+            }
+          }else if(statement.expression.callee.type=="MemberExpression") {
+            //callee is member expression, so either membercall, or objmembercall
+            if (statement.expression.callee.object.name == "$") {
+              template = templateRules.membercall;
+            } else {
+              template = templateRules.objmembercall;
+            }
+          }
+        }
+        //assignment or memberassignment
+        else if (statement.expression.type == "AssignmentExpression") {
+          if(statement.expression.left.type=="MemberExpression"){
+            template=templateRules.memberassignment;
+          }else{
+            template=templateRules.assignment;
+          }
+        }
+
+        console.log("SANITITY CHECK",rule.name,template==templateRules[rule.type])
+      });
 
       //rule is based on one of our templates
       if (templateRules[rule.type]) {
         var nodeType = templateRules[rule.type].nodeType;
         if (!ruleTests[nodeType]) {
           ruleTests[nodeType] = [];
-
         }
         var test = templateRules[rule.type].test.bind(undefined, rule);
         ruleTests[nodeType].push(test);
