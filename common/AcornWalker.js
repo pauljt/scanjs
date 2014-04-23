@@ -23,7 +23,7 @@
       col: node.loc.start.col,
       // node: node, // add a lot of cruft, removing by default
       //this adds a snippet based on lines. Not really useful unless source is prettified first
-      snippet:current_source.split('\n').splice(node.loc.start.line-1,node.loc.start.line+1).join('\n')
+      snippet: current_source.split('\n').splice(node.loc.start.line - 1, node.loc.start.line + 1).join('\n')
     });
 
     aw_found_callback(rule, node);
@@ -36,7 +36,7 @@
     member: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
-        var testNode=rule.statement.expression;
+        var testNode = rule.statement.expression;
         if (node.property.name == testNode.property.name) {
           aw_found(rule, node);
         }
@@ -45,9 +45,18 @@
     objmember: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
-        var testNode=rule.statement.expression;
+        var testNode = rule.statement.expression;
         if (node.property.name == testNode.property.name &&
           node.object.name == testNode.object.name) {
+          aw_found(rule, node);
+        }
+      }
+    },
+    new: {
+      nodeType: "NewExpression",
+      test: function (rule, node) {
+        var testNode = rule.statement.expression;
+        if (node.callee.name == testNode.callee.name) {
           aw_found(rule, node);
         }
       }
@@ -55,7 +64,7 @@
     call: {
       nodeType: "CallExpression",
       test: function (rule, node) {
-        var testNode=rule.statement.expression;
+        var testNode = rule.statement.expression;
         if (node.callee.name == testNode.callee.name) {
           aw_found(rule, node);
         }
@@ -64,7 +73,7 @@
     membercall: {
       nodeType: "CallExpression",
       test: function (rule, node) {
-        var testNode=rule.statement.expression;
+        var testNode = rule.statement.expression;
         if (node.callee.type == 'MemberExpression' &&
           node.callee.property.name == testNode.callee.property.name &&
           node.callee.object.name == "$") {
@@ -75,7 +84,7 @@
     objmembercall: {
       nodeType: "CallExpression",
       test: function (rule, node) {
-        var testNode=rule.statement.expression;
+        var testNode = rule.statement.expression;
         if (node.callee.type == 'MemberExpression' &&
           node.callee.property.name == testNode.callee.property.name &&
           node.callee.object.name == testNode.callee.object.name) {
@@ -87,11 +96,11 @@
       nodeType: "CallExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
-        if (node.callee.name == testNode.callee.name && node.arguments.length>0 ) {
+        if (node.callee.name == testNode.callee.name && node.arguments.length > 0) {
           var matching = true;
           var index = 0;
           while (matching && index < testNode.arguments.length) {
-            var testArg=testNode.arguments[index];
+            var testArg = testNode.arguments[index];
             //ensure each literal argument matches
             if (testArg.type == "Literal") {
               if (node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
@@ -109,7 +118,7 @@
     assignment: {
       nodeType: "AssignmentExpression",
       test: function (rule, node) {
-        var testNode=rule.statement.expression;
+        var testNode = rule.statement.expression;
         if (node.left.name == rule.statement.expression.left.name) {
           aw_found(rule, node);
         }
@@ -118,7 +127,7 @@
     memberassignment: {
       nodeType: "AssignmentExpression",
       test: function (rule, node) {
-        var testNode=rule.statement.expression;
+        var testNode = rule.statement.expression;
         if (node.left.type == 'MemberExpression' && node.left.property.name == rule.statement.expression.left.property.name) {
           aw_found(rule, node);
         }
@@ -160,13 +169,13 @@
       try {
         var program = acorn.parse(rule.source);
         //each rule must contain exactly one javascript statement
-        if(program.body.length!=1){
-          console.log("Rule "+ rule.name+ "contains too many statements, skipping. ",rule.source );
+        if (program.body.length != 1) {
+          console.log("Rule " + rule.name + "contains too many statements, skipping. ", rule.source);
           continue;
         }
-        rule.statement=program.body[0]
+        rule.statement = program.body[0]
       } catch (e) {
-        console.log("Can't parse rule:" + rule.name +". Rule skipped.");
+        console.log("Can't parse rule:" + rule.name + ". Rule skipped.");
         continue;
       }
 
@@ -205,8 +214,16 @@
         } else {
           template = templateRules.assignment;
         }
+      } else if (rule.statement.expression.type == "NewExpression") {
+        template = templateRules.new;
       }
+
+
       //console.log("SANITITY CHECK", rule.name, template == templateRules[rule.type])
+      if (typeof template == 'undefined') {
+        console.log("Error parsing rule " + rule.name, rule.source)
+        break;
+      }
 
       if (!nodeTests[template.nodeType]) {
         nodeTests[template.nodeType] = [];
@@ -229,37 +246,41 @@
     results = [];
     results.filename = "Manual input"
 
-    current_source=source;
+    current_source = source;
 
     if (typeof filename != 'undefined') {
       results.filename = filename;
     }
     var ast;
-    try{
+    try {
       ast = acorn.parse(source, {
         locations: true
       });
-    }catch(e){
-      return [{
-        type: 'error',
-        name: e.name,
-        pos: e.pos,
-        loc: { column: e.loc.column, line: e.loc.line },
-        message: e.message,
-        filename: filename
-      }];
+    } catch (e) {
+      return [
+        {
+          type: 'error',
+          name: e.name,
+          pos: e.pos,
+          loc: { column: e.loc.column, line: e.loc.line },
+          message: e.message,
+          filename: filename
+        }
+      ];
     }
 
 
     if (!rules) {
-      return [{
-        type: 'error',
-        name: 'RulesError',
-        pos: 0,
-        loc: { column: 0, line: 0 },
-        message: "Could not scan with no rules loaded.",
-        filename: filename
-      }];
+      return [
+        {
+          type: 'error',
+          name: 'RulesError',
+          pos: 0,
+          loc: { column: 0, line: 0 },
+          message: "Could not scan with no rules loaded.",
+          filename: filename
+        }
+      ];
     }
     acorn.walk.simple(ast, rules);
 
