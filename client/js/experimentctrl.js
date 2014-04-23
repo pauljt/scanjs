@@ -1,11 +1,20 @@
 function ExperimentCtrl($scope) {
   $scope.codeMirror = undefined;
   $scope.results=[];
+  $scope.ready=false;
+
+  AcornScanJS.loadRulesFile("../common/rules.json",function onLoaded(rules){
+    $scope.ready=true;
+  });
 
   $scope.runManualScan = function (source, filename) {
-    console.log('scanning')
+    if(!$scope.ready){
+      return;
+    }
+    $scope.results=[];
     code = $scope.codeMirror.getValue();
-    $scope.results=ScanJS.scan(code, ScanJS.rules, "ManualInput");
+    //AcornScanJS.setResultCallback(found);
+    $scope.results=AcornScanJS.scan(code);
   }
 
   $scope.showResult = function (filename,line, col) {

@@ -7,7 +7,8 @@ function ScanCtrl($scope, ScanSvc) {
   $scope.filteredResults=[];
   $scope.inputFilename="";
   $scope.issueList=[];
-  $scope.throb = false;
+  $scope.throbInput = false;
+  $scope.throbOutput = false;
 
   var pending = 0;
   var selectedFile = 0;
@@ -19,7 +20,8 @@ function ScanCtrl($scope, ScanSvc) {
     $scope.errors=[];
     $scope.inputFiles.forEach(function (scriptFile, i) {
       if (document.getElementById('doScan_'+i).checked) {
-        pending++; $scope.throb = true;
+        pending++;
+	$scope.throbOutput = true;
         ScanSvc.newScan(scriptFile.name,scriptFile.asText());
       }
     });
@@ -64,7 +66,6 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.navShowInput = function () {
-    console.log('showinput')
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", false);
     document.querySelector("#scan-results").classList.toggle("hidden", true);
@@ -76,7 +77,6 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.navShowOutput = function (filterIssue) {
-    console.log('showoutput')
     //show input tab, hide results
     document.querySelector("#scan-input").classList.toggle("hidden", true);
     document.querySelector("#scan-results").classList.toggle("hidden", false);
@@ -89,6 +89,8 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.handleFileUpload = function handleFileUpload(fileList) {
+    $scope.throbInput = true;
+    $scope.$apply();
     //enable fileselect div
     //document.querySelector("#scan-intro").classList.toggle("hidden",true);
     document.querySelector("#scan-files-selected").classList.toggle("hidden",false);
@@ -134,9 +136,10 @@ function ScanCtrl($scope, ScanSvc) {
           $scope.error = "Could not read file";
           $scope.$apply();
         }
-
       }
     }
+    $scope.throbInput = false;
+    $scope.$apply();
   }
 
   $scope.showFile = function (index) {
@@ -256,8 +259,7 @@ function ScanCtrl($scope, ScanSvc) {
   };
 
   $scope.$on('NewResults', function (event, result) {
-    pending--;
-    if (pending == 0) { $scope.throb = false; }
+    if (--pending <= 0) { $scope.throbOutput = false; }
     if (Object.keys(result).length === 0) {
       $scope.error = "Empty result set (this can also be a good thing, if you test a simple file)";
       return
@@ -273,11 +275,11 @@ function ScanCtrl($scope, ScanSvc) {
   });
 
   $scope.$on('ScanError', function (event, exception) {
-    pending--;
-    if (pending == 0) { $scope.throb = false; }
+    if (--pending <= 0) { $scope.throbOutput = false; }
     $scope.errors.push(exception);
     $scope.updateIssueList();
     $scope.$apply();
     $scope.saveState();
   });
+
 }

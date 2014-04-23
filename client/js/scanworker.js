@@ -3,29 +3,26 @@
 if (typeof console === "undefined") {
   console = {};
   console.log = function consoleShim(mesg) {
-    postMessage({'type':'log', 'message': mesg});
+    //postMessage({'type':'log', 'message': mesg});
   }
 }
 
 importScripts('lib/acorn.js',
-              'lib/walk.js',
-              'lib/acorn_loose.js',
-              '../../common/scan.js',
-              '../../common/rules.js');
+  'lib/walk.js',
+  'lib/acorn_loose.js',
+  '../../common/scan.js',
+  '../../common/AcornWalker.js');
+
+AcornScanJS.loadRulesFile("../../common/rules.json")
 
 onmessage = function (evt) {
   if (evt.data.call === 'scan') {
     var args = evt.data.arguments;
     var source = args[0];
     var rules;
-    if (args[1].length === 0) {
-      // empty string or empty array -> default to standard rules.
-      rules = ScanJS.rules;
-    } else {
-     rules = args[1];
-    }
-    var file = args[2];
-    var findings = ScanJS.scan(source, rules, file);
+
+    var file = args[1];
+    var findings = AcornScanJS.scan(source,file);
     postMessage({"filename": file, "findings": findings});
   }
 };

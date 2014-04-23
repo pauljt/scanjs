@@ -1,5 +1,5 @@
 var static = require("node-static");
-var file = new static.Server('./client', {
+var file = new static.Server('.', {
   headers: {
     "Content-Security-Policy": "default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval'",
   }

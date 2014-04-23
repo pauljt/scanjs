@@ -16,7 +16,7 @@ Server-side instructions
 - ```git clone https://github.com/mozilla/scanjs.git```
 - ```cd scanjs```
 - ```npm install```
-- ```node index.js -t DIRECTORY_PATH```
+- ```node scanner.js -t DIRECTORY_PATH```
 
 Testing instructions
 ------------------------
