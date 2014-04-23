@@ -66,59 +66,7 @@
     scan : function(content, signatures, filename) {
       //console.log(content);
       //console.log(signatures);
-      if (typeof this.th === "undefined") {
-        // init. dirty :<<
-        function getFileFromDict(th, name, cb) {
-          var text = th.fileDict[name];
-          if (text)
-            cb(text);
-          //else if (ts.options.getFile)
-          //  ts.options.getFile(name, c);
-          else
-            cb(null);
-        }
-        function ternHandler() {
-          //  this and most other functions adopted/stolen from tern's codemirror glue
-          this.addFile = function(name, text) {
-            this.fileDict[name] = text;
-            this.ternServer.addFile(name, text)
-          };
-          var self = this;
-          this.fileDict = {}; // used as a cache..
-
-          this.ternServer = new tern.Server({async: true, plugins: {},
-            getFile: function(name, cb) {
-              return getFileFromDict(self, name, cb)
-            },
-            defs: [defs.browser], // [JSON.parse(defs)]
-          });
-          this.getType = function(file, pos, cb) {
-            this.ternServer.request({
-                "query": {
-                  "type": "type",
-                  "lineCharPositions":true,
-                  "end": { "line": 0, "ch": pos}, // yay.. :D
-                  "file": file
-                },
-                "files": []},
-              cb);
-          }
-          // return this;
-        };
-        /*ternHandler.prototype.getType = function(file, pos, cb) {
-         this.ternServer.request({
-         "query": {
-         "type": "type",
-         "lineCharPositions":true,
-         "end": { "line": 0, "ch": pos}, // yay.. :D
-         "file": file
-         },
-         "files": []},
-         cb);
-         } */
-        this.th = new ternHandler();
-      }
-      var scanresults = {};
+      var scanresults = [];
 
       this.testNumber = 0;
       this.testTotal = signatures.length;
@@ -137,9 +85,24 @@
         });
       }
       catch(e) {
-        console.log("ERROR: Skipping " + filename +" (parsing failure)");
-        console.log('Exception: '+e+ "\n");
-        throw e;
+        if (e instanceof SyntaxError) {
+          scanresults.push({
+            //TODO decide whether to leave our or include this (increases results size)
+            type: 'error',
+            name: e.name,
+            pos: e.pos,
+            loc: { column: e.loc.column, line: e.loc.line},
+            message: e.message,
+            filename: filename
+          });
+          // Assuming that we can't get more than 1 SyntaxError per file
+          // from acorn and there's nothing left to do.
+          //TODO investigate this.
+          return scanresults;
+        } else {
+          console.log("uenxpected error!!", e);
+          throw e;
+        }
       }
 
       //run all the rules against content.
@@ -159,7 +122,9 @@
         ScanJS.traverse(ast, function(node) {
           var result = testFunc.call(this, node);
           if(result) {
-            scanresults[rule.name].push({
+            scanresults.push({
+              //TODO decide whether to leave our or include this (increases results size)
+              type: 'finding',
               rule : rule,
               filename : filename,
               line : node.loc.start.line,
@@ -177,27 +142,6 @@
       }
       console.log(filename + ' had matches for ' + Object.keys(scanresults).length + ' rules.');
       return scanresults;
-    },
-    getBlocks: function(ast) {
-      var branchTypes = ["BreakStatement", "ContinueStatement", "IfStatement", "SwitchStatement", "ReturnStatement", "ThrowStatement", "TryStatement", "WhileStatement", "DoWhileStatement", "ForStatement", "ForInStatement", "ForOfStatement"];
-      var blocks = [""]; // list of objects
-      ScanJS.traverse(ast, function(node) {
-        if (!node.hasOwnProperty('type')) { return false; } // don't go deeper
-        console.log(node.type);
-        if (node.type.indexOf("Statement") == -1) { return false; } // just skip?!
-        if (branchTypes.indexOf(node.type) !== -1) {
-          blocks.push(""); // next block
-        }
-        try {
-          var code = escodegen.generate(node)
-        }
-        catch(e) {
-          console.log("escodegen error " +e + "typeof blocks:" + JSON.stringify(blocks));
-          console.log(JSON.stringify(node));
-        }
-        blocks[blocks.length-1] += code;
-      });
-      return blocks
     }
   }
 

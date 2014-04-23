@@ -1,6 +1,5 @@
 scanjsModule.factory('ScanSvc', function($rootScope) {
-  var ScanService = {};
-  return {
+  var ScanService = {
     //results:[],
     ready:false,
     rules:null,
@@ -9,23 +8,37 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
       this.ready=true;
     },
     newScan: function(file,source) {
-      console.log('running scan');
       var fileName = file || 'inline';
-      try {
-        var findings= ScanJS.scan(source, this.rules, fileName);
-        $rootScope.$broadcast('NewResults', {"filename":fileName,"findings":findings});
-      } catch(e) {
-      if (e instanceof SyntaxError) { // e.g., parse failure
-          $rootScope.$broadcast('ScanError', {name: e.name, loc: e.loc,message: e.message });
-          } else {
-          // if not, throw.
-          throw e;
-        }
-      }
+      this.scanWorker.postMessage({call: 'scan', arguments: [source, fileName]});
     },
     addResults: function(results) {
-      this.results = results;
       $rootScope.$broadcast('NewResults', results);
     }
   };
+  ScanService.scanWorker = new Worker("js/scanworker.js");
+  ScanService.scanWorker.addEventListener("message", function (evt) {
+    if (('findings' in evt.data) && ('filename' in evt.data)) {
+      if (evt.data.findings.length > 0) {
+        if (evt.data.findings[0].type == 'error') {
+          $rootScope.$broadcast('ScanError', evt.data.findings[0])
+          return;
+        }
+      }
+      ScanService.addResults(evt.data);
+    }
+    else if ('error' in evt.data) {
+      // This is for errors in the worker, not in the scanning.
+      // Exceptions (like SyntaxErrors) when scanning files
+      // are in the findings.
+      var exception = evt.data.error;
+      if (e instanceof SyntaxError) {
+        $rootScope.$broadcast('ScanError', {filename: evt.data.filename, name: exception.name, loc: exception.loc, message: exception.message })
+      } else {
+        throw e; // keep throwing unexpected things.
+      }
+    }
+  });
+
+  ScanService.scanWorker.onerror = function (e) { console.log('ScanWorker Error: ', e) };
+  return ScanService;
 });

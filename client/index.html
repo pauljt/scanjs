@@ -1,121 +1,245 @@
-<!doctype html>
+<!DOCTYPE html>
 <html ng-app='scanjs' ng-csp>
-<head>
-  
-  <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval">
-  <link href='css/app.css' rel='stylesheet' media='screen'>
+  <head>
+    <meta http-equiv="content-security-policy" content="default-src 'self'; object-src 'none'; img-src 'self' data:; script-src 'self' 'unsafe-eval'">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Third-party libs -->
-  <script src='js/lib/jquery-2.1.0.min.js'></script>
-  <script src='js/lib/angular-1.2.13.min.js'></script>
-  <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
-  <script src="js/lib/codemirror-compressed.js"></script>
-  <script src='js/lib/tern/node_modules/acorn/acorn.js'></script>
-  <script src='js/lib/tern/node_modules/acorn/util/walk.js'></script>
-  <script src='js/lib/tern/node_modules/acorn/acorn_loose.js'></script>
-  <script src='js/lib/tern/lib/signal.js'></script>
-  <script src='js/lib/tern/lib/tern.js'></script>
-  <script src='js/lib/tern/lib/def.js'></script>
-  <script src='js/lib/tern/lib/infer.js'></script>
-  <script src='js/lib/jszip.min.js'></script>
-
-  <!-- CommonJS modules -->
-  <script src='../common/scan.js'></script>
-  <script src='../common/rules.js'></script>
-  <!-- Client specific files -->
-  <script src='js/main.js'></script>
-  <script src='js/scanctrl.js'></script>
-  <script src='js/rules.js'></script>
-  <script src='js/scanservice.js'></script>
-  <script src='js/initTern.js'></script>
-</head>
-<body>
-<tabs id="tabwrapper">
-  <pane heading='input'>
-    <div ng-controller='ScanCtrl'>
-      <div class="span16" id="input">
-          <span class="span10">
-            <div id="codeMirrorDiv"></div>
-            <p>Upload file for scanning:</p>
-            <input type="file" id="js-input" multiple>
-            <button ng-click='run()'>Scan</button>
-          </span>
-          <span class="span6">
-            <ul>
-              <li ng-repeat="file in inputFiles track by $index">
-                <a ng-click="updateCodeMirror($index)"
-                   title="Examine file in preview">{{file.name}}</a>
-            </ul>
-          </span>
-      </div>
+    <title>ScanJS</title>
+    <link href='css/app.css' rel='stylesheet' media='screen'>
+    <link href='css/angular-csp.css' rel='stylesheet' media='screen'>
+    <!-- Third-party libs -->
+    <!--<script src='js/lib/jquery-2.1.0.min.js'></script>-->
+    <script src='js/lib/angular-1.2.13.min.js'></script>
+    <script src='js/lib/ui-bootstrap-tpls-0.3.0.js'></script>
+    <script src='js/lib/codemirror-compressed.js'></script>
+    <script src='js/lib/jszip.min.js'></script>
+    <script src='js/lib/localforage.min.js'></script>
+    <script src='js/lib/acorn.js'></script>
+    <script src='js/lib/utils.js'></script>
+    <script src='js/lib/walk.js'></script>
 
 
-      <div class="span16" id="results">
-        <h2>Output</h2>
-        <div id='output'>
-          <div class="alert-error">{{error}}</div>
+    <!-- CommonJS modules -->
+    <!--<script src='../common/rules.js'></script>
+    <script src='../common/scan.js'></script>-->
+    <script src='../common/AcornWalker.js'></script>
+    <!-- Client specific files -->
+    <script src='js/main.js'></script>
+    <script src='js/scanctrl.js'></script>
+    <script src='js/rules.js'></script>
+    <script src='js/experimentctrl.js'></script>
+    <script src='js/scanservice.js'></script>
+    <script src='js/prettify.js'></script>
+  </head>
 
-          <ul>
-            <li ng-repeat="fileResult in results">
-              <span>File:<strong>{{fileResult.filename}}</strong></span>
-              <ul>
-                <li ng-repeat="(rulename,ruleresult) in fileResult.findings" ng-show="ruleresult">
-                <span title="{{ruleresult[0].rule.desc}}">
-                  Rule:<strong>{{rulename}}</strong>({{ruleresult.length}}):
-                </span>
-                  <ul>
-                    <li ng-repeat='result in ruleresult'>
-                      <a ng-mouseover="setCursor(fileResult.filename,result.line, result.col)"
-                         title="Click to highlight the affected line in the editor">Line {{result.line}}:</a><br>
-                    </li>
-                  </ul>
-                  <span>Recommendation: {{ruleresult[0].rule.rec}}</span>
-                </li>
-              </ul>
-            </li>
-          </ul>
+  <body>
+
+  <div id="header" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar-brand">ScanJS
+    </div>
+    <ul id="header-links" class="nav navbar-nav navbar-left">
+      <li><a id="scan-header">Scan</a></li>
+      <li><a id="rules-header">Rules</a></li>
+      <li><a id="experiment-header">Experiment</a></li>
+    </ul>
+  </div>
+  <!-- header -->
+
+  <div ng-controller="ScanCtrl" id="scan-wrapper" class="ng-scope panel panel-default">
+    <!-- sidebar -->
+    <div class="col-md-2 sidebar">
+      <ul class="nav nav-sidebar">
+	<li id="scan-input-nav" ng-click="navShowInput()" class="active">
+	  <a>Input
+	    <span class="badge pull-right">{{inputFiles.length}}</span>
+	    <span ng-show="throbInput" class="pull-right">
+	      <i class="rotating fa fa-spinner icon-throb"></i>
+	    </span>
+	  </a>
+	</li>
+	<li id="scan-output-nav">
+	  <a ng-click="navShowOutput()">Output
+	    <span class="badge pull-right">{{results.length}}</span>
+	    <span ng-show="throbOutput" class="pull-right">
+	      <i class="rotating fa fa-spinner icon-throb"></i>
+	    </span>
+	  </a>
+	  <div id="scan-output-rules" class="hidden">
+	    <div class="bg-info">Rules</div>
+	    <ul>
+	      <li ng-repeat="issue in issueList">
+		<a ng-click="navShowOutput(issue)">{{issue}}</a>
+	      </li>
+	    </ul>
+	  </div>
+	  <div id="scan-output-files" class="hidden">
+	    <p class="bg-info">Files</p>
+	    <ul>
+	      <li ng-repeat="file in inputFiles">
+		<a title="{{file.name}}" ng-click="navShowOutput(file)">{{file.name}}</a>
+	      </li>
+	    </ul>
+	  </div>
+	</li>
+      </ul>
+    </div> <!-- sidebar -->
+
+    <div class="col-md-4 col-md-offset-2">
+
+    <div id="scan-input">
+      <div id="scan-intro" >
+        <h4>Choose files to scan</h4>
+        <p>Select a list of .js files, or a zip file containing .js files.</p>
+        <input type="file" id="scan-file-input" multiple></p>
+
+        <div id="scan-files-selected" class="hidden">
+          <p>
+            Select files below, then <button class="btn btn-default left-block" ng-click='run()'>Scan</button>
+          </p>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Enable (<a class="small" ng-click="selectAll()">Select All </a>,
+                <a class="small" ng-click="selectNone()"> Select
+                  None</a>)
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="file in inputFiles track by $index">
+              <td><a href="#" ng-click="showFile($index)" title="Examine file in preview">{{file.name}}</a>
+              </td>
+              <td><input type="checkbox" id="doScan_{{ $index }}"
+                         title="Set this checkbox if you want the file included in your scans" checked/></td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-  </pane>
 
-  <pane heading='rules'>
-    <div ng-controller='RuleListCtrl' class='rule-list'>
-      <h2> Rules </h2>
+    <div id="scan-results" class="hidden">
+      <h4>Results <span class="badge pull-right">{{filteredResults.length}}</span></h4>
+      <div id="results-wrapper" ng-show="((results.length == 0) && (errors.length == 0))">
+        Scan results will be loaded here.
+      </div>
+      <div id="results-wrapper" ng-show="results">
+        <table id="results-table" class="table table-striped">
+          <thead>
+          <tr>
+            <th><a href="" ng-click="predicate = 'filename'; reverse=!reverse">Filename</a></th>
+            <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
+            <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+            <!--<th>Description of Issue</th>-->
+          </tr>
+          </thead>
+          <tr ng-repeat='result in filteredResults| orderBy:predicate:reverse' title={{result.rule.rec}}>
+            <td>{{result.filename}}</td>
+            <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a></td>
+            <td>{{result.rule.name }}</td>
+           <!-- <td>{{result.rule.desc}}</a>-->
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4>Errors <span class="badge pull-right">{{errors.length}}</span></h4>
+      <div id="error-wrapper" ng-show="(errors.length > 0)">
+            <table id="error-table" class="table table-striped">
+                <thead>
+                <tr>
+                    <th><a href="" ng-click="predicate_e = 'filename'; reverse=!reverse">Filename</a></th>
+                    <th><a href="" ng-click="predicate_e = 'loc.line'; reverse=!reverse">Line</a></th>
+                    <th><a href="" ng-click="predicate_e = 'name'; reverse=!reverse">Name</a></th>
+                    <th><a href="" ng-click="predicate_e = 'message'; reverse=!reverse">Message</a></th>
+                </tr>
+                </thead>
+                <tr ng-repeat='error in errors| orderBy:predicate_e:reverse'>
+                    <td>{{ error.filename }}</td>
+                    <td><a ng-click="showResult(error.filename, error.loc.line, error.loc.col)">Line {{error.loc.line }}</a></td>
+                    <td>{{ error.name }}</td>
+                    <td>{{ error.message }}</td>
+                    </td>
+                </tr>
+            </table>
+      </div>
 
-      <div class='row'>
-        <div class='span8'>
-          <div class='rule-list'>
-            <ol>
-              <li ng-repeat='rule in rules track by $index'>
-                <a ng-click='editRule($index)'>{{rule.name}}</a>
-              </li>
-            </ol>
-          </div>
-        </div>
-        <div class='span6'>
-          <div class='rule-detail'>
+    </div>
 
-            <input type='text' id='rule_name' ng-model='current.name'>
+    </div>
+    <div id="code-mirror-wrapper" class="col-md-6">
+      <h4>File Viewer <span id="filename-badge" class="badge pull-right"></span></h4>
+      <div class="codeMirrorDiv" id="codeMirrorDiv"></div>
+    </div>
 
-            <br>
-            <textarea type='text' id='rule_detail' ng-model='current.test'></textarea>
-            <br>
-            <input type='text' id='rule_desc' ng-model='current.desc'>
+  </div>
+  <!-- end scan-wrapper -->
 
-            <br>
-            <input type='text' id='rule_rec' ng-model='current.rec'>
-
-            <br>
-            <button ng-click='saveRule()'>
-              Update
-            </button>
+  <div id="rules-wrapper" class="panel container-fluid hidden">
+    <div id="rules-div" class="col-md-12">
+      <div ng-controller='RuleListCtrl'>
+	<span class="badge pull-right">Number of Rules: {{rules.length}}</span>
+        <div class="jumbotron">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+              <tr>
+                <th>Rule Name</th>
+                <th>Rule Description</th>
+                <th>Rule Recommendation</th>
+                <th>Rule Definition</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat='rule in rules' title={{rule.name}} id={{rule.name}}>
+                <td>{{rule.name}}</td>
+                <td>{{rule.desc}}</td>
+                <td>{{rule.rec}}</td>
+                <td>
+                  <pre class="prettyprint lang-js">{{rule.test}}</pre>
+                </td>
+              </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
-  </pane>
+  </div>
+  <!-- rules -->
 
-</tabs>
-</body>
+  <div id="experiment-wrapper" class="panel hidden" ng-controller="ExperimentCtrl">
+    <div class="col-md-5">
+      <h4>Edit code to test  scan rules.</h4>
+      <div class="codeMirror" id="experiment-mirror" ng-keyup="runManualScan()">
+
+      </div>
+    </div>
+    <div class=""col="col-md-3">
+
+    </div>
+    <div id="manual-results-wrapper" class="col-md-4" >
+      <h4>
+        Results
+      </h4>
+      <table class="table table-striped" >
+        <thead>
+        <tr>
+          <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
+          <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+          <th>Description of Issue</th>
+        </tr>
+        </thead>
+        <tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
+          <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a>
+          <td>{{result.rule.name }}</td>
+          <td>{{result.rule.desc}}</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <!-- scan-manual -->
+
+  </body>
 </html>

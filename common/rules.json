@@ -1,0 +1,74 @@
+[
+  {
+    "name": ".foo",
+    "type": "member",
+    "source": "$.foo",
+    "testhit": "bar.foo",
+    "testmiss": "foo.bar",
+    "desc": "A Member Expression with the name of 'foo'",
+    "threat": "example"
+  },
+  {
+    "name": "foo.bar",
+    "type": "objmember",
+    "source": "foo.bar",
+    "testhit": "foo.bar",
+    "testmiss": "foo.baz;baz.bar;",
+    "desc": "A member expression with object of 'foo' and member named 'bar'",
+    "threat": "example"
+  },
+  {
+    "name": "foo()",
+    "type": "call",
+    "source": "foo()",
+    "testhit": "foo(bar+'bar')",
+    "testmiss": "bar()",
+    "desc": "Calling a function with the name 'foo'",
+    "threat": "example"
+  },
+  {
+    "name": ".foo()",
+    "type": "membercall",
+    "source": "foo()",
+    "testhit": "foo(bar+'bar')",
+    "testmiss": "bar()",
+    "desc": "Calling a member function with the name 'foo'",
+    "threat": "example"
+  },
+  {
+    "name": "bar.baz()",
+    "type": "objmembercall",
+    "source": "bar.baz()",
+    "testhit": "bar.baz()",
+    "testmiss": "baz.bar();baz();",
+    "desc": "A member expression with calls the member named 'bar' from object foo",
+    "threat": "example"
+  },
+  {
+    "name": "foo('bar')",
+    "type": "callwithargs",
+    "source": "foo('bar')",
+    "testhit": "foo('bar')",
+    "testmiss": "foo('baz')",
+    "desc": "Calling a function with the name 'foo', checking to make sure that all literal arguments match",
+    "threat": "example"
+  },
+  {
+    "name": "foo=",
+    "type": "assignment",
+    "source": "foo=$",
+    "testhit": "foo=bar+1;",
+    "testmiss": "bar=foo",
+    "desc": "An assignment to an identifier named 'foo'",
+    "threat": "example"
+  },
+  {
+    "name": ".bar=",
+    "type": "memberassignment",
+    "source": "$.bar=$",
+    "testhit": "foo.bar=stuff",
+    "testmiss": "foo=foo.bar==stuff",
+    "desc": "",
+    "threat": "example"
+  }
+]
