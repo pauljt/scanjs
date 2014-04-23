@@ -36,7 +36,8 @@
     member: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
-        if (node.property.name == rule.param.property_name) {
+        var testNode=rule.statement.expression;
+        if (node.property.name == testNode.property.name) {
           aw_found(rule, node);
         }
       }
@@ -44,8 +45,9 @@
     objmember: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
-        if (node.property.name == rule.param.property_name &&
-          node.object.name == rule.param.object_name) {
+        var testNode=rule.statement.expression;
+        if (node.property.name == testNode.property.name &&
+          node.object.name == testNode.object.name) {
           aw_found(rule, node);
         }
       }
@@ -53,7 +55,8 @@
     call: {
       nodeType: "CallExpression",
       test: function (rule, node) {
-        if (node.callee.name == rule.param.callee_name) {
+        var testNode=rule.statement.expression;
+        if (node.callee.name == testNode.callee.name) {
           aw_found(rule, node);
         }
       }
@@ -61,8 +64,10 @@
     membercall: {
       nodeType: "CallExpression",
       test: function (rule, node) {
-        //todo
-        if (node.callee.name == rule.param.callee_name) {
+        var testNode=rule.statement.expression;
+        if (node.callee.type == 'MemberExpression' &&
+          node.callee.property.name == testNode.callee.property.name &&
+          node.callee.object.name == "$") {
           aw_found(rule, node);
         }
       }
@@ -70,9 +75,10 @@
     objmembercall: {
       nodeType: "CallExpression",
       test: function (rule, node) {
+        var testNode=rule.statement.expression;
         if (node.callee.type == 'MemberExpression' &&
-          node.callee.property.name == rule.param.callee_property_name &&
-          node.callee.object.name == rule.param.callee_object_name) {
+          node.callee.property.name == testNode.callee.property.name &&
+          node.callee.object.name == testNode.callee.object.name) {
           aw_found(rule, node);
         }
       }
@@ -80,16 +86,31 @@
     callwithargs: {
       nodeType: "CallExpression",
       test: function (rule, node) {
-        //todo add checks for the args part
-        if (node.callee.name == rule.param.callee_name) {
-          aw_found(rule, node);
+        var testNode = rule.statement.expression;
+        if (node.callee.name == testNode.callee.name && node.arguments.length>0 ) {
+          var matching = true;
+          var index = 0;
+          while (matching && index < testNode.arguments.length) {
+            var testArg=testNode.arguments[index];
+            //ensure each literal argument matches
+            if (testArg.type == "Literal") {
+              if (node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
+                matching = false;
+              }
+            }
+            index++;
+          }
+          if (matching) {
+            aw_found(rule, node);
+          }
         }
       }
     },
     assignment: {
       nodeType: "AssignmentExpression",
       test: function (rule, node) {
-        if (node.left.name == rule.param.left_name) {
+        var testNode=rule.statement.expression;
+        if (node.left.name == rule.statement.expression.left.name) {
           aw_found(rule, node);
         }
       }
@@ -97,13 +118,12 @@
     memberassignment: {
       nodeType: "AssignmentExpression",
       test: function (rule, node) {
-        if (node.left.type == 'MemberExpression' && node.left.property.name == rule.param.left_property_name) {
+        var testNode=rule.statement.expression;
+        if (node.left.type == 'MemberExpression' && node.left.property.name == rule.statement.expression.left.property.name) {
           aw_found(rule, node);
         }
       }
     }
-
-
   };
 
   function aw_loadRulesFile(rulesFile, callback) {
@@ -130,85 +150,78 @@
   }
 
   function aw_loadRules(rulesData) {
-    var ruleTests = {};
 
+    var nodeTests = {};
     //each node type may have multiple tests, so first create arrays of test funcs
     //TODO test with multiple template tests which share the same expression type
     for (i in rulesData) {
       var rule = rulesData[i];
-
-      //parse rule parameter
+      //parse rule source
       try {
-        rule.node = acorn.parse(rule.source);
+        var program = acorn.parse(rule.source);
+        //each rule must contain exactly one javascript statement
+        if(program.body.length!=1){
+          console.log("Rule "+ rule.name+ "contains too many statements, skipping. ",rule.source );
+          continue;
+        }
+        rule.statement=program.body[0]
       } catch (e) {
-        console.log("Can't parse rule:" + rule.name + "(" + rule.source + "). Rule skipped.");
+        console.log("Can't parse rule:" + rule.name +". Rule skipped.");
         continue;
       }
 
-      //add a test for every statement in the rule.source
-      rule.node.body.forEach(function (statement, i, body) {
-        var template;
-        var args=[];
-        //member, objmember
-        if (statement.expression.type == "MemberExpression") {
-          if(statement.expression.object.name=="$"){
-            //rule is $.foo, this is a member rule
-            template=templateRules.member;
-          }else{
-            template=templateRules.objmember;
-          }
-        }
-        //call, membercall,objmembercall or callwithargs
-        else if (statement.expression.type == "CallExpression") {
-          if(statement.expression.callee.type=="Identifier"){
-            if(statement.expression.arguments.length>0) {
-              template=templateRules.callwithargs
-            }else {
-              template=templateRules.call;
-            }
-          }else if(statement.expression.callee.type=="MemberExpression") {
-            //callee is member expression, so either membercall, or objmembercall
-            if (statement.expression.callee.object.name == "$") {
-              template = templateRules.membercall;
-            } else {
-              template = templateRules.objmembercall;
-            }
-          }
-        }
-        //assignment or memberassignment
-        else if (statement.expression.type == "AssignmentExpression") {
-          if(statement.expression.left.type=="MemberExpression"){
-            template=templateRules.memberassignment;
-          }else{
-            template=templateRules.assignment;
-          }
-        }
+      var template;
 
-        console.log("SANITITY CHECK",rule.name,template==templateRules[rule.type])
-      });
-
-      //rule is based on one of our templates
-      if (templateRules[rule.type]) {
-        var nodeType = templateRules[rule.type].nodeType;
-        if (!ruleTests[nodeType]) {
-          ruleTests[nodeType] = [];
+      //member, objmember
+      if (rule.statement.expression.type == "MemberExpression") {
+        if (rule.statement.expression.object.name == "$") {
+          //rule is $.foo, this is a member rule
+          template = templateRules.member;
+        } else {
+          template = templateRules.objmember;
         }
-        var test = templateRules[rule.type].test.bind(undefined, rule);
-        ruleTests[nodeType].push(test);
       }
-      else {
-        //todo add support for custom rules? Or maybe we can just add new things to the template?
+      //call, membercall,objmembercall or callwithargs
+      else if (rule.statement.expression.type == "CallExpression") {
+        if (rule.statement.expression.callee.type == "Identifier") {
+          if (rule.statement.expression.arguments.length > 0) {
+            template = templateRules.callwithargs
+          } else {
+            template = templateRules.call;
+          }
+        } else if (rule.statement.expression.callee.type == "MemberExpression") {
+          //callee is member expression, so either membercall, or objmembercall
+          if (rule.statement.expression.callee.object.name == "$") {
+            template = templateRules.membercall;
+          } else {
+            template = templateRules.objmembercall;
+          }
+        }
       }
+      //assignment or memberassignment
+      else if (rule.statement.expression.type == "AssignmentExpression") {
+        if (rule.statement.expression.left.type == "MemberExpression") {
+          template = templateRules.memberassignment;
+        } else {
+          template = templateRules.assignment;
+        }
+      }
+      //console.log("SANITITY CHECK", rule.name, template == templateRules[rule.type])
+
+      if (!nodeTests[template.nodeType]) {
+        nodeTests[template.nodeType] = [];
+      }
+      nodeTests[template.nodeType].push(template.test.bind(undefined, rule));
     }
 
     rules = {};
     //create a single function for each nodeType, which calls all the test functions
-    for (nodeType in ruleTests) {
+    for (nodeType in nodeTests) {
       rules[nodeType] = function (tests, node) {
         tests.forEach(function (arg) {
           arg.call(this, node);
         });
-      }.bind(undefined, ruleTests[nodeType]);
+      }.bind(undefined, nodeTests[nodeType]);
     }
   }
 

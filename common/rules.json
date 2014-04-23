@@ -32,7 +32,7 @@
     "source": "foo()",
     "testhit": "foo(bar+'bar')",
     "testmiss": "bar()",
-    "desc": "Calling a function with the name 'foo'",
+    "desc": "Calling a member function with the name 'foo'",
     "threat": "example"
   },
   {
@@ -45,12 +45,12 @@
     "threat": "example"
   },
   {
-    "name": "foo(",
+    "name": "foo('bar')",
     "type": "callwithargs",
     "source": "foo('bar')",
-    "testhit": "foo(",
-    "testmiss": "foo(",
-    "desc": "",
+    "testhit": "foo('bar')",
+    "testmiss": "foo('baz')",
+    "desc": "Calling a function with the name 'foo', checking to make sure that all literal arguments match",
     "threat": "example"
   },
   {
