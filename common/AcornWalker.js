@@ -4,12 +4,7 @@
   mod(this.AcornScanJS || (this.AcornScanJS = {})); // Plain browser env
 })(function (exports) {
 
-  var ruleData = [
-    {"name": ".foo", "type": "member", "target": "foo"},
-    {"name": "foo=", "type": "assignment", "target": "foo"},
-    {"name": "foo()", "type": "call", "target": "foo"}
-  ];
-  var rules;
+  var rules={};
   var results = [];
   var current_source;
 
@@ -33,7 +28,16 @@
 
 
   var templateRules = {
-    member: {
+    identifier: {
+      nodeType: "Identifier",
+      test: function (rule, node) {
+        var testNode = rule.statement.expression;
+        if (node.name == testNode.name) {
+          aw_found(rule, node);
+        }
+      }
+    },
+    property: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
@@ -42,7 +46,7 @@
         }
       }
     },
-    objmember: {
+    objectproperty: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
@@ -65,12 +69,17 @@
       nodeType: "CallExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
-        if (node.callee.name == testNode.callee.name) {
+        if (node.callee.type == 'Identifier' &&
+          node.callee.name == testNode.callee.name) {
+          aw_found(rule, node);
+        }
+        if (node.callee.type == 'MemberExpression' &&
+          node.callee.property.name == testNode.callee.name) {
           aw_found(rule, node);
         }
       }
     },
-    membercall: {
+    propertycall: {
       nodeType: "CallExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
@@ -81,7 +90,7 @@
         }
       }
     },
-    objmembercall: {
+    objectpropertycall: {
       nodeType: "CallExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
@@ -96,8 +105,11 @@
       nodeType: "CallExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
-        if (node.callee.name == testNode.callee.name && node.arguments.length > 0) {
-          var matching = true;
+        if ((node.callee.type == 'Identifier' && node.callee.name == testNode.callee.name) ||
+          (node.callee.type == 'MemberExpression' && node.callee.property.name == testNode.callee.name)) {
+
+          //can only match if this callExpression actually has arguments
+          var matching = node.arguments.length > 0;
           var index = 0;
           while (matching && index < testNode.arguments.length) {
             var testArg = testNode.arguments[index];
@@ -124,7 +136,7 @@
         }
       }
     },
-    memberassignment: {
+    propertyassignment: {
       nodeType: "AssignmentExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
@@ -181,16 +193,16 @@
 
       var template;
 
-      //member, objmember
+      //property, objectproperty
       if (rule.statement.expression.type == "MemberExpression") {
         if (rule.statement.expression.object.name == "$") {
-          //rule is $.foo, this is a member rule
-          template = templateRules.member;
+          //rule is $.foo, this is a property rule
+          template = templateRules.property;
         } else {
-          template = templateRules.objmember;
+          template = templateRules.objectproperty;
         }
       }
-      //call, membercall,objmembercall or callwithargs
+      //call, propertycall,objectpropertycall or callwithargs
       else if (rule.statement.expression.type == "CallExpression") {
         if (rule.statement.expression.callee.type == "Identifier") {
           if (rule.statement.expression.arguments.length > 0) {
@@ -199,27 +211,29 @@
             template = templateRules.call;
           }
         } else if (rule.statement.expression.callee.type == "MemberExpression") {
-          //callee is member expression, so either membercall, or objmembercall
+          //callee is property expression, so either propertycall, or objectpropertycall
           if (rule.statement.expression.callee.object.name == "$") {
-            template = templateRules.membercall;
+            template = templateRules.propertycall;
           } else {
-            template = templateRules.objmembercall;
+            template = templateRules.objectpropertycall;
           }
         }
       }
-      //assignment or memberassignment
+      //assignment or propertyassignment
       else if (rule.statement.expression.type == "AssignmentExpression") {
         if (rule.statement.expression.left.type == "MemberExpression") {
-          template = templateRules.memberassignment;
+          template = templateRules.propertyassignment;
         } else {
           template = templateRules.assignment;
         }
       } else if (rule.statement.expression.type == "NewExpression") {
         template = templateRules.new;
+      }else if (rule.statement.expression.type == "Identifier") {
+        template = templateRules.identifier;
       }
 
 
-      //console.log("SANITITY CHECK", rule.name, template == templateRules[rule.type])
+      console.log("SANITITY CHECK", rule.name, template ,template == templateRules[rule.name])
       if (typeof template == 'undefined') {
         console.log("Error parsing rule " + rule.name, rule.source)
         break;
@@ -284,7 +298,6 @@
     }
     acorn.walk.simple(ast, rules);
 
-
     return results;
   }
 
@@ -292,7 +305,7 @@
     aw_found_callback = found_callback;
   }
 
-  exports.rules = aw_scan;
+  exports.rules = rules;
   exports.scan = aw_scan;
   exports.loadRulesFile = aw_loadRulesFile;
   exports.loadRules = aw_loadRules;

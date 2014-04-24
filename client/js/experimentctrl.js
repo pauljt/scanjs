@@ -2,6 +2,15 @@ function ExperimentCtrl($scope) {
   $scope.codeMirror = undefined;
   $scope.results=[];
   $scope.ready=false;
+  $scope.rule="eval()"
+  var ruleData={
+    "name": "manual rule",
+    "source": $scope.rule,
+    "testhit": $scope.rule,
+    "testmiss": "",
+    "desc": "Manual input.",
+    "threat": "example"
+  }
 
   AcornScanJS.loadRulesFile("../common/rules.json",function onLoaded(rules){
     $scope.ready=true;
@@ -11,6 +20,9 @@ function ExperimentCtrl($scope) {
     if(!$scope.ready){
       return;
     }
+    ruleData.source=$scope.rule;
+    AcornScanJS.loadRules([ruleData]);
+
     $scope.results=[];
     code = $scope.codeMirror.getValue();
     //put ast on global variable for debugging purposes.
