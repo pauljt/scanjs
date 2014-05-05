@@ -268,6 +268,7 @@
         template = templateRules[aw_parseRule(rule)];
       } catch (e) {
         console.log("Error parsing rule " + rule.name, rule.source)
+        break;
       }
 
       if (typeof template == 'undefined') {
