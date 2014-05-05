@@ -35,7 +35,7 @@
     "name": "propertycall",
     "source": "$.foo()",
     "testhit": "a.foo(); a.b.foo(); this['foo']();",
-    "testmiss": "foo();foo;a.foo",
+    "testmiss": "foo();foo;a.foo;",
     "desc": "Find function, where callee is a member object, matching property name only",
     "threat": "example"
   },
@@ -50,8 +50,8 @@
   {
     "name": "callargs",
     "source": "foo('test',ignored,42)",
-    "testhit": "foo('test',foo,42); foo('test',foo,42,'extra'); a.foo('test',foo,42); a[foo]('test',foo,42); a['b'].foo('test',bar,42);",
-    "testmiss": "foo; foo(); foo('miss',foo,42); foo('wrong',foo,42); foo('test',foo,41); foo('test',41); foo(foo,'test', foo,42)",
+    "testhit": "foo('test',foo,42); foo('test',foo,42,'extra'); ",
+    "testmiss": "foo; foo(); a.foo('test',foo,42); foo('wrong',foo,42); foo('test',foo,41); foo('test',41); foo(foo,'test', foo,42)",
     "desc": "Same as for call, expect this allow makes sure that any supplied literal arguments are matching (both in value, and in position)",
     "threat": "example"
   },
@@ -59,7 +59,7 @@
     "name": "propertycallargs",
     "source": "$.foo('test',ignored,42)",
     "testhit": "$.foo('test',foo,42); $.foo('test',foo,42,'extra'); $.a.foo('test',foo,42); $.a[foo]('test',foo,42); $.a['b'].foo('test',bar,42);",
-    "testmiss": "foo('test',foo,42); a.foo('miss',foo,42); a.foo('test',foo); a[foo]('test',foo,41); a['b'].foo('test',bar,42); foo('miss');  a.foo('test',42); a[foo](foo,41);",
+    "testmiss": "foo('test',foo,42); a.foo('miss',foo,42); a.foo('test',foo); a[foo]('test',foo,41); a['b'].foo('test',42); foo('miss');   a[foo](foo,41);",
     "desc": "Same as for propertycall, expect this allow makes sure that any supplied literal arguments are matching (both in value, and in position)",
     "threat": "example"
   },
@@ -74,8 +74,8 @@
   {
     "name": "assignment",
     "source": "foo=$",
-    "testhit": "foo=bar; a.foo=bar; a.b.foo=bar; this['foo']=bar;",
-    "testmiss": "foo;",
+    "testhit": "foo=bar;",
+    "testmiss": "foo; foo",
     "desc": "Assigning to identifier with given name",
     "threat": "example"
   },
@@ -90,7 +90,7 @@
   {
     "name": "objectpropertyassignment",
     "source": "foo.bar=$",
-    "testhit": "foo.bar=a; a.foo.bar=b; foo['bar']=c;",
+    "testhit": "foo.bar=a; a.foo.bar=b; foo['bar']=c;a.foo['bar']=c;",
     "testmiss": "bar.bar=a;foo.foo=b;",
     "desc": "Assigning to a object property matching both object name and property name",
     "threat": "example"

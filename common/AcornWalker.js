@@ -30,7 +30,7 @@
     identifier: {
       nodeType: "Identifier",
       test: function (testNode, node) {
-        if (node.name == testNode.name) {
+        if (node.type="Identifier"&&node.name == testNode.name) {
           return true;
         }
       }
@@ -39,6 +39,7 @@
       nodeType: "MemberExpression",
       test: function (testNode, node) {
         // foo.bar & foo['bar'] create different AST but mean the same thing
+
         var testName = testNode.property.type == 'Identifier' ? testNode.property.name : testNode.property.value;
         if (node.property && (node.property.name == testName || node.property.value == testName)) {
           return true;
@@ -50,7 +51,8 @@
       test: function (testNode, node) {
         // foo.bar & foo['bar'] create different AST but mean the same thing
         var testName = testNode.property.type == 'Identifier' ? testNode.property.name : testNode.property.value;
-        if ((node.property.name == testName || node.property.value == testName) &&
+
+        if ((node.property && (node.property.name == testName || node.property.value == testName)) &&
           (node.object.name == testNode.object.name ||  // this matches the foo in foo.bar
             (node.object.property && node.object.property.name == testNode.object.name)  )) { //this matches foo in nested objects e.g. baz.foo.bar
           return true;
@@ -91,36 +93,37 @@
         }
       }
     },
+    matchArgs:function(testNode,node){
+      var matching = node.arguments.length > 0;
+      var index = 0;
+      while (matching && index < testNode.arguments.length) {
+        var testArg = testNode.arguments[index];
+        //ensure each literal argument matches
+        if (testArg.type == "Literal") {
+          if (typeof node.arguments[index] == 'undefined' || node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
+            matching = false;
+          }
+        }
+        index++;
+      }
+      if (matching) {
+        return true;
+      }
+    },
     callargs: {
       nodeType: "CallExpression",
       test: function (testNode, node) {
-        if ((node.callee.type == 'Identifier' && node.callee.name == testNode.callee.name) ||
-          (node.callee.type == 'MemberExpression' && node.callee.property.name == testNode.callee.name)) {
-
-          //can only match if this callExpression actually has arguments
-          var matching = node.arguments.length > 0;
-          var index = 0;
-          while (matching && index < testNode.arguments.length) {
-            var testArg = testNode.arguments[index];
-            //ensure each literal argument matches
-            if (testArg.type == "Literal") {
-              if (typeof node.arguments[index] == 'undefined' || node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
-                matching = false;
-              }
-            }
-            index++;
-          }
-          if (matching) {
+        if (templateRules.call.test(testNode,node) &&
+          templateRules.matchArgs(testNode,node)) {
             return true;
-          }
         }
       }
     },
     propertycallargs: {
       nodeType: "CallExpression",
       test: function (testNode, node) {
-        if (templateRules.propertycall.test(testNode, node) &&
-          templateRules.callwithargs.test(testNode, node)) {
+        if (templateRules.propertycall.test(testNode,node) &&
+          templateRules.matchArgs(testNode,node)) {
           return true;
         }
       }
@@ -128,32 +131,16 @@
     objectpropertycallargs: {
       nodeType: "CallExpression",
       test: function (testNode, node) {
-        if ((node.callee.type == 'Identifier' && node.callee.name == testNode.callee.name) ||
-          (node.callee.type == 'MemberExpression' && node.callee.property.name == testNode.callee.name)) {
-
-          //can only match if this callExpression actually has arguments
-          var matching = node.arguments.length > 0;
-          var index = 0;
-          while (matching && index < testNode.arguments.length) {
-            var testArg = testNode.arguments[index];
-            //ensure each literal argument matches
-            if (testArg.type == "Literal") {
-              if (typeof node.arguments[index] == 'undefined' || node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
-                matching = false;
-              }
-            }
-            index++;
-          }
-          if (matching) {
-            return true;
-          }
+        if (templateRules.objectpropertycall.test(testNode,node) &&
+          templateRules.matchArgs(testNode,node)) {
+          return true;
         }
       }
     },
     assignment: {
       nodeType: "AssignmentExpression",
       test: function (testNode, node) {
-        if (node.left.name == rule.statement.expression.left.name) {
+        if (templateRules.identifier.test(testNode.left,node.left)) {
           return true;
         }
       }
@@ -161,7 +148,7 @@
     propertyassignment: {
       nodeType: "AssignmentExpression",
       test: function (testNode, node) {
-        if (node.left.type == 'MemberExpression' && node.left.property.name == rule.statement.expression.left.property.name) {
+        if (templateRules.property.test(testNode.left,node.left)) {
           return true;
         }
       }
@@ -169,7 +156,7 @@
     objectpropertyassignment: {
       nodeType: "AssignmentExpression",
       test: function (testNode, node) {
-        if (node.left.type == 'MemberExpression' && node.left.property.name == rule.statement.expression.left.property.name) {
+        if (templateRules.objectproperty.test(testNode.left,node.left)) {
           return true;
         }
       }
@@ -252,14 +239,13 @@
     //assignment, propertyassignment, objectpropertyassignment
     if (rule.statement.expression.type == "AssignmentExpression") {
       if (rule.statement.expression.left.type == "MemberExpression") {
-        return templateRules.propertyassignment;
         if (rule.statement.expression.left.object.name == "$") {
-          return templateRules.propertyassignment;
+          return 'propertyassignment';
         } else {
-          return templateRules.objectpropertyassignment;
+          return 'objectpropertyassignment';
         }
       } else {
-        return templateRules.assignment;
+        return 'assignment';
       }
     }
 
