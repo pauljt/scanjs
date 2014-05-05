@@ -10,7 +10,7 @@
   {
     "name": "property",
     "source": "$.foo",
-    "testhit": "a.foo; a.b.foo; this['foo'];",
+    "testhit": "a.foo; a.b.foo; this['foo'];this['bar'].foo;",
     "testmiss": "foo;",
     "desc": "Matches object with property of same name.",
     "threat": "example"
@@ -26,7 +26,7 @@
   {
     "name": "call",
     "source": "foo()",
-    "testhit": "foo(); a.foo(); a[foo](); a['b'].foo();",
+    "testhit": "foo();",
     "testmiss": "foo;",
     "desc": "Matches funtion where callee has a given name.",
     "threat": "example"
@@ -35,7 +35,7 @@
     "name": "propertycall",
     "source": "$.foo()",
     "testhit": "a.foo(); a.b.foo(); this['foo']();",
-    "testmiss": "foo();foo;",
+    "testmiss": "foo();foo;a.foo",
     "desc": "Find function, where callee is a member object, matching property name only",
     "threat": "example"
   },
@@ -51,7 +51,7 @@
     "name": "callargs",
     "source": "foo('test',ignored,42)",
     "testhit": "foo('test',foo,42); foo('test',foo,42,'extra'); a.foo('test',foo,42); a[foo]('test',foo,42); a['b'].foo('test',bar,42);",
-    "testmiss": "foo; foo(); foo('miss',foo,42); a.foo('test',foo); a[foo]('test',foo,41); a['b'].foo('test',bar,41); foo('miss'); a.foo('test',42); a[foo](foo,41);",
+    "testmiss": "foo; foo(); foo('miss',foo,42); foo('wrong',foo,42); foo('test',foo,41); foo('test',41); foo(foo,'test', foo,42)",
     "desc": "Same as for call, expect this allow makes sure that any supplied literal arguments are matching (both in value, and in position)",
     "threat": "example"
   },

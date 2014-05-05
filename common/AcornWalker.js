@@ -4,7 +4,7 @@
   mod(this.AcornScanJS || (this.AcornScanJS = {})); // Plain browser env
 })(function (exports) {
 
-  var rules={};
+  var rules = {};
   var results = [];
   var current_source;
 
@@ -26,91 +26,74 @@
   var aw_found_callback = function () {
   };
 
-
   var templateRules = {
     identifier: {
       nodeType: "Identifier",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         if (node.name == testNode.name) {
-          aw_found(rule, node);
+          return true;
         }
       }
     },
     property: {
       nodeType: "MemberExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         // foo.bar & foo['bar'] create different AST but mean the same thing
         var testName = testNode.property.type == 'Identifier' ? testNode.property.name : testNode.property.value;
-        if (node.property.name == testName || node.property.value == testName) {
-          aw_found(rule, node);
+        if (node.property && (node.property.name == testName || node.property.value == testName)) {
+          return true;
         }
-
       }
     },
     objectproperty: {
       nodeType: "MemberExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         // foo.bar & foo['bar'] create different AST but mean the same thing
         var testName = testNode.property.type == 'Identifier' ? testNode.property.name : testNode.property.value;
         if ((node.property.name == testName || node.property.value == testName) &&
           (node.object.name == testNode.object.name ||  // this matches the foo in foo.bar
             (node.object.property && node.object.property.name == testNode.object.name)  )) { //this matches foo in nested objects e.g. baz.foo.bar
-          aw_found(rule, node);
+          return true;
         }
       }
     },
     new: {
       nodeType: "NewExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         if (node.callee.name == testNode.callee.name) {
-          aw_found(rule, node);
+          return true;
         }
       }
     },
     call: {
       nodeType: "CallExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
+        // matches foo()
         if (node.callee.type == 'Identifier' &&
           node.callee.name == testNode.callee.name) {
-          aw_found(rule, node);
-        }
-        if (node.callee.type == 'MemberExpression' &&
-          node.callee.property.name == testNode.callee.name) {
-          aw_found(rule, node);
+          return true;
         }
       }
     },
     propertycall: {
       nodeType: "CallExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
-        if (node.callee.type == 'MemberExpression' &&
-          node.callee.property.name == testNode.callee.property.name &&
-          node.callee.object.name == "$") {
-          aw_found(rule, node);
+      test: function (testNode, node) {
+        if (templateRules.property.test(testNode.callee, node.callee)) {
+          return true;
         }
       }
     },
     objectpropertycall: {
       nodeType: "CallExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
-        if (node.callee.type == 'MemberExpression' &&
-          node.callee.property.name == testNode.callee.property.name &&
-          node.callee.object.name == testNode.callee.object.name) {
-          aw_found(rule, node);
+      test: function (testNode, node) {
+        if (templateRules.objectproperty.test(testNode.callee, node.callee)) {
+          return true;
         }
       }
     },
-    callwithargs: {
+    callargs: {
       nodeType: "CallExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         if ((node.callee.type == 'Identifier' && node.callee.name == testNode.callee.name) ||
           (node.callee.type == 'MemberExpression' && node.callee.property.name == testNode.callee.name)) {
 
@@ -121,42 +104,73 @@
             var testArg = testNode.arguments[index];
             //ensure each literal argument matches
             if (testArg.type == "Literal") {
-              if (typeof node.arguments[index]=='undefined'|| node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
+              if (typeof node.arguments[index] == 'undefined' || node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
                 matching = false;
               }
             }
             index++;
           }
           if (matching) {
-            aw_found(rule, node);
+            return true;
+          }
+        }
+      }
+    },
+    propertycallargs: {
+      nodeType: "CallExpression",
+      test: function (testNode, node) {
+        if (templateRules.propertycall.test(testNode, node) &&
+          templateRules.callwithargs.test(testNode, node)) {
+          return true;
+        }
+      }
+    },
+    objectpropertycallargs: {
+      nodeType: "CallExpression",
+      test: function (testNode, node) {
+        if ((node.callee.type == 'Identifier' && node.callee.name == testNode.callee.name) ||
+          (node.callee.type == 'MemberExpression' && node.callee.property.name == testNode.callee.name)) {
+
+          //can only match if this callExpression actually has arguments
+          var matching = node.arguments.length > 0;
+          var index = 0;
+          while (matching && index < testNode.arguments.length) {
+            var testArg = testNode.arguments[index];
+            //ensure each literal argument matches
+            if (testArg.type == "Literal") {
+              if (typeof node.arguments[index] == 'undefined' || node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
+                matching = false;
+              }
+            }
+            index++;
+          }
+          if (matching) {
+            return true;
           }
         }
       }
     },
     assignment: {
       nodeType: "AssignmentExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         if (node.left.name == rule.statement.expression.left.name) {
-          aw_found(rule, node);
+          return true;
         }
       }
     },
     propertyassignment: {
       nodeType: "AssignmentExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         if (node.left.type == 'MemberExpression' && node.left.property.name == rule.statement.expression.left.property.name) {
-          aw_found(rule, node);
+          return true;
         }
       }
     },
     objectpropertyassignment: {
       nodeType: "AssignmentExpression",
-      test: function (rule, node) {
-        var testNode = rule.statement.expression;
+      test: function (testNode, node) {
         if (node.left.type == 'MemberExpression' && node.left.property.name == rule.statement.expression.left.property.name) {
-          aw_found(rule, node);
+          return true;
         }
       }
     }
@@ -172,7 +186,7 @@
       if (request.status >= 200 && request.status < 400) {
         rulesData = JSON.parse(request.responseText);
         aw_loadRules(rulesData);
-        if (typeof callback == "function")
+        if (typeof callback == 'function')
           callback(rules);
       } else {
         console.log('Error loading ' + rules)
@@ -185,6 +199,76 @@
     request.send();
   }
 
+
+  function aw_parseRule(rule) {
+    try {
+      var program = acorn.parse(rule.source);
+      //each rule must contain exactly one javascript statement
+      if (program.body.length != 1) {
+        throw ('Rule ' + rule.name + 'contains too many statements, skipping: '+ rule.source);
+
+      }
+      rule.statement = program.body[0]
+    } catch (e) {
+      throw('Can\'t parse rule:' + rule.name );
+    }
+
+    //identifier
+    if (rule.statement.expression.type == "Identifier") {
+      return 'identifier';
+    }
+
+    if (rule.statement.expression.type == "NewExpression") {
+      return 'new';
+    }
+
+    //property, objectproperty
+    if (rule.statement.expression.type == "MemberExpression") {
+      if (rule.statement.expression.object.name == "$") {
+        //rule is $.foo, this is a property rule
+        return 'property';
+      } else {
+        return 'objectproperty';
+      }
+    }
+    //call, propertycall,objectpropertycall ( + args variants)
+    if (rule.statement.expression.type == "CallExpression") {
+      var args = '';
+      if (rule.statement.expression.arguments.length > 0) {
+        args = 'args';
+      }
+
+      if (rule.statement.expression.callee.type == "Identifier") {
+        return 'call' + args;
+      } else if (rule.statement.expression.callee.type == "MemberExpression") {
+        if (rule.statement.expression.callee.object.name == "$") {
+          return 'propertycall' + args;
+        } else {
+          return 'objectpropertycall' + args;
+        }
+      }
+    }
+
+    //assignment, propertyassignment, objectpropertyassignment
+    if (rule.statement.expression.type == "AssignmentExpression") {
+      if (rule.statement.expression.left.type == "MemberExpression") {
+        return templateRules.propertyassignment;
+        if (rule.statement.expression.left.object.name == "$") {
+          return templateRules.propertyassignment;
+        } else {
+          return templateRules.objectpropertyassignment;
+        }
+      } else {
+        return templateRules.assignment;
+      }
+    }
+
+
+
+    //if we get to here we couldn't find a matching template for the rule.source
+    throw ("No matching template")
+  }
+
   function aw_loadRules(rulesData) {
 
     var nodeTests = {};
@@ -193,77 +277,35 @@
     for (i in rulesData) {
       var rule = rulesData[i];
       //parse rule source
-      try {
-        var program = acorn.parse(rule.source);
-        //each rule must contain exactly one javascript statement
-        if (program.body.length != 1) {
-          console.log("Rule " + rule.name + "contains too many statements, skipping. ", rule.source);
-          continue;
-        }
-        rule.statement = program.body[0]
-      } catch (e) {
-        console.log("Can't parse rule:" + rule.name + ". Rule skipped.");
-        continue;
-      }
-
       var template;
-
-      //property, objectproperty
-      if (rule.statement.expression.type == "MemberExpression") {
-        if (rule.statement.expression.object.name == "$") {
-          //rule is $.foo, this is a property rule
-          template = templateRules.property;
-        } else {
-          template = templateRules.objectproperty;
-        }
-      }
-      //call, propertycall,objectpropertycall or callwithargs
-      else if (rule.statement.expression.type == "CallExpression") {
-        if (rule.statement.expression.callee.type == "Identifier") {
-          if (rule.statement.expression.arguments.length > 0) {
-            template = templateRules.callwithargs
-          } else {
-            template = templateRules.call;
-          }
-        } else if (rule.statement.expression.callee.type == "MemberExpression") {
-          //callee is property expression, so either propertycall, or objectpropertycall
-          if (rule.statement.expression.callee.object.name == "$") {
-            template = templateRules.propertycall;
-          } else {
-            template = templateRules.objectpropertycall;
-          }
-        }
-      }
-      //assignment or propertyassignment
-      else if (rule.statement.expression.type == "AssignmentExpression") {
-        if (rule.statement.expression.left.type == "MemberExpression") {
-          template = templateRules.propertyassignment;
-        } else {
-          template = templateRules.assignment;
-        }
-      } else if (rule.statement.expression.type == "NewExpression") {
-        template = templateRules.new;
-      }else if (rule.statement.expression.type == "Identifier") {
-        template = templateRules.identifier;
+      try {
+        template = templateRules[aw_parseRule(rule)];
+      } catch (e) {
+        console.log("Error parsing rule " + rule.name, rule.source)
       }
 
       if (typeof template == 'undefined') {
-        console.log("Error parsing rule " + rule.name, rule.source)
+        console.log("Should never get here.")
         break;
       }
 
       if (!nodeTests[template.nodeType]) {
         nodeTests[template.nodeType] = [];
       }
-      nodeTests[template.nodeType].push(template.test.bind(undefined, rule));
+      nodeTests[template.nodeType].push(function (template, rule, node) {
+        if (template.test(rule.statement.expression, node)) {
+          aw_found(rule, node);
+        }
+      }.bind(undefined, template, rule));
     }
+
 
     rules = {};
     //create a single function for each nodeType, which calls all the test functions
     for (nodeType in nodeTests) {
       rules[nodeType] = function (tests, node) {
-        tests.forEach(function (arg) {
-          arg.call(this, node);
+        tests.forEach(function (test) {
+          test.call(this, node);
         });
       }.bind(undefined, nodeTests[nodeType]);
     }
@@ -322,6 +364,7 @@
   exports.scan = aw_scan;
   exports.loadRulesFile = aw_loadRulesFile;
   exports.loadRules = aw_loadRules;
+  exports.parseRule = aw_parseRule;
   exports.setResultCallback = aw_setCallback;
 
 });
