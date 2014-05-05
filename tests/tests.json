@@ -2,7 +2,7 @@
   {
     "name": "identifier",
     "source": "foo",
-    "testhit": "foo;a.foo;a.b.foo;this['foo'];",
+    "testhit": "foo;",
     "testmiss": "'foo';",
     "desc": "Matches identifier with same name.",
     "threat": "example"
@@ -51,7 +51,7 @@
     "name": "callargs",
     "source": "foo('test',ignored,42)",
     "testhit": "foo('test',foo,42); foo('test',foo,42,'extra'); a.foo('test',foo,42); a[foo]('test',foo,42); a['b'].foo('test',bar,42);",
-    "testmiss": "foo; foo(); foo('miss',foo,42); a.foo('test',foo); a[foo]('test',foo,41); a['b'].foo('test',bar,42); foo('miss'); a.foo('test',42); a[foo](foo,41);",
+    "testmiss": "foo; foo(); foo('miss',foo,42); a.foo('test',foo); a[foo]('test',foo,41); a['b'].foo('test',bar,41); foo('miss'); a.foo('test',42); a[foo](foo,41);",
     "desc": "Same as for call, expect this allow makes sure that any supplied literal arguments are matching (both in value, and in position)",
     "threat": "example"
   },

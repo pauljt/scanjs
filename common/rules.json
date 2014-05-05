@@ -2,7 +2,7 @@
   {
     "name": "identifier",
     "source": "foo",
-    "testhit": "foo;a.foo;a.b.foo;this['foo'];",
+    "testhit": "foo;",
     "testmiss": "'foo';",
     "desc": "Matches identifier with same name.",
     "threat": "example"

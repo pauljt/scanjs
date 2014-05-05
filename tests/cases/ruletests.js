@@ -7,15 +7,14 @@ describe('Testing rule templates (tests.json)', function () {
 
     ruleData.forEach(function (rule) {
       describe('Rule: ' + rule.name, function () {
-        rule.testhit.split(";").forEach(function (testhit) {
-          it(rule.source + " should match " + testhit, function () {
-            AcornScanJS.loadRules([rule]);
-            console.log(rule.source,testhit,AcornScanJS.scan(testhit))
-            var results = AcornScanJS.scan(testhit);
-
-            chai.expect(results.length).to.equal(1);
-            chai.expect(results[0].rule.name).to.equal(rule.name);
-          });
+        rule.testhit.split(";").forEach(function (testsplit) {
+          if(testsplit.trim()!=""){
+            it(rule.source + " should match " + testsplit, function () {
+              AcornScanJS.loadRules([rule]);
+              var results = AcornScanJS.scan(testsplit);
+              chai.expect(results.length).to.equal(1);
+            });
+          }
         });
 
         it(rule.name + " should not match " + rule.testmiss, function () {

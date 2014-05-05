@@ -41,17 +41,23 @@
       nodeType: "MemberExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
-        if (node.property.name == testNode.property.name) {
+        // foo.bar & foo['bar'] create different AST but mean the same thing
+        var testName = testNode.property.type == 'Identifier' ? testNode.property.name : testNode.property.value;
+        if (node.property.name == testName || node.property.value == testName) {
           aw_found(rule, node);
         }
+
       }
     },
     objectproperty: {
       nodeType: "MemberExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
-        if (node.property.name == testNode.property.name &&
-          node.object.name == testNode.object.name) {
+        // foo.bar & foo['bar'] create different AST but mean the same thing
+        var testName = testNode.property.type == 'Identifier' ? testNode.property.name : testNode.property.value;
+        if ((node.property.name == testName || node.property.value == testName) &&
+          (node.object.name == testNode.object.name ||  // this matches the foo in foo.bar
+            (node.object.property && node.object.property.name == testNode.object.name)  )) { //this matches foo in nested objects e.g. baz.foo.bar
           aw_found(rule, node);
         }
       }
@@ -115,7 +121,7 @@
             var testArg = testNode.arguments[index];
             //ensure each literal argument matches
             if (testArg.type == "Literal") {
-              if (node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
+              if (typeof node.arguments[index]=='undefined'|| node.arguments[index].type != "Literal" || testArg.value != node.arguments[index].value) {
                 matching = false;
               }
             }
@@ -137,6 +143,15 @@
       }
     },
     propertyassignment: {
+      nodeType: "AssignmentExpression",
+      test: function (rule, node) {
+        var testNode = rule.statement.expression;
+        if (node.left.type == 'MemberExpression' && node.left.property.name == rule.statement.expression.left.property.name) {
+          aw_found(rule, node);
+        }
+      }
+    },
+    objectpropertyassignment: {
       nodeType: "AssignmentExpression",
       test: function (rule, node) {
         var testNode = rule.statement.expression;
@@ -232,8 +247,6 @@
         template = templateRules.identifier;
       }
 
-
-      console.log("SANITITY CHECK", rule.name, template ,template == templateRules[rule.name])
       if (typeof template == 'undefined') {
         console.log("Error parsing rule " + rule.name, rule.source)
         break;
