@@ -89,26 +89,29 @@ function ScanCtrl($scope, ScanSvc) {
   }
 
   $scope.handleFileUpload = function handleFileUpload(fileList) {
-    $scope.throbInput = true;
-    $scope.$apply();
-    //enable fileselect div
-    //document.querySelector("#scan-intro").classList.toggle("hidden",true);
-    document.querySelector("#scan-files-selected").classList.toggle("hidden",false);
-
-    if (fileList.length === 1 && /\.zip$/.test(fileList[0].name)) {
+    function handleMaybeZip() {
       //packaged app case
       var reader = new FileReader();
-      $scope.inputFilename=fileList[0].name;
-      reader.readAsArrayBuffer(fileList[0]);
+      $scope.inputFilename = fileList[0].name;
       reader.onload = function () {
-        var zip = new JSZip(this.result);
-        $scope.inputFiles = zip.file(/\.js$/);
-        $scope.$apply();
+        var magic = new DataView(this.result).getUint32(0, true /* LE */);
+        if (magic !== 0x04034b50) { // magic marker per spec.
+          handleList();
+          return;
+        }
+        reader.onload = function() {
+          var zip = new JSZip(this.result);
+          $scope.inputFiles = zip.file(/\.js$/);
+          $scope.$apply();
+        };
+        reader.readAsArrayBuffer(fileList[0]);
       };
-    }
-    else {
+      reader.readAsArrayBuffer(fileList[0].slice(0, 4));
+    };
+
+    function handleList() {
       //uploading individual js file(s) case
-      $scope.inputFilename="Multiple files"
+      $scope.inputFilename="Multiple files";
       var jsType = /(text\/javascript|application\/javascript|application\/x-javascript)/;
       var zip = new JSZip(); //create a jszip to manage the files
 
@@ -137,6 +140,18 @@ function ScanCtrl($scope, ScanSvc) {
           $scope.$apply();
         }
       }
+    };
+    $scope.throbInput = true;
+    $scope.$apply();
+    //enable fileselect div
+    //document.querySelector("#scan-intro").classList.toggle("hidden",true);
+    document.querySelector("#scan-files-selected").classList.toggle("hidden",false);
+
+    if (fileList.length === 1) {
+      handleMaybeZip();
+    }
+    else {
+      handleList();
     }
     $scope.throbInput = false;
     $scope.$apply();
