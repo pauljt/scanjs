@@ -568,14 +568,6 @@
     "threat": ""
   },
   {
-    "name": "nfc-manager permission",
-    "source": "",
-    "testhit": "",
-    "testmiss": "",
-    "desc": "Usage of sensitive API",
-    "threat": "Certified API"
-  },
-  {
     "name": "open-remote-window permission",
     "source": "window.open($,$, 'remote=true');",
     "testhit": "window.open(target.dataset.url, '_blank', 'remote=true');",
