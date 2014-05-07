@@ -20,13 +20,11 @@
 
 
     <!-- CommonJS modules -->
-    <!--<script src='../common/rules.js'></script>
-    <script src='../common/scan.js'></script>-->
-    <script src='../common/AcornWalker.js'></script>
+    <script src='../common/scan.js'></script>
     <!-- Client specific files -->
     <script src='js/main.js'></script>
     <script src='js/scanctrl.js'></script>
-    <script src='js/rules.js'></script>
+    <script src='js/rulesctrl.js'></script>
     <script src='js/experimentctrl.js'></script>
     <script src='js/scanservice.js'></script>
     <script src='js/prettify.js'></script>
@@ -178,15 +176,20 @@
   <div id="rules-wrapper" class="panel container-fluid hidden">
     <div id="rules-div" class="col-md-12">
       <div ng-controller='RuleListCtrl'>
-	<span class="badge pull-right">Number of Rules: {{rules.length}}</span>
+
+
         <div class="jumbotron">
+          <h4>Load new rules</h4>
+          Load a JSON rules file to change rules:
+          <input type="file" id="rule-file-input" accept="application/json">
+          <h4>Current rules</h4>
+          <span class="badge pull-right">Number of Rules: {{rules.length}}</span>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
               <tr>
                 <th>Rule Name</th>
                 <th>Rule Description</th>
-                <th>Rule Recommendation</th>
                 <th>Rule Definition</th>
               </tr>
               </thead>
@@ -194,9 +197,9 @@
               <tr ng-repeat='rule in rules' title={{rule.name}} id={{rule.name}}>
                 <td>{{rule.name}}</td>
                 <td>{{rule.desc}}</td>
-                <td>{{rule.rec}}</td>
+
                 <td>
-                  <pre class="prettyprint lang-js">{{rule.test}}</pre>
+                  <pre class="prettyprint lang-js">{{rule.source}}</pre>
                 </td>
               </tr>
               </tbody>

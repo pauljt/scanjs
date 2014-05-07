@@ -8,23 +8,23 @@ describe('Testing rule templates (tests.json)', function () {
     ruleData.forEach(function (rule) {
       describe('Rule: ' + rule.name, function () {
         it(rule.name + " should match template " + rule.name, function () {
-          var template=AcornScanJS.parseRule(rule);
+          var template=ScanJS.parseRule(rule);
           chai.expect(template).to.equal(rule.name);
         });
 
         rule.testhit.split(";").forEach(function (testsplit) {
           if(testsplit.trim()!=""){
             it(rule.source + " should match " + testsplit, function () {
-              AcornScanJS.loadRules([rule]);
-              var results = AcornScanJS.scan(testsplit);
+              ScanJS.loadRules([rule]);
+              var results = ScanJS.scan(testsplit);
               chai.expect(results.length).to.equal(1);
             });
           }
         });
 
         it(rule.name + " should not match " + rule.testmiss, function () {
-          AcornScanJS.loadRules([rule]);
-          var results = AcornScanJS.scan(rule.testmiss);
+          ScanJS.loadRules([rule]);
+          var results = ScanJS.scan(rule.testmiss);
           chai.expect(results).to.have.length(0);
         });
       });
