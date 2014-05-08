@@ -1,6 +1,6 @@
-describe('Testing rule templates (tests.json)', function () {
+describe('Testing rule templates (common/template_rules.json)', function () {
   $.ajax({
-    url: 'tests.json',
+    url: '../common/template_rules.json',
     async: false,
     dataType: 'json'
   }).done(function (ruleData) {
