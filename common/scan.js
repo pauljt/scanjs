@@ -30,7 +30,7 @@
     identifier: {
       nodeType: "Identifier",
       test: function (testNode, node) {
-        if (node.type="Identifier"&&node.name == testNode.name) {
+        if (node.type=="Identifier"&&node.name == testNode.name) {
           return true;
         }
       }

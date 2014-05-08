@@ -16,6 +16,7 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
     },
     loadRules:function(ruleData){
       this.rules=ruleData;
+      console.log(ruleData)
       this.scanWorker.postMessage({call: 'updateRules', rules: ruleData});
     }
   };
