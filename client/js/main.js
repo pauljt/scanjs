@@ -16,11 +16,14 @@ angular.element(document).ready(function() {
   });
 
   //Hack since angular doesn't support file inputs yet :(
-  var jsInput = document.getElementById("scan-file-input");
-  var fileHandler = angular.element(jsInput).scope().handleFileUpload;
-  jsInput.addEventListener("change", function(evt) {
-    fileHandler(this.files);
+  document.getElementById("scan-file-input").addEventListener("change", function(evt) {
+    angular.element(evt.target).scope().handleFileUpload(this.files);
   });
+
+  document.getElementById("rule-file-input").addEventListener("change", function(evt) {
+    angular.element(evt.target).scope().handleFileUpload(this.files);
+  });
+
 
   // loading codeMirror requires the textArea
   var scanCtrlScope = angular.element(document.getElementById("scan-wrapper")).scope();
@@ -39,7 +42,7 @@ angular.element(document).ready(function() {
     mode: 'javascript',
     lineNumbers: true,
     theme: 'mdn-like',
-    value: "bar.foo\nfoo=something\nbaz.bar=stuff\nfoo(something)\nfoo.bar\nfoo.bar()\neval(test)\ncrypto.generateCRMFRequest(test)",
+    value: "bar.foo\nfoo=something\nbaz.bar=stuff\nfoo(something)\nfoo.bar\nfoo.bar()\neval(test)\nfoo.innerHTML=danger",
     tabsize: 2,
     styleActiveLine: true
   });

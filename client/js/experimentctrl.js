@@ -1,8 +1,9 @@
-function ExperimentCtrl($scope) {
+function ExperimentCtrl($scope,ScanSvc) {
   $scope.codeMirror = undefined;
   $scope.results=[];
   $scope.ready=false;
   $scope.rule="eval()"
+
   var ruleData={
     "name": "manual rule",
     "source": $scope.rule,
@@ -12,14 +13,16 @@ function ExperimentCtrl($scope) {
     "threat": "example"
   }
 
-  ScanJS.loadRulesFile("../common/rules.json",function onLoaded(rules){
-    $scope.ready=true;
-  });
+  $scope.runScan = function () {
+    $scope.results=[];
+    code = $scope.codeMirror.getValue();
+    ScanJS.loadRules(ScanSvc.rules);
+    $scope.results=ScanJS.scan(code);
+    $scope.lastScan=$scope.runScan;
+  }
+
 
   $scope.runManualScan = function () {
-    if(!$scope.ready){
-      return;
-    }
     ruleData.source=$scope.rule;
     ScanJS.loadRules([ruleData]);
 
@@ -33,14 +36,15 @@ function ExperimentCtrl($scope) {
     }
     //ScanJS.setResultCallback(found);
     $scope.results=ScanJS.scan(code);
+    $scope.lastScan=$scope.runManualScan;
   }
 
   $scope.showResult = function (filename,line, col) {
     document.querySelector("#code-mirror-wrapper").classList.toggle("hidden",false);
-    var file = $scope.inputFiles.find(function(f){return f.name==filename});
-    $scope.codeMirror.setValue(file.asText());
     $scope.codeMirror.setCursor(line - 1, col || 0);
     $scope.codeMirror.focus();
   };
+
+  $scope.lastScan=$scope.runScan;
   
 }

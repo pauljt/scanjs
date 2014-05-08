@@ -9,7 +9,7 @@
       });
       context(null, function () {
         var good = 'doc = parser.parseFromString("<h1>somehtml</h1>", "text/html");';
-        it(good, function () {
+        it.skip(good, function () {
           chai.expect(ScanJS.scan(good, document.location.pathname)).to.be.empty;
         });
       });

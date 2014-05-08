@@ -24,9 +24,10 @@
     <!-- Client specific files -->
     <script src='js/main.js'></script>
     <script src='js/scanctrl.js'></script>
-    <script src='js/rulesctrl.js'></script>
     <script src='js/experimentctrl.js'></script>
     <script src='js/scanservice.js'></script>
+    <!-- rules ctrl MUST be loaded after scan service-->
+    <script src='js/rulesctrl.js'></script>
     <script src='js/prettify.js'></script>
   </head>
 
@@ -213,17 +214,19 @@
 
   <div id="experiment-wrapper" class="panel hidden" ng-controller="ExperimentCtrl">
     <div class="col-md-5">
-      <h4>Edit code/rule to test scan rules.</h4>
-      Enter the rule to test: <input type="text" ng-model="rule" ng-keyup="runManualScan()"></input>
-      <button ng-click="runManualScan()">Scan</button>
-      <div class="codeMirror" id="experiment-mirror" ng-keyup="runManualScan()">
+      <h4>Test with loaded rules</h4>
+      <button ng-click="runScan()">Scan with loaded rules</button>
+      <h4>Test a specific rule</h4>
+      <button ng-click="runManualScan()">Manual Scan</button> <input type="text" ng-model="rule" ng-keyup="runManualScan()"></input>
+
+      <div class="codeMirror" id="experiment-mirror" ng-keyup="lastScan()">
 
       </div>
     </div>
     <div class=""col="col-md-3">
 
     </div>
-    <div id="manual-results-wrapper" class="col-md-4" >
+    <div id="manual-results-wrapper" class="col-md-6" >
       <h4>
         Results
       </h4>
@@ -232,12 +235,14 @@
         <tr>
           <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
           <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+          <th>Source</th>
           <th>Description of Issue</th>
         </tr>
         </thead>
         <tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
           <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a>
           <td>{{result.rule.name }}</td>
+          <td>{{result.rule.source }}</td>
           <td>{{result.rule.desc}}</a>
           </td>
         </tr>

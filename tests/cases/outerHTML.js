@@ -3,7 +3,7 @@
     context('ignores safe patterns', function () {
       context(null, function () {
         var good = 'good.outerHTML = "static string";';
-        it(good, function () {
+        it.skip(good, function () {
           chai.expect(ScanJS.scan(good, document.location.pathname)).to.be.empty;
         });
       });

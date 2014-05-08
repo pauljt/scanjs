@@ -13,6 +13,11 @@ scanjsModule.factory('ScanSvc', function($rootScope) {
     },
     addResults: function(results) {
       $rootScope.$broadcast('NewResults', results);
+    },
+    loadRules:function(ruleData){
+      this.rules=ruleData;
+      console.log(ruleData)
+      this.scanWorker.postMessage({call: 'updateRules', rules: ruleData});
     }
   };
   ScanService.scanWorker = new Worker("js/scanworker.js");

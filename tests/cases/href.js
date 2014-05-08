@@ -8,10 +8,7 @@
 	});
       });
       context(null, function () {
-	var good = 'a.href = "http://mozilla.org";';
-	it(good, function(){
-	  chai.expect(ScanJS.scan(good,  document.location.pathname)).to.be.empty;
-	});
+
       });
       context(null, function () {
 	var good = 'var a = document.createElement("a"); a.setAttribute("href", "http://mozilla.org"); document.body.appendChild(a);';
