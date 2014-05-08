@@ -42,7 +42,7 @@ angular.element(document).ready(function() {
     mode: 'javascript',
     lineNumbers: true,
     theme: 'mdn-like',
-    value: "bar.foo\nfoo=something\nbaz.bar=stuff\nfoo(something)\nfoo.bar\nfoo.bar()\neval(test)\ncrypto.generateCRMFRequest(test)",
+    value: "bar.foo\nfoo=something\nbaz.bar=stuff\nfoo(something)\nfoo.bar\nfoo.bar()\neval(test)\nfoo.innerHTML=danger",
     tabsize: 2,
     styleActiveLine: true
   });

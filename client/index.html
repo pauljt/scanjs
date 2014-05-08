@@ -226,7 +226,7 @@
     <div class=""col="col-md-3">
 
     </div>
-    <div id="manual-results-wrapper" class="col-md-4" >
+    <div id="manual-results-wrapper" class="col-md-6" >
       <h4>
         Results
       </h4>
@@ -235,12 +235,14 @@
         <tr>
           <th><a href="" ng-click="predicate = 'line'; reverse=!reverse">Line</a></th>
           <th><a href="" ng-click="predicate = 'rule.name'; reverse=!reverse">Rule</a></th>
+          <th>Source</th>
           <th>Description of Issue</th>
         </tr>
         </thead>
         <tr ng-repeat='result in results| orderBy:predicate:reverse' title={{result.rule.rec}}>
           <td><a ng-click="showResult(result.filename,result.line, result.col)">Line {{result.line}}</a>
           <td>{{result.rule.name }}</td>
+          <td>{{result.rule.source }}</td>
           <td>{{result.rule.desc}}</a>
           </td>
         </tr>
