@@ -259,7 +259,6 @@
 
     var nodeTests = {};
     //each node type may have multiple tests, so first create arrays of test funcs
-    //TODO test with multiple template tests which share the same expression type
     for (i in rulesData) {
       var rule = rulesData[i];
       //parse rule source

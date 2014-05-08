@@ -3,7 +3,7 @@
 if (typeof console === "undefined") {
   console = {};
   console.log = function consoleShim(mesg) {
-    //postMessage({'type':'log', 'message': mesg});
+    postMessage({'type':'log', 'message': mesg});
   }
 }
 
@@ -12,7 +12,8 @@ importScripts('lib/acorn.js',
   'lib/acorn_loose.js',
   '../../common/scan.js');
 
-ScanJS.loadRulesFile("../../common/rules.json")
+//load default rules
+//ScanJS.loadRulesFile("../../common/rules.json")
 
 onmessage = function (evt) {
   if (evt.data.call === 'scan') {
@@ -23,5 +24,9 @@ onmessage = function (evt) {
     var file = args[1];
     var findings = ScanJS.scan(source,file);
     postMessage({"filename": file, "findings": findings});
+  }
+  else if(evt.data.call === 'updateRules'){
+    console.log('scanworker.js: Loaded '+evt.data.rules.length+" rules.")
+    ScanJS.loadRules(evt.data.rules)
   }
 };

@@ -16,11 +16,14 @@ angular.element(document).ready(function() {
   });
 
   //Hack since angular doesn't support file inputs yet :(
-  var jsInput = document.getElementById("scan-file-input");
-  var fileHandler = angular.element(jsInput).scope().handleFileUpload;
-  jsInput.addEventListener("change", function(evt) {
-    fileHandler(this.files);
+  document.getElementById("scan-file-input").addEventListener("change", function(evt) {
+    angular.element(evt.target).scope().handleFileUpload(this.files);
   });
+
+  document.getElementById("rule-file-input").addEventListener("change", function(evt) {
+    angular.element(evt.target).scope().handleFileUpload(this.files);
+  });
+
 
   // loading codeMirror requires the textArea
   var scanCtrlScope = angular.element(document.getElementById("scan-wrapper")).scope();
