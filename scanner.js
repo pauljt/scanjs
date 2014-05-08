@@ -8,9 +8,9 @@ var beautify = require('js-beautify').js_beautify;
 global.acorn = require(__dirname + '/client/js/lib/acorn.js');
 acorn.walk = require('acorn/util/walk.js');
 
-var AcornScanJS = require(__dirname + '/common/AcornWalker');
+var ScanJS = require(__dirname + '/common/scan');
 var signatures = JSON.parse(fs.readFileSync(__dirname + "/common/rules.json", "utf8"));
-AcornScanJS.loadRules(signatures);
+ScanJS.loadRules(signatures);
 
 var argv = require('optimist').usage('Usage: $node scan.js -t [path/to/app] -o [resultFile.json]').demand(['t']).argv;
 
@@ -66,7 +66,7 @@ if( typeof process != 'undefined' && process.argv[2]) {
         var content = fs.readFileSync(fullpath, 'utf8');
         //beautify source so result snippet is meaningful
         var content = beautify(content, { indent_size: 2 })
-        var scanresult = AcornScanJS.scan(content, fullpath);
+        var scanresult = ScanJS.scan(content, fullpath);
         if (scanresult.type == 'error') {
           console.log("SKIPPING FILE: Error in "+ fullpath+", at Line "+ scanresult.error.loc.line +", Column "+scanresult.error.loc.column+ ": " + scanresult.error.message);
         }

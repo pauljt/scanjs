@@ -10,10 +10,9 @@ if (typeof console === "undefined") {
 importScripts('lib/acorn.js',
   'lib/walk.js',
   'lib/acorn_loose.js',
-  '../../common/scan.js',
-  '../../common/AcornWalker.js');
+  '../../common/scan.js');
 
-AcornScanJS.loadRulesFile("../../common/rules.json")
+ScanJS.loadRulesFile("../../common/rules.json")
 
 onmessage = function (evt) {
   if (evt.data.call === 'scan') {
@@ -22,7 +21,7 @@ onmessage = function (evt) {
     var rules;
 
     var file = args[1];
-    var findings = AcornScanJS.scan(source,file);
+    var findings = ScanJS.scan(source,file);
     postMessage({"filename": file, "findings": findings});
   }
 };

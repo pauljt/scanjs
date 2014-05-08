@@ -12,16 +12,16 @@ function ExperimentCtrl($scope) {
     "threat": "example"
   }
 
-  AcornScanJS.loadRulesFile("../common/rules.json",function onLoaded(rules){
+  ScanJS.loadRulesFile("../common/rules.json",function onLoaded(rules){
     $scope.ready=true;
   });
 
-  $scope.runManualScan = function (source, filename) {
+  $scope.runManualScan = function () {
     if(!$scope.ready){
       return;
     }
     ruleData.source=$scope.rule;
-    AcornScanJS.loadRules([ruleData]);
+    ScanJS.loadRules([ruleData]);
 
     $scope.results=[];
     code = $scope.codeMirror.getValue();
@@ -31,8 +31,8 @@ function ExperimentCtrl($scope) {
     }catch(e){
 
     }
-    //AcornScanJS.setResultCallback(found);
-    $scope.results=AcornScanJS.scan(code);
+    //ScanJS.setResultCallback(found);
+    $scope.results=ScanJS.scan(code);
   }
 
   $scope.showResult = function (filename,line, col) {

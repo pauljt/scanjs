@@ -1,1 +1,1 @@
-AcornScanJS.loadRulesFile("tests.json");
+ScanJS.loadRulesFile("tests.json");

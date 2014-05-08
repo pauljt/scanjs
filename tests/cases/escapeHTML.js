@@ -4,13 +4,13 @@
       context(null, function () {
         var good = 'var a = "escapeHTML";';
         it(good, function () {
-          chai.expect(AcornScanJS.scan(good, document.location.pathname)).to.be.empty;
+          chai.expect(ScanJS.scan(good, document.location.pathname)).to.be.empty;
         });
       });
       context(null, function () {
         var good = 'var escapeHTML = "just a string";';
         it(good, function () {
-          chai.expect(AcornScanJS.scan(good, document.location.pathname)).to.be.empty;
+          chai.expect(ScanJS.scan(good, document.location.pathname)).to.be.empty;
         });
       });
     });
@@ -18,7 +18,7 @@
       context(null, function () {
         var bad = 'var nodeName = escapeHTML(node.name);';
         it(bad, function () {
-          chai.expect(AcornScanJS.scan(bad, document.location.pathname)).not.to.be.empty;
+          chai.expect(ScanJS.scan(bad, document.location.pathname)).not.to.be.empty;
         });
       });
     });
